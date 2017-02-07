@@ -1,5 +1,8 @@
 all : MThread.o UDPSocket.o TCPSocket.o MTCPListener.o libSocketUtils.a
 
+clean : 
+	rm -rf Debug/*.o Debug/libSocketUtils.a
+
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Linux)
         CC = g++ -pthread  
