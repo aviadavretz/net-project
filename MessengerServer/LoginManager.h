@@ -14,7 +14,7 @@
 using namespace std;
 
 #define USERS_FILE_NAME "users.txt"
-#define PASSWORD_DELIMITER "@"
+#define PASSWORD_DELIMITER "@@@@@"
 
 class LoginManager
 {

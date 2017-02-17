@@ -59,11 +59,9 @@ bool LoginManager::writeUserCredentialsToFile(string username, string password)
 		usersFile << username + PASSWORD_DELIMITER + password << endl;
 		usersFile.close();
 
-		return false;
+		return true;
 	}
 
 	return false;
 }
-
-
 
