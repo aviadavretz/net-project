@@ -30,7 +30,5 @@ bool LoginManager::signIn(string username, string password)
 
 string LoginManager::tryFindingUserPassword(string username)
 {
-	usersFile = new File(USERS_FILE_NAME);
-
-	usersFile->
+	return "zibi";
 }
