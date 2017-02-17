@@ -7,28 +7,63 @@
 
 #include "LoginManager.h"
 
-bool LoginManager::signIn(string username, string password)
+bool LoginManager::signUp(string username, string password)
 {
-	if (doesUserExist(username))
+	if (validateUserCredentials(username, password))
 	{
 		return false;
 	}
 
-	return true;
+	return writeUserCredentialsToFile(username, password);
 }
 
-
-bool LoginManager::doesUserExist(string username)
+bool LoginManager::validateUserCredentials(string username, string password)
 {
-	return tryFindingUserPassword(username) != NULL;
+	ifstream usersFile;
+	usersFile.open(USERS_FILE_NAME, ios::in | ios::binary);
+
+	if (usersFile.is_open())
+	{
+		string userLine;
+
+		while (getline(usersFile, userLine))
+		{
+			if (doesFileLineMatchesUserCredentials(userLine, username, password))
+			{
+				usersFile.close();
+				return true;
+			}
+		}
+
+		usersFile.close();
+	}
+
+	return false;
 }
 
-bool LoginManager::signIn(string username, string password)
+bool LoginManager::doesFileLineMatchesUserCredentials(string fileLine, string username, string password)
 {
-	return tryFindingUserPassword(username).compare(password) == 0;
+	string passwordDelimiter = string(PASSWORD_DELIMITER);
+
+	return (fileLine.length() == (username.length() + passwordDelimiter.length() + password.length())) &&
+			(fileLine.compare(username + passwordDelimiter + password) == 0);
 }
 
-string LoginManager::tryFindingUserPassword(string username)
+bool LoginManager::writeUserCredentialsToFile(string username, string password)
 {
-	return "zibi";
+	ofstream usersFile;
+	usersFile.open(USERS_FILE_NAME, ios::out | ios::app | ios::binary);
+
+	if (usersFile.is_open())
+	{
+		usersFile << username + PASSWORD_DELIMITER + password << endl;
+		usersFile.close();
+
+		return false;
+	}
+
+	return false;
 }
+
+
+

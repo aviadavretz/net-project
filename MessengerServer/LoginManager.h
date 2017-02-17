@@ -19,13 +19,12 @@ using namespace std;
 class LoginManager
 {
 private:
-	File* usersFile;
-	string tryFindingUserPassword(string username);
+	bool doesFileLineMatchesUserCredentials(string fileLine, string username, string password);
+	bool writeUserCredentialsToFile(string username, string password);
 
 public:
 	bool signUp(string username, string password);
-	bool doesUserExist(string username);
-	bool signIn(string username, string password);
+	bool validateUserCredentials(string username, string password);
 };
 
 #endif /* LOGINMANAGER_H_ */
