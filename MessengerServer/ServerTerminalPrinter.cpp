@@ -51,4 +51,14 @@ void ServerTerminalPrinter::print(vector<ChatRoom*> rooms)
 
 }
 
+void ServerTerminalPrinter::printUsersName(vector<string> names)
+{
+	cout << "Registered users name:" << endl;
+
+	for (vector<string>::iterator iterator = names.begin(); iterator != names.end(); iterator++)
+	{
+		cout << *iterator << endl;
+	}
+}
+
 

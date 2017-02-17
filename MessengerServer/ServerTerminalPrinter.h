@@ -27,6 +27,7 @@ class ServerTerminalPrinter
 	void print(vector<User*> users);
 	void print(vector<Session*> sessions);
 	void print(vector<ChatRoom*> rooms);
+	void printUsersName(vector<string> names);
 };
 
 

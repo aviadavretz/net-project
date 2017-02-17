@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -25,6 +26,7 @@ private:
 public:
 	bool signUp(string username, string password);
 	bool validateUserCredentials(string username, string password);
+	vector<string> getAllRegisteredUsersName();
 };
 
 #endif /* LOGINMANAGER_H_ */

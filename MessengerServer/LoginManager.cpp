@@ -65,3 +65,31 @@ bool LoginManager::writeUserCredentialsToFile(string username, string password)
 	return false;
 }
 
+vector<string> LoginManager::getAllRegisteredUsersName()
+{
+	vector<string> usernames;
+
+	ifstream usersFile;
+	usersFile.open(USERS_FILE_NAME, ios::in | ios::binary);
+
+	if (usersFile.is_open())
+	{
+		string userLine;
+
+		while (getline(usersFile, userLine))
+		{
+			string::size_type delimiterIndex = userLine.find(PASSWORD_DELIMITER, 0);
+
+			if (delimiterIndex != string::npos)
+			{
+				usernames.push_back(userLine.substr(0, delimiterIndex));
+			}
+		}
+
+		usersFile.close();
+	}
+
+	return usernames;
+}
+
+
