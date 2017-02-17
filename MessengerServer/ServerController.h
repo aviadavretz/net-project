@@ -24,6 +24,7 @@ class ServerController: public MThread
 
 	bool isUserInSession(User* user);
 	bool isUserInChatRoom(User* user);
+	bool isBusyUser(User* user);
 
 public:
 	ServerController();
