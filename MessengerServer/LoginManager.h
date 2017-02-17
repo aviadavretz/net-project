@@ -8,8 +8,8 @@
 #ifndef LOGINMANAGER_H_
 #define LOGINMANAGER_H_
 
-#include "File.h"
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 

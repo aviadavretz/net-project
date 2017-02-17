@@ -22,9 +22,6 @@ TCPSocket.o : TCPSocket.cpp
 	
 MTCPListener.o : MTCPListener.cpp
 	$(CC) -g -c MTCPListener.cpp -o Debug/MTCPListener.o
-	
-File.o : File.cpp
-	$(CC) -g -c File.cpp -o Debug/File.o
 
-libSocketUtils.a : MThread.o UDPSocket.o TCPSocket.o MTCPListener.o File.o 
-	ar -crv Debug/libSocketUtils.a Debug/MThread.o Debug/UDPSocket.o Debug/TCPSocket.o Debug/MTCPListener.o Debug/File.o
+libSocketUtils.a : MThread.o UDPSocket.o TCPSocket.o MTCPListener.o
+	ar -crv Debug/libSocketUtils.a Debug/MThread.o Debug/UDPSocket.o Debug/TCPSocket.o Debug/MTCPListener.o
