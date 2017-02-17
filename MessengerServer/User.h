@@ -8,6 +8,8 @@
 #ifndef USER_H_
 #define USER_H_
 
+#include <iostream>
+
 using namespace std;
 
 class User
@@ -17,7 +19,6 @@ class User
 public:
 	string getName();
 };
-
 
 
 #endif /* USER_H_ */
