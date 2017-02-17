@@ -22,9 +22,12 @@ ChatRoom.o : ChatRoom.cpp
 
 ServerTerminalPrinter.o : ServerTerminalPrinter.cpp
 	$(CC) -g -c ServerTerminalPrinter.cpp -o Debug/ServerTerminalPrinter.o
+	
+LoginManager.o : LoginManager.cpp
+	$(CC) -g -c LoginManager.cpp -o Debug/LoginManager.o
 
 main.o : main.cpp
 	$(CC) -g -c -I../SocketUtils  main.cpp -o Debug/main.o
 	
-MessengerServer: User.o Session.o ChatRoom.o ServerTerminalPrinter.o main.o
-	$(CC) Debug/User.o Debug/Session.o Debug/ChatRoom.o Debug/ServerTerminalPrinter.o Debug/main.o -L../SocketUtils/Debug -lSocketUtils -o Debug/MessengerServer 
+MessengerServer: User.o Session.o ChatRoom.o ServerTerminalPrinter.o LoginManager.o main.o
+	$(CC) Debug/User.o Debug/Session.o Debug/ChatRoom.o Debug/ServerTerminalPrinter.o Debug/LoginManager.o Debug/main.o -L../SocketUtils/Debug -lSocketUtils -o Debug/MessengerServer 
