@@ -22,6 +22,11 @@
 #define SESSION_REFUSED				5
 #define SESSION_ESTABLISHED			6
 
+#define LOGIN					    70
+#define REGISTER					71
+
+#define EXPECTED_COMMAND_BYTES_SIZE 4
+
 #define TEST_PEER_NAME "test"
 #define SESSION_REFUSED_MSG "Connection to peer refused, peer might be busy or disconnected, try again later"
 

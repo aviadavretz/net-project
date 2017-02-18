@@ -16,13 +16,14 @@
 #include "LoginManager.h"
 #include "ServerPeersAcceptor.h"
 #include "NewPeerAcceptedObserver.h"
+#include "PeerMessagesObserver.h"
 #include "string"
 #include <vector>
 
 using namespace std;
 using namespace npl;
 
-class ServerController: public NewPeerAcceptedObserver
+class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 {
 	LoginManager loginManager;
 	ServerPeersAcceptor peersAcceptor;
@@ -36,14 +37,15 @@ class ServerController: public NewPeerAcceptedObserver
 
 public:
 	ServerController();
+	void startServer();
+	void stopServer();
+	void notifyNewPeerAccepted(TCPSocket* peerSocket);
+	void notifyMessageReceived(TCPSocket* peerSocket, string message);
 	vector<string> getAllRegisteredUsersName();
 	vector<User*> getAllConnectedUsers();
 	vector<Session*> getAllSessions();
 	vector<ChatRoom*> getAllChatRooms();
 	ChatRoom* getChatRoomByName(string name);
-	void notifyNewPeerAccepted(TCPSocket* peerSocket);
-	void startServer();
-	void stopServer();
 };
 
 

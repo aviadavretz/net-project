@@ -1,0 +1,41 @@
+/*
+ * ServerPeersListener.h
+ *
+ *  Created on: Feb 18, 2017
+ *      Author: user
+ */
+
+#ifndef SERVERPEERSLISTENER_H_
+#define SERVERPEERSLISTENER_H_
+
+#include "MThread.h"
+#include "MTCPListener.h"
+#include "TCPSocket.h"
+#include "TCPMessengerProtocol.h"
+#include "PeerMessagesObserver.h"
+
+using namespace std;
+using namespace npl;
+
+#define BAD_REQUEST -1
+
+class ServerPeersListener: public MThread
+{
+	vector<TCPSocket*> peers;
+	PeerMessagesObserver* observer;
+	bool shouldContinue;
+
+	void run();
+	int readCommand(TCPSocket* socket);
+	void routeCommand(int command);
+
+public:
+	ServerPeersListener(PeerMessagesObserver* observer);
+	void addPeer(TCPSocket* peer);
+	void removePeer(TCPSocket* peer);
+	void stop();
+};
+
+
+
+#endif /* SERVERPEERSLISTENER_H_ */

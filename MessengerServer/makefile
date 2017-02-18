@@ -19,9 +19,6 @@ Session.o : Session.cpp
 	
 ChatRoom.o : ChatRoom.cpp
 	$(CC) -g -c ChatRoom.cpp -o Debug/ChatRoom.o
-
-ServerTerminalPrinter.o : ServerTerminalPrinter.cpp
-	$(CC) -g -c ServerTerminalPrinter.cpp -o Debug/ServerTerminalPrinter.o
 	
 LoginManager.o : LoginManager.cpp
 	$(CC) -g -c LoginManager.cpp -o Debug/LoginManager.o
@@ -29,11 +26,17 @@ LoginManager.o : LoginManager.cpp
 ServerPeersAcceptor.o : ServerPeersAcceptor.cpp
 	$(CC) -g -c -I../SocketUtils  ServerPeersAcceptor.cpp -o Debug/ServerPeersAcceptor.o
 	
+ServerPeersListener.o : ServerPeersListener.cpp
+	$(CC) -g -c -I../SocketUtils  ServerPeersListener.cpp -o Debug/ServerPeersListener.o
+	
 ServerController.o : ServerController.cpp
 	$(CC) -g -c -I../SocketUtils  ServerController.cpp -o Debug/ServerController.o
+	
+ServerTerminalPrinter.o : ServerTerminalPrinter.cpp
+	$(CC) -g -c ServerTerminalPrinter.cpp -o Debug/ServerTerminalPrinter.o
 
 main.o : main.cpp
 	$(CC) -g -c -I../SocketUtils main.cpp -o Debug/main.o
 	
-MessengerServer: User.o Session.o ChatRoom.o ServerTerminalPrinter.o LoginManager.o ServerPeersAcceptor.o ServerController.o main.o
-	$(CC) Debug/User.o Debug/Session.o Debug/ChatRoom.o Debug/ServerTerminalPrinter.o Debug/LoginManager.o Debug/ServerPeersAcceptor.o Debug/ServerController.o Debug/main.o -L../SocketUtils/Debug -lSocketUtils -o Debug/MessengerServer 
+MessengerServer: User.o Session.o ChatRoom.o LoginManager.o ServerPeersAcceptor.o ServerPeersListener.o ServerController.o ServerTerminalPrinter.o main.o
+	$(CC) Debug/User.o Debug/Session.o Debug/ChatRoom.o Debug/ServerTerminalPrinter.o Debug/LoginManager.o Debug/ServerPeersAcceptor.o Debug/ServerPeersListener.o Debug/ServerController.o Debug/main.o -L../SocketUtils/Debug -lSocketUtils -o Debug/MessengerServer 

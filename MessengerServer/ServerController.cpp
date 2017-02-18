@@ -46,6 +46,11 @@ void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
 	cout << "New peer accepted from address : " << peerSocket->fromAddr() << " !" << endl;
 }
 
+void ServerController::notifyMessageReceived(TCPSocket* peerSocket, string message)
+{
+	cout << "Message received : " << message << endl;
+}
+
 void ServerController::stopServer()
 {
 	peersAcceptor.stop();
@@ -67,5 +72,7 @@ bool isBusyUser(User* user)
 }
 
 NewPeerAcceptedObserver::~NewPeerAcceptedObserver(){}
+
+PeerMessagesObserver::~PeerMessagesObserver(){}
 
 
