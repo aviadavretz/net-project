@@ -7,28 +7,24 @@
 
 #include "ServerPeersAcceptor.h"
 
-ServerPeersAcceptor::ServerPeersAcceptor(ServerController* controller)
+ServerPeersAcceptor::ServerPeersAcceptor(NewPeerAcceptedObserver* observer)
 {
-	this->controller = controller;
-	serverSocket = new TCPSocket(MSNGR_PORT);
+	this->observer = observer;
+	acceptingSocket = new TCPSocket(MSNGR_PORT);
 	shouldContinue = true;
-
-	start();
 }
 
 void ServerPeersAcceptor::run()
 {
 	while (shouldContinue)
 	{
-		TCPSocket* peer = serverSocket->listenAndAccept();
-		cout << "New peer accepted from address : " << peer->fromAddr() << " !" << endl;
-
-		//controller->addNewPeer(peer);
+		TCPSocket* peerSocket = acceptingSocket->listenAndAccept();
+		observer->notifyNewPeerAccepted(peerSocket);
 	}
 }
 
-ServerPeersAcceptor::~ServerPeersAcceptor()
+void ServerPeersAcceptor::stop()
 {
 	shouldContinue = false;
-	serverSocket->close();
+	acceptingSocket->close();
 }

@@ -1,13 +1,18 @@
 #include <iostream>
 #include "ServerTerminalPrinter.h"
 #include "UserInputCommands.h"
+#include "ServerController.h"
 
 using namespace std;
+using namespace npl;
 
 int main()
 {
 	ServerTerminalPrinter printer;
 	printer.printWelcomeMessage();
+
+	ServerController controller;
+	controller.startServer();
 
 	bool shouldContinue = true;
 

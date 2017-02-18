@@ -11,22 +11,22 @@
 #include "MThread.h"
 #include "TCPSocket.h"
 #include "TCPMessengerProtocol.h"
-#include "ServerController.h"
+#include "NewPeerAcceptedObserver.h"
 
 using namespace std;
 using namespace npl;
 
 class ServerPeersAcceptor: public MThread
 {
-	TCPSocket* serverSocket;
-	ServerController* controller;
+	TCPSocket* acceptingSocket;
+	NewPeerAcceptedObserver* observer;
 	bool shouldContinue;
 
 	void run();
 
 public:
-	ServerPeersAcceptor(ServerController* controller);
-	~ServerPeersAcceptor();
+	ServerPeersAcceptor(NewPeerAcceptedObserver* observer);
+	void stop();
 };
 
 #endif /* SERVERPEERSACCEPTOR_H_ */
