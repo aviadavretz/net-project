@@ -22,7 +22,7 @@ void ServerTerminalPrinter::printMenu()
 	cout << " 3. To list sessions: " << PRINT_SESSIONS <<endl;
 	cout << " 4. To list Rooms: " << PRINT_ROOMS <<endl;
 	cout << " 5. To list Users in Room: " << PRINT_ROOM_USERS << " <roomName>" <<endl;
-	cout << " 6. To exit type: " << EXIT <<endl;
+	cout << " 6. To exit type: " << SHUTDOWN_SERVER <<endl;
 	cout << "----------------------------------------------" <<endl;
 }
 

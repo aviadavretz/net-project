@@ -11,10 +11,12 @@
 #include "MThread.h"
 #include "User.h"
 #include "Session.h"
+#include "ChatRoom.h"
 #include "string"
 #include <vector>
 
 using namespace std;
+using namespace npl;
 
 class ServerController: public MThread
 {
@@ -34,6 +36,7 @@ public:
 	vector<Session*> getAllSessions();
 	vector<ChatRoom*> getAllChatRooms();
 	ChatRoom* getChatRoomByName(string name);
+	void addNewPeer(TCPSocket* peer);
 	void stop();
 };
 
