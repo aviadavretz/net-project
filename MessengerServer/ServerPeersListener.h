@@ -17,8 +17,6 @@
 using namespace std;
 using namespace npl;
 
-#define BAD_REQUEST -1
-
 class ServerPeersListener: public MThread
 {
 	vector<TCPSocket*> peers;
@@ -27,7 +25,11 @@ class ServerPeersListener: public MThread
 
 	void run();
 	int readCommand(TCPSocket* socket);
-	void routeCommand(int command);
+	void routeCommand(int command, TCPSocket* peer);
+	string readMessage(TCPSocket* socket);
+	void routeLoginCommand(TCPSocket* peer);
+	void routeRegisterCommand(TCPSocket* peer);
+	pair<string, string> getUsernameAndPasswordFromMessage(string message);
 
 public:
 	ServerPeersListener(PeerMessagesObserver* observer);

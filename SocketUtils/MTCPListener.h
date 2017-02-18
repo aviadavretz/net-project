@@ -24,7 +24,7 @@ public:
 	 */
 	void add(TCPSocket* socket);
 	void add(vector<TCPSocket*> sockets);
-	TCPSocket* listen();
+	TCPSocket* listen(int timeout = 0);
 
 };
 

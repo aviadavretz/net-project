@@ -7,13 +7,14 @@
 
 #include "ServerController.h"
 
-ServerController::ServerController() : peersAcceptor(ServerPeersAcceptor(this))
+ServerController::ServerController() : peersAcceptor(ServerPeersAcceptor(this)), peersListener(ServerPeersListener(this))
 {
 }
 
 void ServerController::startServer()
 {
 	peersAcceptor.start();
+	peersListener.start();
 }
 
 vector<string> ServerController::getAllRegisteredUsersName()
@@ -43,17 +44,35 @@ ChatRoom* ServerController::getChatRoomByName(string name)
 
 void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
 {
-	cout << "New peer accepted from address : " << peerSocket->fromAddr() << " !" << endl;
+	peersListener.addPeer(peerSocket);
 }
 
-void ServerController::notifyMessageReceived(TCPSocket* peerSocket, string message)
+void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username, string password)
 {
-	cout << "Message received : " << message << endl;
+	bool loginSuccessed = loginManager.validateUserCredentials(username, password);
+	cout << "Login attempt : " << loginSuccessed << endl;
+
+	// TODO : Implement further login actions
+}
+
+void ServerController::notifyRegistrationRequest(TCPSocket* peerSocket, string username, string password)
+{
+	bool registrationSuccessed = false;
+
+	if (!loginManager.validateUserCredentials(username, password))
+	{
+		registrationSuccessed = loginManager.signUp(username, password);
+	}
+
+	cout << "Registration attempt : " << registrationSuccessed << endl;
+
+	// TODO : Implement further register actions
 }
 
 void ServerController::stopServer()
 {
 	peersAcceptor.stop();
+	peersListener.stop();
 }
 
 bool isUserInSession(User* user)

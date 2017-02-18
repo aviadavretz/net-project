@@ -17,6 +17,7 @@
 #include "ServerPeersAcceptor.h"
 #include "NewPeerAcceptedObserver.h"
 #include "PeerMessagesObserver.h"
+#include "ServerPeersListener.h"
 #include "string"
 #include <vector>
 
@@ -27,6 +28,7 @@ class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 {
 	LoginManager loginManager;
 	ServerPeersAcceptor peersAcceptor;
+	ServerPeersListener peersListener;
 	vector<User*> connectedUsers;
 	vector<Session*> sessions;
 	vector<ChatRoom*> chatRooms;
@@ -40,7 +42,8 @@ public:
 	void startServer();
 	void stopServer();
 	void notifyNewPeerAccepted(TCPSocket* peerSocket);
-	void notifyMessageReceived(TCPSocket* peerSocket, string message);
+	void notifyLoginRequest(TCPSocket* peerSocket, string username, string password);
+	void notifyRegistrationRequest(TCPSocket* peerSocket, string username, string password);
 	vector<string> getAllRegisteredUsersName();
 	vector<User*> getAllConnectedUsers();
 	vector<Session*> getAllSessions();

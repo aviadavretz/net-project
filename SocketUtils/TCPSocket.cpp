@@ -101,6 +101,10 @@ int TCPSocket::send(const string& msg){
 	return write(socket_fd,msg.c_str(),msg.size());
 }
 
+int TCPSocket::send(const char* msg, int length){
+	return write(socket_fd, msg, length);
+}
+
 
 void TCPSocket::close(){
 	//cout<<"closing socket"<<endl;

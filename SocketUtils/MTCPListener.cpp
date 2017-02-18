@@ -17,7 +17,7 @@ void MTCPListener::add(vector<TCPSocket*> sockets){
 	this->sockets = sockets;
 }
 
-TCPSocket* MTCPListener::listen(){
+TCPSocket* MTCPListener::listen(int timeout){
 	fd_set set;
 	int nfd = 0;
 	FD_ZERO(&set);
@@ -31,7 +31,16 @@ TCPSocket* MTCPListener::listen(){
 		}
 	}
 
-	int rc = select(nfd, &set,NULL,NULL,NULL);
+	struct timeval tVal = {timeout, 0};
+	int rc;
+
+	if (timeout > 0){
+		rc = select(nfd, &set,NULL,NULL,&tVal);
+	}
+	else{
+		rc = select(nfd, &set,NULL,NULL,NULL);
+	}
+
 	if (rc<1){
 		FD_ZERO(&set);
 		return NULL;

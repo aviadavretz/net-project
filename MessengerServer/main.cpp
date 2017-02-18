@@ -2,6 +2,7 @@
 #include "ServerTerminalPrinter.h"
 #include "UserInputCommands.h"
 #include "ServerController.h"
+#include "TCPSocket.h"
 
 using namespace std;
 using namespace npl;
@@ -25,11 +26,45 @@ int main()
 
 		if (userCommand.compare(PRINT_ALL_USERS) == 0)
 		{
+			// Just for testing, should be removed.
+			TCPSocket* socket = new TCPSocket("127.0.0.1", MSNGR_PORT);
 
+			int commandLength = htonl(LOGIN);
+			socket->send((char*)&commandLength,4);
+
+			string username;
+			string password;
+			cin >> username;
+			cin >> password;
+
+			string message = username.append(" ").append(password);
+
+			cout << "Sending : " << message << endl;
+
+			int messageLength = htonl(message.length());
+			socket->send((char*)&messageLength, 4);
+			socket->send(message);
 		}
 		else if (userCommand.compare(PRINT_CONNECTED_USERS) == 0)
 		{
+			// Just for testing, should be removed.
+			TCPSocket* socket = new TCPSocket("127.0.0.1", MSNGR_PORT);
 
+			int commandLength = htonl(REGISTER);
+			socket->send((char*)&commandLength,4);
+
+			string username;
+			string password;
+			cin >> username;
+			cin >> password;
+
+			string message = username.append(" ").append(password);
+
+			cout << "Sending : " << message << endl;
+
+			int messageLength = htonl(message.length());
+			socket->send((char*)&messageLength, 4);
+			socket->send(message);
 		}
 		else if (userCommand.compare(PRINT_SESSIONS) == 0)
 		{

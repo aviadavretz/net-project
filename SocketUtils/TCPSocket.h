@@ -56,6 +56,11 @@ public:
 	int send(const string& msg);
 
 	/**
+	 * send the given buffer with the length to the socket
+	 */
+	int send(const char* msg, int length);
+
+	/**
 	 * close the socket and free all resources
 	 */
 	void close();

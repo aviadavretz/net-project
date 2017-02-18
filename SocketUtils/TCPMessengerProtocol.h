@@ -22,10 +22,20 @@
 #define SESSION_REFUSED				5
 #define SESSION_ESTABLISHED			6
 
+#define GET_REGISTERED_USERS 		7
+#define GET_CONNECTED_USERS			8
+#define GET_CHAT_ROOMS				9
+#define GET_USERS_IN_CHAT_ROOM		10
+#define ENTER_CHAT_ROOM				11
+#define CLOSE_CHAT_ROOM				12
+#define DISCONNECT					13
+
 #define LOGIN					    70
 #define REGISTER					71
+#define USERNAME_PASSWORD_DELIMITER " "
 
-#define EXPECTED_COMMAND_BYTES_SIZE 4
+#define EXPECTED_COMMAND_BYTES_SIZE 				 4
+#define EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE 4
 
 #define TEST_PEER_NAME "test"
 #define SESSION_REFUSED_MSG "Connection to peer refused, peer might be busy or disconnected, try again later"
