@@ -38,7 +38,7 @@ int main()
 		{
 
 		}
-		else if (userCommand.compare(EXIT) == 0)
+		else if (userCommand.compare(SHUTDOWN_SERVER) == 0)
 		{
 			printer.printExitMessage();
 			shouldContinue = false;
