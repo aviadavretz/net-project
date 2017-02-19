@@ -45,6 +45,13 @@ int main()
 			int messageLength = htonl(message.length());
 			socket->send((char*)&messageLength, 4);
 			socket->send(message);
+
+			int command = 0;
+
+			// Receive command (the size should be as stated in the protocol)
+			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
+
+			cout << ntohl(command) << endl;
 		}
 		else if (userCommand.compare(PRINT_CONNECTED_USERS) == 0)
 		{
@@ -63,16 +70,21 @@ int main()
 			int messageLength = htonl(message.length());
 			socket->send((char*)&messageLength, 4);
 			socket->send(message);
+
+			int command = 0;
+
+			// Receive command (the size should be as stated in the protocol)
+			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
+
+			cout << ntohl(command) << endl;
 		}
 		else if (userCommand.compare(PRINT_SESSIONS) == 0)
 		{
-			if (kaki)
-				socket = new TCPSocket("127.0.0.1", MSNGR_PORT);
-			kaki = false;
+			socket = new TCPSocket("127.0.0.1", MSNGR_PORT);
 		}
 		else if (userCommand.compare(PRINT_ROOMS) == 0)
 		{
-			kaki = true;
+
 		}
 		else if (userCommand.compare(PRINT_ROOM_USERS) == 0)
 		{

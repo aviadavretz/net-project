@@ -65,23 +65,20 @@ void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username
 {
 	if (isPeerLoggedIn(peerSocket))
 	{
-		cout << "already logged in" << endl;
-		// TODO : Return "already logged in" code
+		peersMessageSender.sendAlreadyLoggedIn(peerSocket);
 	}
 	else
 	{
 		if (!userCredentialsManager.validateUserCredentials(username, password))
 		{
-			cout << "bad username / password" << endl;
-			// TODO : Return "bad username / password" code
+			peersMessageSender.sendBadUsernamePassword(peerSocket);
 		}
 		else
 		{
 			User* user = new User(username);
 			connectedUsers[peerSocket] = user;
 
-			cout << "login success" << endl;
-			// TODO : Return "login success" code
+			peersMessageSender.sendLoginSuccessful(peerSocket);
 		}
 	}
 }
@@ -90,27 +87,23 @@ void ServerController::notifyRegistrationRequest(TCPSocket* peerSocket, string u
 {
 	if (isPeerLoggedIn(peerSocket))
 	{
-		cout << "cant register when logged in" << endl;
-		// TODO : Return "cant register when logged in" code
+		peersMessageSender.sendAlreadyLoggedIn(peerSocket);
 	}
 	else
 	{
 		if (userCredentialsManager.doesUsernameExist(username))
 		{
-			cout << "username already exists" << endl;
-			// TODO : return "username already exists" code
+			peersMessageSender.sendUsernameExists(peerSocket);
 		}
 		else
 		{
 			if (userCredentialsManager.signUp(username, password))
 			{
-				cout << "register success" << endl;
-				// TODO : return "register success" code
+				peersMessageSender.sendRegisterSuccessful(peerSocket);
 			}
 			else
 			{
-				cout << "register failed" << endl;
-				// TODO : return "register failed" code
+				peersMessageSender.sendRegisterFailed(peerSocket);
 			}
 		}
 	}

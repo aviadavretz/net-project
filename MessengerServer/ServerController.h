@@ -22,6 +22,7 @@
 #include <map>
 #include <algorithm>
 #include "UserCredentialsManager.h"
+#include "ServerPeersMessageSender.h"
 
 using namespace std;
 using namespace npl;
@@ -31,6 +32,7 @@ class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 	UserCredentialsManager userCredentialsManager;
 	ServerPeersAcceptor peersAcceptor;
 	ServerPeersListener peersListener;
+	ServerPeersMessageSender peersMessageSender;
 	map<TCPSocket*, User*> connectedUsers;
 	vector<Session*> sessions;
 	vector<ChatRoom*> chatRooms;
