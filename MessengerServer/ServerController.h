@@ -13,23 +13,24 @@
 #include "User.h"
 #include "Session.h"
 #include "ChatRoom.h"
-#include "LoginManager.h"
 #include "ServerPeersAcceptor.h"
 #include "NewPeerAcceptedObserver.h"
 #include "PeerMessagesObserver.h"
 #include "ServerPeersListener.h"
 #include "string"
 #include <vector>
+#include <map>
+#include "UserCredentialsManager.h"
 
 using namespace std;
 using namespace npl;
 
 class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 {
-	LoginManager loginManager;
+	UserCredentialsManager userCredentialsManager;
 	ServerPeersAcceptor peersAcceptor;
 	ServerPeersListener peersListener;
-	vector<User*> connectedUsers;
+	map<TCPSocket*, User*> connectedUsers;
 	vector<Session*> sessions;
 	vector<ChatRoom*> chatRooms;
 
@@ -49,6 +50,8 @@ public:
 	vector<Session*> getAllSessions();
 	vector<ChatRoom*> getAllChatRooms();
 	ChatRoom* getChatRoomByName(string name);
+	User* getUserByPeer(TCPSocket* peer);
+	bool isPeerLoggedIn(TCPSocket* peer);
 };
 
 

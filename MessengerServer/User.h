@@ -14,10 +14,11 @@ using namespace std;
 
 class User
 {
-	string name;
+	string username;
 
 public:
-	string getName();
+	User(string username);
+	string getUsername();
 };
 
 

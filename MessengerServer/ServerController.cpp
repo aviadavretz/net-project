@@ -19,12 +19,19 @@ void ServerController::startServer()
 
 vector<string> ServerController::getAllRegisteredUsersName()
 {
-	return loginManager.getAllRegisteredUsersName();
+	return userCredentialsManager.getAllRegisteredUsersName();
 }
 
 vector<User*> ServerController::getAllConnectedUsers()
 {
-	return connectedUsers;
+	vector<User*> users;
+
+	for(auto const& imap: connectedUsers)
+	{
+		users.push_back(imap.second);
+	}
+
+	return users;
 }
 
 vector<Session*> ServerController::getAllSessions()
@@ -49,24 +56,47 @@ void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
 
 void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username, string password)
 {
-	bool loginSuccessed = loginManager.validateUserCredentials(username, password);
-	cout << "Login attempt : " << loginSuccessed << endl;
+	if (isPeerLoggedIn(peerSocket))
+	{
+		// TODO : Return "already logged in" message
+	}
+	else
+	{
+		bool loginSuccessed = userCredentialsManager.validateUserCredentials(username, password);
 
-	// TODO : Implement further login actions
+		if (loginSuccessed)
+		{
+			// TODO : Return "bad username / password" message
+		}
+		else
+		{
+			User* user = new User(username);
+			connectedUsers[peerSocket] = user;
+
+			// TODO : Return "login success" message
+		}
+	}
 }
 
 void ServerController::notifyRegistrationRequest(TCPSocket* peerSocket, string username, string password)
 {
-	bool registrationSuccessed = false;
-
-	if (!loginManager.validateUserCredentials(username, password))
+	if (isPeerLoggedIn(peerSocket))
 	{
-		registrationSuccessed = loginManager.signUp(username, password);
+		// TODO : Return "cant register when logged in" message
 	}
+	else
+	{
+		bool registrationSuccessed = false;
 
-	cout << "Registration attempt : " << registrationSuccessed << endl;
-
-	// TODO : Implement further register actions
+		if (userCredentialsManager.validateUserCredentials(username, password))
+		{
+			// TODO :
+		}
+		else
+		{
+			registrationSuccessed = userCredentialsManager.signUp(username, password);
+		}
+	}
 }
 
 void ServerController::stopServer()
@@ -88,6 +118,16 @@ bool isUserInChatRoom(User* user)
 bool isBusyUser(User* user)
 {
 	return isUserInChatRoom(user) || isUserInSession(user);
+}
+
+User* ServerController::getUserByPeer(TCPSocket* peer)
+{
+	return connectedUsers[peer];
+}
+
+bool ServerController::isPeerLoggedIn(TCPSocket* peer)
+{
+	return getUserByPeer(peer) != NULL;
 }
 
 NewPeerAcceptedObserver::~NewPeerAcceptedObserver(){}

@@ -5,8 +5,8 @@
  *      Author: user
  */
 
-#ifndef LOGINMANAGER_H_
-#define LOGINMANAGER_H_
+#ifndef USERCREDENTIALSMANAGER_H_
+#define USERCREDENTIALSMANAGER_H_
 
 #include <iostream>
 #include <fstream>
@@ -17,7 +17,7 @@ using namespace std;
 #define USERS_FILE_NAME "users.txt"
 #define PASSWORD_DELIMITER "@@@@@"
 
-class LoginManager
+class UserCredentialsManager
 {
 private:
 	bool doesFileLineMatchesUserCredentials(string fileLine, string username, string password);
@@ -29,4 +29,4 @@ public:
 	vector<string> getAllRegisteredUsersName();
 };
 
-#endif /* LOGINMANAGER_H_ */
+#endif /* USERCREDENTIALSMANAGER_H_ */

@@ -7,7 +7,9 @@
 
 #include "User.h"
 
-string User::getName()
+User::User(string username): username(username) {}
+
+string User::getUsername()
 {
-	return name;
+	return username;
 }

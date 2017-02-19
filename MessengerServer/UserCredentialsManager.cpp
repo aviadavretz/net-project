@@ -5,9 +5,9 @@
  *      Author: user
  */
 
-#include "LoginManager.h"
+#include "UserCredentialsManager.h"
 
-bool LoginManager::signUp(string username, string password)
+bool UserCredentialsManager::signUp(string username, string password)
 {
 	if (validateUserCredentials(username, password))
 	{
@@ -17,7 +17,7 @@ bool LoginManager::signUp(string username, string password)
 	return writeUserCredentialsToFile(username, password);
 }
 
-bool LoginManager::validateUserCredentials(string username, string password)
+bool UserCredentialsManager::validateUserCredentials(string username, string password)
 {
 	ifstream usersFile;
 	usersFile.open(USERS_FILE_NAME, ios::in | ios::binary);
@@ -41,7 +41,7 @@ bool LoginManager::validateUserCredentials(string username, string password)
 	return false;
 }
 
-bool LoginManager::doesFileLineMatchesUserCredentials(string fileLine, string username, string password)
+bool UserCredentialsManager::doesFileLineMatchesUserCredentials(string fileLine, string username, string password)
 {
 	string passwordDelimiter = string(PASSWORD_DELIMITER);
 
@@ -49,7 +49,7 @@ bool LoginManager::doesFileLineMatchesUserCredentials(string fileLine, string us
 			(fileLine.compare(username + passwordDelimiter + password) == 0);
 }
 
-bool LoginManager::writeUserCredentialsToFile(string username, string password)
+bool UserCredentialsManager::writeUserCredentialsToFile(string username, string password)
 {
 	ofstream usersFile;
 	usersFile.open(USERS_FILE_NAME, ios::out | ios::app | ios::binary);
@@ -65,7 +65,7 @@ bool LoginManager::writeUserCredentialsToFile(string username, string password)
 	return false;
 }
 
-vector<string> LoginManager::getAllRegisteredUsersName()
+vector<string> UserCredentialsManager::getAllRegisteredUsersName()
 {
 	vector<string> usernames;
 
