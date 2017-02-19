@@ -92,4 +92,11 @@ vector<string> UserCredentialsManager::getAllRegisteredUsersName()
 	return usernames;
 }
 
+bool UserCredentialsManager::doesUsernameExist(string username)
+{
+	vector<string> usernames = getAllRegisteredUsersName();
+
+	return find(usernames.begin(), usernames.end(), username) != usernames.end();
+}
+
 

@@ -17,6 +17,12 @@ void ServerController::startServer()
 	peersListener.start();
 }
 
+void ServerController::stopServer()
+{
+	peersAcceptor.stop();
+	peersListener.stop();
+}
+
 vector<string> ServerController::getAllRegisteredUsersName()
 {
 	return userCredentialsManager.getAllRegisteredUsersName();
@@ -25,10 +31,11 @@ vector<string> ServerController::getAllRegisteredUsersName()
 vector<User*> ServerController::getAllConnectedUsers()
 {
 	vector<User*> users;
+	map<TCPSocket*,User*>::iterator iterator;
 
-	for(auto const& imap: connectedUsers)
+	for (iterator = connectedUsers.begin(); iterator != connectedUsers.end(); iterator++)
 	{
-		users.push_back(imap.second);
+		users.push_back(iterator->second);
 	}
 
 	return users;
@@ -58,22 +65,23 @@ void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username
 {
 	if (isPeerLoggedIn(peerSocket))
 	{
-		// TODO : Return "already logged in" message
+		cout << "already logged in" << endl;
+		// TODO : Return "already logged in" code
 	}
 	else
 	{
-		bool loginSuccessed = userCredentialsManager.validateUserCredentials(username, password);
-
-		if (loginSuccessed)
+		if (!userCredentialsManager.validateUserCredentials(username, password))
 		{
-			// TODO : Return "bad username / password" message
+			cout << "bad username / password" << endl;
+			// TODO : Return "bad username / password" code
 		}
 		else
 		{
 			User* user = new User(username);
 			connectedUsers[peerSocket] = user;
 
-			// TODO : Return "login success" message
+			cout << "login success" << endl;
+			// TODO : Return "login success" code
 		}
 	}
 }
@@ -82,27 +90,30 @@ void ServerController::notifyRegistrationRequest(TCPSocket* peerSocket, string u
 {
 	if (isPeerLoggedIn(peerSocket))
 	{
-		// TODO : Return "cant register when logged in" message
+		cout << "cant register when logged in" << endl;
+		// TODO : Return "cant register when logged in" code
 	}
 	else
 	{
-		bool registrationSuccessed = false;
-
-		if (userCredentialsManager.validateUserCredentials(username, password))
+		if (userCredentialsManager.doesUsernameExist(username))
 		{
-			// TODO :
+			cout << "username already exists" << endl;
+			// TODO : return "username already exists" code
 		}
 		else
 		{
-			registrationSuccessed = userCredentialsManager.signUp(username, password);
+			if (userCredentialsManager.signUp(username, password))
+			{
+				cout << "register success" << endl;
+				// TODO : return "register success" code
+			}
+			else
+			{
+				cout << "register failed" << endl;
+				// TODO : return "register failed" code
+			}
 		}
 	}
-}
-
-void ServerController::stopServer()
-{
-	peersAcceptor.stop();
-	peersListener.stop();
 }
 
 bool isUserInSession(User* user)

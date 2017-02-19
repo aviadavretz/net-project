@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -27,6 +28,7 @@ public:
 	bool signUp(string username, string password);
 	bool validateUserCredentials(string username, string password);
 	vector<string> getAllRegisteredUsersName();
+	bool doesUsernameExist(string username);
 };
 
 #endif /* USERCREDENTIALSMANAGER_H_ */

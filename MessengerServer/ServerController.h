@@ -20,6 +20,7 @@
 #include "string"
 #include <vector>
 #include <map>
+#include <algorithm>
 #include "UserCredentialsManager.h"
 
 using namespace std;

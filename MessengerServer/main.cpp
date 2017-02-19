@@ -15,6 +15,10 @@ int main()
 	ServerController controller;
 	controller.startServer();
 
+	// Just for testing, should be removed.
+	TCPSocket* socket;
+	int kaki = true;
+
 	bool shouldContinue = true;
 
 	while (shouldContinue)
@@ -26,9 +30,6 @@ int main()
 
 		if (userCommand.compare(PRINT_ALL_USERS) == 0)
 		{
-			// Just for testing, should be removed.
-			TCPSocket* socket = new TCPSocket("127.0.0.1", MSNGR_PORT);
-
 			int commandLength = htonl(LOGIN);
 			socket->send((char*)&commandLength,4);
 
@@ -47,9 +48,6 @@ int main()
 		}
 		else if (userCommand.compare(PRINT_CONNECTED_USERS) == 0)
 		{
-			// Just for testing, should be removed.
-			TCPSocket* socket = new TCPSocket("127.0.0.1", MSNGR_PORT);
-
 			int commandLength = htonl(REGISTER);
 			socket->send((char*)&commandLength,4);
 
@@ -68,11 +66,13 @@ int main()
 		}
 		else if (userCommand.compare(PRINT_SESSIONS) == 0)
 		{
-
+			if (kaki)
+				socket = new TCPSocket("127.0.0.1", MSNGR_PORT);
+			kaki = false;
 		}
 		else if (userCommand.compare(PRINT_ROOMS) == 0)
 		{
-
+			kaki = true;
 		}
 		else if (userCommand.compare(PRINT_ROOM_USERS) == 0)
 		{
