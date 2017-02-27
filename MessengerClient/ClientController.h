@@ -7,8 +7,6 @@
 
 #ifndef CLIENTCONTROLLER_H_
 #define CLIENTCONTROLLER_H_
-#define LOGIN 1
-#define REGISTER 2
 
 #include "string"
 

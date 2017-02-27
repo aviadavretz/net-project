@@ -1,48 +1,83 @@
 #include <iostream>
 #include "ClientController.h"
+#include "ClientTerminalPrinter.h"
+#include "UserInputCommands.h"
 
 int main()
 {
-	int action;
-	string username;
-	string password;
 	ClientController controller;
+	ClientTerminalPrinter printer;
 
-	cout << "Welcome! Please select: " << endl;
-	cout << LOGIN << ") Login" << endl;
-	cout << REGISTER << ") Register" << endl;
-	cin >> action;
+	printer.printWelcomeMessage();
+	bool shouldContinue = true;
 
-	cout << "Username: " << endl;
-	cin >> username;
-	cout << "Password: " << endl;
-	cin >> password;
-
-	bool success = false;
-
-	switch (action)
+	while (shouldContinue)
 	{
-		case (LOGIN):
+		printer.printMenu();
+
+		string userCommand;
+		cin >> userCommand;
+
+		if (userCommand.compare(CONNECT) == 0)
 		{
-			success = controller.login(username, password);
 
-			if (!success)
-			{
-				cout << "Sorry, idiots are not allowed in." << endl;
-			}
-
-			break;
 		}
-		case (REGISTER):
+		else if (userCommand.compare(PRINT_ALL_USERS) == 0)
 		{
-			success = controller.registerUser(username, password);
 
-			if (!success)
-			{
-				cout << "You are too ugly to register." << endl;
-			}
+		}
+		else if (userCommand.compare(PRINT_CONNECTED_USERS) == 0)
+		{
 
-			break;
+		}
+		else if (userCommand.compare(PRINT_ROOMS) == 0)
+		{
+
+		}
+		else if (userCommand.compare(LOGIN) == 0)
+		{
+
+		}
+		else if (userCommand.compare(REGISTER) == 0)
+		{
+
+		}
+		else if (userCommand.compare(OPEN_SESSION) == 0)
+		{
+
+		}
+		else if (userCommand.compare(OPEN_ROOM) == 0)
+		{
+
+		}
+		else if (userCommand.compare(SEND_MESSAGE) == 0)
+		{
+
+		}
+		else if (userCommand.compare(PRINT_STATUS) == 0)
+		{
+
+		}
+		else if (userCommand.compare(CLOSE_SESSION) == 0)
+		{
+
+		}
+		else if (userCommand.compare(CLOSE_ROOM) == 0)
+		{
+
+		}
+		else if (userCommand.compare(DISCONNECT) == 0)
+		{
+
+		}
+		else if (userCommand.compare(EXIT) == 0)
+		{
+			printer.printExitMessage();
+			shouldContinue = false;
+		}
+		else
+		{
+			printer.printUnknownCommand();
 		}
 	}
 
