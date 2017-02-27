@@ -26,6 +26,16 @@ void ServerTerminalPrinter::printMenu()
 	cout << "----------------------------------------------" <<endl;
 }
 
+void ServerTerminalPrinter::printNewPeerAccepted(string addr)
+{
+	cout << "New peer accepted: " << addr << endl;
+}
+
+void ServerTerminalPrinter::printLoginSuccessful(string username, string addr)
+{
+	cout << username << " (" << addr << ") has logged in." << endl;
+}
+
 void ServerTerminalPrinter::printUnknownCommand()
 {
 	cout << "The command you entered does not exist" << endl;

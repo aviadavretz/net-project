@@ -23,6 +23,7 @@
 #include <algorithm>
 #include "UserCredentialsManager.h"
 #include "ServerPeersMessageSender.h"
+#include "ServerTerminalPrinter.h"
 
 using namespace std;
 using namespace npl;
@@ -36,6 +37,7 @@ class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 	map<TCPSocket*, User*> connectedUsers;
 	vector<Session*> sessions;
 	vector<ChatRoom*> chatRooms;
+	ServerTerminalPrinter printer;
 
 	bool isUserInSession(User* user);
 	bool isUserInChatRoom(User* user);

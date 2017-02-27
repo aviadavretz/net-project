@@ -59,6 +59,8 @@ ChatRoom* ServerController::getChatRoomByName(string name)
 void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
 {
 	peersListener.addPeer(peerSocket);
+
+	printer.printNewPeerAccepted(peerSocket->fromAddr());
 }
 
 void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username, string password)
@@ -79,6 +81,7 @@ void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username
 			connectedUsers[peerSocket] = user;
 
 			peersMessageSender.sendLoginSuccessful(peerSocket);
+			printer.printLoginSuccessful(username, peerSocket->fromAddr());
 		}
 	}
 }

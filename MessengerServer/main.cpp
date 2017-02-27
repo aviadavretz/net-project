@@ -48,7 +48,7 @@ int main()
 
 			int command = 0;
 
-			// Receive command (the size should be as stated in the protocol)
+			// Receive reply (the size should be as stated in the protocol)
 			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
 
 			cout << ntohl(command) << endl;

@@ -28,6 +28,8 @@ class ServerTerminalPrinter
 	void print(vector<Session*> sessions);
 	void print(vector<ChatRoom*> rooms);
 	void printUsersName(vector<string> names);
+	void printNewPeerAccepted(string addr);
+	void printLoginSuccessful(string username, string addr);
 };
 
 
