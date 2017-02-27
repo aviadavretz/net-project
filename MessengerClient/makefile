@@ -11,8 +11,11 @@ ifeq ($(UNAME_S),Darwin)
         CC = g++
 endif
 
-MessengerClient: main.o
-	$(CC) Debug/main.o -L../SocketUtils/Debug -lSocketUtils -o Debug/MessengerClient 
-
 main.o : main.cpp
 	$(CC) -g -c -I../SocketUtils  main.cpp -o Debug/main.o
+	
+ClientController.o : ClientController.cpp
+	$(CC) -g -c -I../SocketUtils  ClientController.cpp -o Debug/ClientController.o
+
+MessengerClient: ClientController.o main.o
+	$(CC) Debug/ClientController.o Debug/main.o -L../SocketUtils/Debug -lSocketUtils -o Debug/MessengerClient 
