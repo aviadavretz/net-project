@@ -65,15 +65,19 @@ void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
 
 void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username, string password)
 {
+	string address = peerSocket->fromAddr();
+
 	if (isPeerLoggedIn(peerSocket))
 	{
 		peersMessageSender.sendAlreadyLoggedIn(peerSocket);
+		printer.print(address.append(" tried to login but is already logged in."));
 	}
 	else
 	{
 		if (!userCredentialsManager.validateUserCredentials(username, password))
 		{
 			peersMessageSender.sendBadUsernamePassword(peerSocket);
+			printer.print(username.append(" (").append(address).append(") tried to login with a wrong username/password."));
 		}
 		else
 		{
@@ -81,7 +85,7 @@ void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username
 			connectedUsers[peerSocket] = user;
 
 			peersMessageSender.sendLoginSuccessful(peerSocket);
-			printer.printLoginSuccessful(username, peerSocket->fromAddr());
+			printer.printLoginSuccessful(username, address);
 		}
 	}
 }
@@ -91,22 +95,26 @@ void ServerController::notifyRegistrationRequest(TCPSocket* peerSocket, string u
 	if (isPeerLoggedIn(peerSocket))
 	{
 		peersMessageSender.sendAlreadyLoggedIn(peerSocket);
+		printer.print(username.append(" tried to register, but is already logged in to another user."));
 	}
 	else
 	{
 		if (userCredentialsManager.doesUsernameExist(username))
 		{
 			peersMessageSender.sendUsernameExists(peerSocket);
+			printer.print(username.append(" tried to register, but username exists."));
 		}
 		else
 		{
 			if (userCredentialsManager.signUp(username, password))
 			{
 				peersMessageSender.sendRegisterSuccessful(peerSocket);
+				printer.print(username.append(" has registered."));
 			}
 			else
 			{
 				peersMessageSender.sendRegisterFailed(peerSocket);
+				printer.print(username.append(" tried to register but failed."));
 			}
 		}
 	}

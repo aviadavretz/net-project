@@ -34,6 +34,17 @@ void ClientTerminalPrinter::printMenu()
 	cout << "----------------------------------------------" << endl;
 }
 
+// TODO: Delete this when finished with the project
+void ClientTerminalPrinter::print(string str)
+{
+	cout << str << endl;
+}
+
+void ClientTerminalPrinter::printInvalidArgsNum()
+{
+	cout << "Invalid number of arguments." << endl;
+}
+
 void ClientTerminalPrinter::printUnknownCommand()
 {
 	cout << "The command you entered does not exist" << endl;

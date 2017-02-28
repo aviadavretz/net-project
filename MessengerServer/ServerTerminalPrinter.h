@@ -30,6 +30,8 @@ class ServerTerminalPrinter
 	void printUsersName(vector<string> names);
 	void printNewPeerAccepted(string addr);
 	void printLoginSuccessful(string username, string addr);
+
+	void print(string str);
 };
 
 

@@ -19,6 +19,9 @@ public:
 	void printMenu();
 	void printUnknownCommand();
 	void printExitMessage();
+	void printInvalidArgsNum();
+
+	void print(string str);
 };
 
 #endif /* CLIENTTERMINALPRINTER_H_ */

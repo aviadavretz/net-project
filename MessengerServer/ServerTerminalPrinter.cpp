@@ -16,7 +16,7 @@ void ServerTerminalPrinter::printWelcomeMessage()
 
 void ServerTerminalPrinter::printMenu()
 {
-	cout << "-------------------Menu--------------------" <<endl;
+	cout << "------------------- Menu - Server --------------------" <<endl;
 	cout << " 1. To list users: " << PRINT_ALL_USERS << endl;
 	cout << " 2. To list connected users: " << PRINT_CONNECTED_USERS <<endl;
 	cout << " 3. To list sessions: " << PRINT_SESSIONS <<endl;
@@ -24,6 +24,12 @@ void ServerTerminalPrinter::printMenu()
 	cout << " 5. To list Users in Room: " << PRINT_ROOM_USERS << " <roomName>" <<endl;
 	cout << " 6. To exit type: " << SHUTDOWN_SERVER <<endl;
 	cout << "----------------------------------------------" <<endl;
+}
+
+// TODO: Delete this when finished with the project
+void ServerTerminalPrinter::print(string str)
+{
+	cout << str << endl;
 }
 
 void ServerTerminalPrinter::printNewPeerAccepted(string addr)
