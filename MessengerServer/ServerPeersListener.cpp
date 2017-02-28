@@ -7,6 +7,9 @@
 
 #include "ServerPeersListener.h"
 
+// TODO
+#include "ServerTerminalPrinter.h"
+
 ServerPeersListener::ServerPeersListener(PeerMessagesObserver* observer)
 {
 	this->observer = observer;
@@ -30,6 +33,7 @@ void ServerPeersListener::run()
 		}
 
 		int commandCode = readCommand(readyPeer);
+
 		routeCommand(commandCode, readyPeer);
 	}
 }
@@ -54,6 +58,10 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 	{
 		routeRegisterCommand(peer);
 	}
+	else if (command == DISCONNECT)
+	{
+		routeDisconnectCommand(peer);
+	}
 }
 
 void ServerPeersListener::routeLoginCommand(TCPSocket* peer)
@@ -62,6 +70,11 @@ void ServerPeersListener::routeLoginCommand(TCPSocket* peer)
 	pair<string, string> usernamePassword = getUsernameAndPasswordFromMessage(message);
 
 	observer->notifyLoginRequest(peer, usernamePassword.first, usernamePassword.second);
+}
+
+void ServerPeersListener::routeDisconnectCommand(TCPSocket* peer)
+{
+	observer->notifyDisconnectCommand(peer);
 }
 
 void ServerPeersListener::routeRegisterCommand(TCPSocket* peer)

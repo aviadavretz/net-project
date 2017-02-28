@@ -50,5 +50,19 @@ void ServerPeersMessageSender::sendUsernameExists(TCPSocket* peer)
 	sendCode(peer, USERNAME_EXISTS);
 }
 
+void ServerPeersMessageSender::sendConnectSuccess(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int CONNECT_SUCCESS = 420;
+	sendCode(peer, CONNECT_SUCCESS);
+}
+
+void ServerPeersMessageSender::sendDisconnectSuccess(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int DISCONNECT_SUCCESS = 421;
+	sendCode(peer, DISCONNECT_SUCCESS);
+}
+
 
 

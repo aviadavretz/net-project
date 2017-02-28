@@ -30,65 +30,24 @@ int main()
 
 		if (userCommand.compare(PRINT_ALL_USERS) == 0)
 		{
-			int commandLength = htonl(LOGIN);
-			socket->send((char*)&commandLength,4);
-
-			string username;
-			string password;
-			cin >> username;
-			cin >> password;
-
-			string message = username.append(" ").append(password);
-
-			cout << "Sending : " << message << endl;
-
-			int messageLength = htonl(message.length());
-			socket->send((char*)&messageLength, 4);
-			socket->send(message);
-
-			int command = 0;
-
-			// Receive reply (the size should be as stated in the protocol)
-			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
-
-			cout << ntohl(command) << endl;
+			printer.printUsersName(controller.getAllRegisteredUsersName());
 		}
 		else if (userCommand.compare(PRINT_CONNECTED_USERS) == 0)
 		{
-			int commandLength = htonl(REGISTER);
-			socket->send((char*)&commandLength,4);
-
-			string username;
-			string password;
-			cin >> username;
-			cin >> password;
-
-			string message = username.append(" ").append(password);
-
-			cout << "Sending : " << message << endl;
-
-			int messageLength = htonl(message.length());
-			socket->send((char*)&messageLength, 4);
-			socket->send(message);
-
-			int command = 0;
-
-			// Receive command (the size should be as stated in the protocol)
-			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
-
-			cout << ntohl(command) << endl;
+			printer.print(controller.getAllConnectedUsers());
 		}
 		else if (userCommand.compare(PRINT_SESSIONS) == 0)
 		{
-			socket = new TCPSocket("127.0.0.1", MSNGR_PORT);
+			printer.print(controller.getAllSessions());
 		}
 		else if (userCommand.compare(PRINT_ROOMS) == 0)
 		{
-
+			printer.print(controller.getAllChatRooms());
 		}
 		else if (userCommand.compare(PRINT_ROOM_USERS) == 0)
 		{
-
+			// TODO: Get args: room name
+			printer.print(controller.getChatRoomByName("guh")->getParticipatingUsers());
 		}
 		else if (userCommand.compare(SHUTDOWN_SERVER) == 0)
 		{

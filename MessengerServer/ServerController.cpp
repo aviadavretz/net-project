@@ -61,6 +61,33 @@ void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
 	peersListener.addPeer(peerSocket);
 
 	printer.printNewPeerAccepted(peerSocket->fromAddr());
+
+	// Send back confirmation to the client
+	peersMessageSender.sendConnectSuccess(peerSocket);
+}
+
+void ServerController::notifyDisconnectCommand(TCPSocket* peerSocket)
+{
+	string notification;
+	if (isPeerLoggedIn(peerSocket))
+	{
+		string username = getUserByPeer(peerSocket)->getUsername();
+
+		notification = username + " (" +peerSocket->fromAddr() + ") has disconnected.";
+
+	}
+	else
+	{
+		notification = peerSocket->fromAddr() + " has disconnected.";
+	}
+
+	peersListener.removePeer(peerSocket);
+
+	printer.print(notification);
+
+	// Send back confirmation to the client
+	peersMessageSender.sendDisconnectSuccess(peerSocket);
+	peerSocket->close();
 }
 
 void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username, string password)

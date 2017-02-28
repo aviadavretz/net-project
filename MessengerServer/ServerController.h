@@ -50,6 +50,7 @@ public:
 	void notifyNewPeerAccepted(TCPSocket* peerSocket);
 	void notifyLoginRequest(TCPSocket* peerSocket, string username, string password);
 	void notifyRegistrationRequest(TCPSocket* peerSocket, string username, string password);
+	void notifyDisconnectCommand(TCPSocket* peerSocket);
 	vector<string> getAllRegisteredUsersName();
 	vector<User*> getAllConnectedUsers();
 	vector<Session*> getAllSessions();

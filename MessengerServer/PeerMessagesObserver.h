@@ -18,6 +18,7 @@ class PeerMessagesObserver
 public:
 	virtual void notifyLoginRequest(TCPSocket* peerSocket, string username, string password) = 0;
 	virtual void notifyRegistrationRequest(TCPSocket* peerSocket, string username, string password) = 0;
+	virtual void notifyDisconnectCommand(TCPSocket* peerSocket) = 0;
 	virtual ~PeerMessagesObserver() = 0;
 };
 

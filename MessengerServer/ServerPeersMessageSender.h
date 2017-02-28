@@ -25,6 +25,8 @@ public:
 	void sendRegisterFailed(TCPSocket* peer);
 	void sendRegisterSuccessful(TCPSocket* peer);
 	void sendUsernameExists(TCPSocket* peer);
+	void sendConnectSuccess(TCPSocket* peer);
+	void sendDisconnectSuccess(TCPSocket* peer);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */

@@ -8,7 +8,7 @@
 using namespace std;
 using namespace npl;
 
-// TODO: Find a better way for this
+// TODO: Think of a better way to do this
 bool connected = false;
 
 bool commandStartsWith(string command, string prefix)
@@ -16,6 +16,67 @@ bool commandStartsWith(string command, string prefix)
 	int firstSpaceIndex = command.find_first_of(' ', 0);
 
 	return command.substr(0, firstSpaceIndex).compare(prefix) == 0;
+}
+
+void connect(TCPSocket* socket, ClientTerminalPrinter printer, string address)
+{
+	// TODO: Make sure we're not connected already
+	// TODO: MSGR_PORT
+	socket = new TCPSocket(address, 3346);
+
+	// TODO: TCPProtocol
+	int EXPECTED_COMMAND_BYTES_SIZE = 4;
+	int CONNECT_SUCCESS = 420;
+
+	int command = 0;
+
+	// Receive reply (the size should be as stated in the protocol)
+	int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
+
+	int returnedCode = ntohl(command);
+
+	if (returnedCode == CONNECT_SUCCESS)
+	{
+		cout << "Connected!" << endl;
+		connected = true;
+	}
+}
+
+void disconnect(TCPSocket* socket, ClientTerminalPrinter printer)
+{
+	// TODO: TCPProtocol
+	int EXPECTED_COMMAND_BYTES_SIZE = 4;
+	int DISCONNECT_SUCCESS = 421;
+	int DISCONNECTz = 13;
+
+	// Notify the server
+	int commandLength = htonl(DISCONNECTz);
+	socket->send((char*)&commandLength,4);
+
+//			string message = "" + DISCONNECTz;
+//
+//			int messageLength = htonl(message.length());
+//			socket->send((char*)&messageLength, 4);
+//			socket->send(message);
+
+	int command = 0;
+
+	printer.print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFUUUU");
+
+	// Receive reply (the size should be as stated in the protocol)
+	int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
+
+	int returnedCode = ntohl(command);
+
+	if (returnedCode == DISCONNECT_SUCCESS)
+	{
+		printer.print("Disconnected from server.");
+
+		socket->close();
+		socket = NULL;
+
+		connected = false;
+	}
 }
 
 vector<string> getCommandArgs(string command, string prefix)
@@ -58,7 +119,7 @@ int main()
 	bool shouldContinue = true;
 
 	// Just for testing, should be removed.
-	TCPSocket* socket = NULL;
+	TCPSocket* socket;
 
 	while (shouldContinue)
 	{
@@ -71,40 +132,23 @@ int main()
 		{
 			if (connected)
 			{
-				printer.print("You are already connected to " + socket->fromAddr());
-				continue;
+				printer.print("Already connected to " + socket->fromAddr());
 			}
-
-			vector<string> args = getCommandArgs(userCommand, CONNECT);
-
-			if (args.size() != CONNECT_ARGS_NUM)
+			else
 			{
-				printer.printInvalidArgsNum();
-				continue;
+				// Get the args
+				vector<string> args = getCommandArgs(userCommand, CONNECT);
+
+				if (args.size() != CONNECT_ARGS_NUM)
+				{
+					printer.printInvalidArgsNum();
+					continue;
+				}
+
+				string address = args[0];
+
+				connect(socket, printer, address);
 			}
-
-			string address = args[0];
-
-			// TODO: Make sure we're not connected already
-			socket = new TCPSocket(address, 3346);
-
-			// TODO: TCPProtocol
-			int EXPECTED_COMMAND_BYTES_SIZE = 4;
-			int CONNECT_SUCCESS = 420;
-
-			int command = 0;
-
-			// Receive reply (the size should be as stated in the protocol)
-			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
-
-			int returnedCode = ntohl(command);
-
-			if (returnedCode == CONNECT_SUCCESS)
-			{
-				cout << "Connected!" << endl;
-				connected = true;
-			}
-
 		}
 		else if (userCommand.compare(PRINT_ALL_USERS) == 0)
 		{
@@ -258,43 +302,21 @@ int USERNAME_EXISTS = 205;
 		}
 		else if (userCommand.compare(DISCONNECT) == 0)
 		{
-			if (!connected)
+			if (connected)
 			{
-				printer.print("You are not connected to a server.");
-				continue;
+				disconnect(socket, printer);
 			}
-
-			// TODO: TCPProtocol
-			int EXPECTED_COMMAND_BYTES_SIZE = 4;
-			int DISCONNECT_SUCCESS = 421;
-			int DISCONNECTz = 13;
-
-			// Notify the server
-			int commandLength = htonl(DISCONNECTz);
-			socket->send((char*)&commandLength,4);
-
-			int command = 0;
-
-			// Receive reply (the size should be as stated in the protocol)
-			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
-
-			int returnedCode = ntohl(command);
-
-			if (returnedCode == DISCONNECT_SUCCESS)
+			else
 			{
-				printer.print("Disconnected from server.");
-
-				socket->close();
-				socket = NULL;
-
-				connected = false;
+				printer.print("You are not connected.");
 			}
 		}
 		else if (userCommand.compare(EXIT) == 0)
 		{
 			if (connected)
 			{
-				// TODO: disconnect & close sockets
+				// Disconnect
+				disconnect(socket, printer);
 			}
 
 			printer.printExitMessage();
