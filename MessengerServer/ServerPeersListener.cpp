@@ -49,6 +49,7 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 {
 	// TODO: TCPProtocol
 	int OPEN_CHAT_ROOM = 11;
+	int JOIN_CHAT_ROOM = 14;
 
 	if (command == LOGIN)
 	{
@@ -66,6 +67,18 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 	{
 		routeOpenChatRoomCommand(peer);
 	}
+	else if (command == JOIN_CHAT_ROOM)
+	{
+		routeJoinChatRoomCommand(peer);
+	}
+}
+
+void ServerPeersListener::routeJoinChatRoomCommand(TCPSocket* peer)
+{
+	// Message = 1 argument = room name
+	string roomName = readMessage(peer);
+
+	observer->notifyJoinChatRoomRequest(peer, roomName);
 }
 
 void ServerPeersListener::routeOpenChatRoomCommand(TCPSocket* peer)

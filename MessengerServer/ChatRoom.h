@@ -21,6 +21,8 @@ public:
 	ChatRoom(string name, User* owner);
 	string getName();
 	User* getOwner();
+	void addParticipant(User* user);
+	void removeParticipant(User* user);
 	vector<User*> getParticipatingUsers();
 };
 

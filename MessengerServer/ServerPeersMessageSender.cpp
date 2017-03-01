@@ -27,6 +27,27 @@ void ServerPeersMessageSender::sendNotLoggedIn(TCPSocket* peer)
 	sendCode(peer, NOT_LOGGED_IN);
 }
 
+void ServerPeersMessageSender::sendRoomDoesntExist(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int ROOM_DOESNT_EXISTS = 461;
+	sendCode(peer, ROOM_DOESNT_EXISTS);
+}
+
+void ServerPeersMessageSender::sendJoinRoomSuccess(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int JOIN_ROOM_SUCCESS = 460;
+	sendCode(peer, JOIN_ROOM_SUCCESS);
+}
+
+void ServerPeersMessageSender::sendAlreadyInARoom(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int ALREADY_IN_A_ROOM = 462;
+	sendCode(peer, ALREADY_IN_A_ROOM);
+}
+
 void ServerPeersMessageSender::sendRoomNameExists(TCPSocket* peer)
 {
 	// TODO: Put this in TCPProtocol

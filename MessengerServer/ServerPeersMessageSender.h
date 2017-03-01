@@ -30,6 +30,9 @@ public:
 	void sendDisconnectSuccess(TCPSocket* peer);
 	void sendRoomNameExists(TCPSocket* peer);
 	void sendOpenRoomSuccess(TCPSocket* peer);
+	void sendRoomDoesntExist(TCPSocket* peer);
+	void sendJoinRoomSuccess(TCPSocket* peer);
+	void sendAlreadyInARoom(TCPSocket* peer);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */

@@ -280,6 +280,63 @@ int EXPECTED_COMMAND_BYTES_SIZE = 4;
 				printer.print("A room with that name already exists.");
 			}
 		}
+		else if (commandStartsWith(userCommand, JOIN_ROOM))
+		{
+			if (!connected)
+			{
+				printer.print("You are not connected.");
+				continue;
+			}
+
+			vector<string> args = getCommandArgs(userCommand, JOIN_ROOM);
+
+			if (args.size() != JOIN_ROOM_ARGS_NUM)
+			{
+				printer.printInvalidArgsNum();
+				continue;
+			}
+
+			string roomName = args[0];
+
+			// TODO: Get this from TCPProtocol
+int JOIN_ROOM_SUCCESS = 460;
+int NOT_LOGGED_IN = 206;
+int ROOM_DOES_NOT_EXIST = 461;
+unsigned int JOIN_CHAT_ROOMz = 14;
+int EXPECTED_COMMAND_BYTES_SIZE = 4;
+int ALREADY_IN_A_ROOM = 462;
+
+			int commandLength = htonl(JOIN_CHAT_ROOMz);
+			socket->send((char*)&commandLength,4);
+
+			int messageLength = htonl(roomName.length());
+			socket->send((char*)&messageLength, 4);
+			socket->send(roomName);
+
+			int command = 0;
+
+			// Receive reply (the size should be as stated in the protocol)
+			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
+
+			int returnedCode = ntohl(command);
+
+			if (returnedCode == JOIN_ROOM_SUCCESS)
+			{
+				printer.print("You have joined '" + roomName + "'.");
+			}
+			else if (returnedCode == NOT_LOGGED_IN)
+			{
+				printer.print("You are not logged in.");
+			}
+			else if (returnedCode == ROOM_DOES_NOT_EXIST)
+			{
+				printer.print("There is no room named '" + roomName + "'.");
+			}
+			else if (returnedCode == ALREADY_IN_A_ROOM)
+			{
+				printer.print("You are already inside a room.");
+			}
+		}
 		else if (userCommand.compare(SEND_MESSAGE) == 0)
 		{
 

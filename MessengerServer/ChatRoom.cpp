@@ -23,6 +23,16 @@ User* ChatRoom::getOwner()
 	return owner;
 }
 
+void ChatRoom::addParticipant(User* user)
+{
+	users.push_back(user);
+}
+
+void ChatRoom::removeParticipant(User* user)
+{
+	// TODO: Implement this
+}
+
 vector<User*> ChatRoom::getParticipatingUsers()
 {
 	return users;

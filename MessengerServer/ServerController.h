@@ -51,6 +51,7 @@ public:
 	void notifyLoginRequest(TCPSocket* peerSocket, string username, string password);
 	void notifyRegistrationRequest(TCPSocket* peerSocket, string username, string password);
 	void notifyOpenChatRoomRequest(TCPSocket* peerSocket, string roomName);
+	void notifyJoinChatRoomRequest(TCPSocket* peerSocket, string roomName);
 	void notifyDisconnectRequest(TCPSocket* peerSocket);
 	vector<string> getAllRegisteredUsersName();
 	vector<User*> getAllConnectedUsers();

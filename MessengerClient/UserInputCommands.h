@@ -22,6 +22,9 @@
 #define OPEN_ROOM "or"
 #define OPEN_ROOM_ARGS_NUM 1
 
+#define JOIN_ROOM "jr"
+#define JOIN_ROOM_ARGS_NUM 1
+
 #define PRINT_ALL_USERS "lu"
 #define PRINT_CONNECTED_USERS "lcu"
 #define PRINT_ROOMS "lr"
