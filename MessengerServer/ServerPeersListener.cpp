@@ -53,6 +53,7 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 	int JOIN_CHAT_ROOM = 14;
 	int CLOSE_SESSION_OR_EXIT_ROOM = 15;
 	int CLOSE_ROOM = 16;
+	int OPEN_SESSION_WITH_PEER = 2;
 
 	if (command == LOGIN)
 	{
@@ -82,6 +83,18 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 	{
 		routeCloseChatRoomCommand(peer);
 	}
+	else if (command == OPEN_SESSION_WITH_PEER)
+	{
+		routeOpenSessionCommand(peer);
+	}
+}
+
+void ServerPeersListener::routeOpenSessionCommand(TCPSocket* peer)
+{
+	// Message = 1 argument = username to start session with
+	string otherUserName = readMessage(peer);
+
+	observer->notifyOpenSessionRequest(peer, otherUserName);
 }
 
 void ServerPeersListener::routeCloseChatRoomCommand(TCPSocket* peer)

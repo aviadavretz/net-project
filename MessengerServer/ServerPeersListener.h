@@ -34,6 +34,7 @@ class ServerPeersListener: public MThread
 	void routeJoinChatRoomCommand(TCPSocket* peer);
 	void routeCloseSessionOrExitRoomCommand(TCPSocket* peer);
 	void routeCloseChatRoomCommand(TCPSocket* peer);
+	void routeOpenSessionCommand(TCPSocket* peer);
 	pair<string, string> getUsernameAndPasswordFromMessage(string message);
 
 public:

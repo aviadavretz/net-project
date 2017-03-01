@@ -76,6 +76,62 @@ void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
 	peersMessageSender.sendConnectSuccess(peerSocket);
 }
 
+void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string otherUserName)
+{
+	// Make sure the peer is logged in
+	if (!isPeerLoggedIn(peerSocket))
+	{
+		peersMessageSender.sendNotLoggedIn(peerSocket);
+		printer.print(peerSocket->fromAddr() + " tried to open a session, but is not logged in.");
+	}
+	else
+	{
+		User* requestingUser = getUserByPeer(peerSocket);
+
+		// Make sure the requesting user is not currently in a session or room
+		if (isBusyUser(requestingUser))
+		{
+			peersMessageSender.sendAlreadyInSession(peerSocket);
+			printer.print(requestingUser->getUsername() + " wants to create a Session, but is currently in a Session or ChatRoom.");
+		}
+		else
+		{
+			// Check if user exists and is logged in
+			if (isUserConnected(otherUserName))
+			{
+				User* otherUser = getConnectedUserByUsername(otherUserName);
+
+				// Make sure the other user is not busy
+				if (isBusyUser(otherUser))
+				{
+					peersMessageSender.sendOtherUserBusy(peerSocket);
+					printer.print(requestingUser->getUsername() + " wants to create a Session with " + otherUserName +
+								  ", but " + otherUserName + " is busy.");
+				}
+				else
+				{
+					// Other user is not busy. Create the session
+					Session* session = new Session(requestingUser, otherUser);
+
+					sessions.push_back(session);
+
+					peersMessageSender.sendOpenSessionSuccess(peerSocket);
+					printer.print(requestingUser->getUsername() + " has created a Session with " + otherUserName);
+
+					// TODO: Need to send the socket info to the users?
+				}
+			}
+			else
+			{
+				// User not found
+				peersMessageSender.sendUserNotFound(peerSocket);
+				printer.print(requestingUser->getUsername() + " tried to open a Session with " + otherUserName +
+						      ", but there is no logged in user named " + otherUserName);
+			}
+		}
+	}
+}
+
 void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string roomName)
 {
 	// Make sure the peer is logged in
@@ -341,6 +397,29 @@ void ServerController::notifyRegistrationRequest(TCPSocket* peerSocket, string u
 		}
 	}
 }
+
+bool ServerController::isUserConnected(string username)
+{
+	return getConnectedUserByUsername(username) != NULL;
+}
+
+User* ServerController::getConnectedUserByUsername(string username)
+{
+ 	for (map<TCPSocket*, User*>::iterator iterator = connectedUsers.begin(); iterator != connectedUsers.end(); iterator++)
+	{
+ 		User* currentUser = (*iterator).second;
+
+		if (currentUser->getUsername().compare(username) == 0)
+		{
+			// Return the User object
+			return currentUser;
+		}
+	}
+
+ 	return NULL;
+}
+
+
 
 bool ServerController::isUserInSession(User* user)
 {

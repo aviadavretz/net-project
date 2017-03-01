@@ -18,6 +18,7 @@
 #define REGISTER_ARGS_NUM 2
 
 #define OPEN_SESSION "o"
+#define OPEN_SESSION_ARGS_NUM 1
 
 #define OPEN_ROOM "or"
 #define OPEN_ROOM_ARGS_NUM 1

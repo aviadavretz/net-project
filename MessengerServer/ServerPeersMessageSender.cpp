@@ -20,6 +20,32 @@ void ServerPeersMessageSender::sendMessage(TCPSocket* peer, string message)
 	peer->send(message);
 }
 
+void ServerPeersMessageSender::sendAlreadyInSession(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int ALREADY_IN_SESSION = 521;
+	sendCode(peer, ALREADY_IN_SESSION);
+}
+
+void ServerPeersMessageSender::sendUserNotFound(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int USER_NOT_FOUND = 522;
+	sendCode(peer, USER_NOT_FOUND);
+}
+
+void ServerPeersMessageSender::sendOtherUserBusy(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int OTHER_USER_BUSY = 523;
+	sendCode(peer, OTHER_USER_BUSY);
+}
+
+void ServerPeersMessageSender::sendOpenSessionSuccess(TCPSocket* peer)
+{
+	sendCode(peer, SESSION_ESTABLISHED);
+}
+
 void ServerPeersMessageSender::sendNotRoomOwner(TCPSocket* peer)
 {
 	// TODO: Put this in TCPProtocol

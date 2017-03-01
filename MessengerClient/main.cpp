@@ -226,7 +226,67 @@ int USERNAME_EXISTS = 205;
 		}
 		else if (userCommand.compare(OPEN_SESSION) == 0)
 		{
+			if (!connected)
+			{
+				printer.print("You are not connected.");
+				continue;
+			}
 
+			vector<string> args = getCommandArgs(userCommand, OPEN_SESSION);
+
+			if (args.size() != OPEN_SESSION_ARGS_NUM)
+			{
+				printer.printInvalidArgsNum();
+				continue;
+			}
+
+			string otherUserName = args[0];
+
+			// TODO: Get this from TCPProtocol
+int SESSION_ESTABLISHED = 6;
+int NOT_LOGGED_IN = 206;
+int ALREADY_IN_SESSION = 521;
+int USER_NOT_FOUND = 522;
+int OTHER_USER_BUSY = 523;
+unsigned int OPEN_SESSION_WITH_PEER = 2;
+int EXPECTED_COMMAND_BYTES_SIZE = 4;
+
+			int commandLength = htonl(OPEN_SESSION_WITH_PEER);
+			socket->send((char*)&commandLength,4);
+
+			int messageLength = htonl(otherUserName.length());
+			socket->send((char*)&messageLength, 4);
+			socket->send(otherUserName);
+
+			int command = 0;
+
+			// Receive reply (the size should be as stated in the protocol)
+			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
+
+			int returnedCode = ntohl(command);
+
+			if (returnedCode == SESSION_ESTABLISHED)
+			{
+				printer.print("Session with " + otherUserName + " created.");
+
+				// TODO: Need to create the UDP socket here?
+			}
+			else if (returnedCode == NOT_LOGGED_IN)
+			{
+				printer.print("You are not logged in.");
+			}
+			else if (returnedCode == ALREADY_IN_SESSION)
+			{
+				printer.print("You are already participating in a Session or ChatRoom.");
+			}
+			else if (returnedCode == USER_NOT_FOUND)
+			{
+				printer.print(otherUserName + " is either logged off or does not exist.");
+			}
+			else if (returnedCode == OTHER_USER_BUSY)
+			{
+				printer.print(otherUserName + " is busy.");
+			}
 		}
 		else if (commandStartsWith(userCommand, OPEN_ROOM))
 		{
