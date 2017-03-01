@@ -224,8 +224,16 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 				sessions.erase(position);
 
 				peersMessageSender.sendCloseSessionSuccess(peerSocket);
+				string otherUserName = userSession->getSecondUser()->getUsername();
+
+				// If the requesting user is the second user in the session
+				if (otherUserName.compare(requestingUser->getUsername()) == 0)
+				{
+					otherUserName = userSession->getFirstUser()->getUsername();
+				}
+
 				printer.print(requestingUser->getUsername() +
-							  " has closed the Session with " + userSession->getSecondUser()->getUsername() + ".");
+							  " has closed the Session with " + otherUserName + ".");
 			}
 		}
 		else
@@ -249,10 +257,11 @@ void ServerController::notifyJoinChatRoomRequest(TCPSocket* peerSocket, string r
 	{
 		User* requestingUser = getUserByPeer(peerSocket);
 
-		if (isUserInChatRoom(requestingUser))
+		// Make sure the requesting user is not in a session or chat-room
+		if (isBusyUser(requestingUser))
 		{
 			peersMessageSender.sendAlreadyInARoom(peerSocket);
-			printer.print(requestingUser->getUsername() + " tried to join a room, but is already in a room.");
+			printer.print(requestingUser->getUsername() + " tried to join a room, but is already in a room or session.");
 		}
 		else
 		{

@@ -224,7 +224,7 @@ int USERNAME_EXISTS = 205;
 				cout << "Registration failed, Please try again." << endl;
 			}
 		}
-		else if (userCommand.compare(OPEN_SESSION) == 0)
+		else if (commandStartsWith(userCommand, OPEN_SESSION))
 		{
 			if (!connected)
 			{
@@ -394,7 +394,7 @@ int ALREADY_IN_A_ROOM = 462;
 			}
 			else if (returnedCode == ALREADY_IN_A_ROOM)
 			{
-				printer.print("You are already inside a room.");
+				printer.print("You are already inside a room or session.");
 			}
 		}
 		else if (userCommand.compare(SEND_MESSAGE) == 0)
