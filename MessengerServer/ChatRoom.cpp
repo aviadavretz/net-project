@@ -6,6 +6,7 @@
  */
 
 #include "ChatRoom.h"
+#include <algorithm>
 
 ChatRoom::ChatRoom(string name, User* owner)
 {
@@ -30,7 +31,14 @@ void ChatRoom::addParticipant(User* user)
 
 void ChatRoom::removeParticipant(User* user)
 {
-	// TODO: Implement this
+	// TODO: Implement this without #include <algorithm>?
+	vector<User*>::iterator position = std::find(users.begin(), users.end(), user);
+
+	 // end() means the element was not found
+	if (position != users.end())
+	{
+		users.erase(position);
+	}
 }
 
 vector<User*> ChatRoom::getParticipatingUsers()

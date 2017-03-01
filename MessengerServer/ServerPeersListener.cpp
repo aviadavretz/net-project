@@ -6,6 +6,7 @@
  */
 
 #include "ServerPeersListener.h"
+#include <algorithm>
 
 ServerPeersListener::ServerPeersListener(PeerMessagesObserver* observer)
 {
@@ -139,7 +140,14 @@ void ServerPeersListener::addPeer(TCPSocket* peer)
 
 void ServerPeersListener::removePeer(TCPSocket* peer)
 {
-	// TODO : Implement it
+	// TODO: Implement this without #include <algorithm>?
+	vector<TCPSocket*>::iterator position = std::find(peers.begin(), peers.end(), peer);
+
+	 // end() means the element was not found
+	if (position != peers.end())
+	{
+		peers.erase(position);
+	}
 }
 
 pair<string, string> ServerPeersListener::getUsernameAndPasswordFromMessage(string message)

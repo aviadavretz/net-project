@@ -42,6 +42,7 @@ class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 	bool isUserInSession(User* user);
 	bool isUserInChatRoom(User* user);
 	bool isBusyUser(User* user);
+	ChatRoom* getRoomByUser(User* user);
 
 public:
 	ServerController();

@@ -151,9 +151,16 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 	string notification;
 	if (isPeerLoggedIn(peerSocket))
 	{
-		string username = getUserByPeer(peerSocket)->getUsername();
+		User* user = getUserByPeer(peerSocket);
 
-		notification = username + " (" +peerSocket->fromAddr() + ") has disconnected.";
+		if (isUserInChatRoom(user))
+		{
+			// Remove the user from the room he is inside
+			ChatRoom* usersRoom = getRoomByUser(user);
+			usersRoom->removeParticipant(user);
+		}
+
+		notification = user->getUsername() + " (" +peerSocket->fromAddr() + ") has disconnected.";
 
 		// Remove the user from the vector of connected users.
 		connectedUsers.erase(peerSocket);
@@ -234,8 +241,13 @@ bool ServerController::isUserInSession(User* user)
 	return true;
 }
 
-// TODO: Maybe create a map<user*, bool> for this?
 bool ServerController::isUserInChatRoom(User* user)
+{
+ 	return getRoomByUser(user) != NULL;
+}
+
+// TODO: Maybe create a map<user*, room*> for this?
+ChatRoom* ServerController::getRoomByUser(User* user)
 {
  	for (vector<ChatRoom*>::iterator iterator = chatRooms.begin(); iterator != chatRooms.end(); iterator++)
 	{
@@ -246,12 +258,13 @@ bool ServerController::isUserInChatRoom(User* user)
 			// TODO: Compare whole User* objects?
 			if ((*iterator2)->getUsername().compare(user->getUsername()) == 0)
 			{
-				return true;
+				// Return the room object
+				return (*iterator);
 			}
 		}
 	}
 
- 	return false;
+ 	return NULL;
 }
 
 bool ServerController::isBusyUser(User* user)
