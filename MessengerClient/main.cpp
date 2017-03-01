@@ -228,9 +228,57 @@ int USERNAME_EXISTS = 205;
 		{
 
 		}
-		else if (userCommand.compare(OPEN_ROOM) == 0)
+		else if (commandStartsWith(userCommand, OPEN_ROOM))
 		{
+			if (!connected)
+			{
+				printer.print("You are not connected.");
+				continue;
+			}
 
+			vector<string> args = getCommandArgs(userCommand, OPEN_ROOM);
+
+			if (args.size() != OPEN_ROOM_ARGS_NUM)
+			{
+				printer.printInvalidArgsNum();
+				continue;
+			}
+
+			string roomName = args[0];
+
+			// TODO: Get this from TCPProtocol
+int OPEN_ROOM_SUCCESS = 440;
+int NOT_LOGGED_IN = 206;
+int ROOM_NAME_EXISTS = 441;
+unsigned int OPEN_CHAT_ROOMz = 11;
+int EXPECTED_COMMAND_BYTES_SIZE = 4;
+
+			int commandLength = htonl(OPEN_CHAT_ROOMz);
+			socket->send((char*)&commandLength,4);
+
+			int messageLength = htonl(roomName.length());
+			socket->send((char*)&messageLength, 4);
+			socket->send(roomName);
+
+			int command = 0;
+
+			// Receive reply (the size should be as stated in the protocol)
+			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
+
+			int returnedCode = ntohl(command);
+
+			if (returnedCode == OPEN_ROOM_SUCCESS)
+			{
+				printer.print("Room '" + roomName + "' created.");
+			}
+			else if (returnedCode == NOT_LOGGED_IN)
+			{
+				printer.print("You are not logged in.");
+			}
+			else if (returnedCode == ROOM_NAME_EXISTS)
+			{
+				printer.print("A room with that name already exists.");
+			}
 		}
 		else if (userCommand.compare(SEND_MESSAGE) == 0)
 		{

@@ -20,6 +20,27 @@ void ServerPeersMessageSender::sendMessage(TCPSocket* peer, string message)
 	peer->send(message);
 }
 
+void ServerPeersMessageSender::sendNotLoggedIn(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int NOT_LOGGED_IN = 206;
+	sendCode(peer, NOT_LOGGED_IN);
+}
+
+void ServerPeersMessageSender::sendRoomNameExists(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int ROOM_NAME_EXISTS = 441;
+	sendCode(peer, ROOM_NAME_EXISTS);
+}
+
+void ServerPeersMessageSender::sendOpenRoomSuccess(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int OPEN_CHAT_ROOM_SUCCESS = 440;
+	sendCode(peer, OPEN_CHAT_ROOM_SUCCESS);
+}
+
 void ServerPeersMessageSender::sendAlreadyLoggedIn(TCPSocket* peer)
 {
 	sendCode(peer, ALREADY_LOGGED_IN);

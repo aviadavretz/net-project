@@ -20,6 +20,7 @@ class ServerPeersMessageSender
 	void sendMessage(TCPSocket* peer, string message);
 public:
 	void sendAlreadyLoggedIn(TCPSocket* peer);
+	void sendNotLoggedIn(TCPSocket* peer);
 	void sendBadUsernamePassword(TCPSocket* peer);
 	void sendLoginSuccessful(TCPSocket* peer);
 	void sendRegisterFailed(TCPSocket* peer);
@@ -27,6 +28,8 @@ public:
 	void sendUsernameExists(TCPSocket* peer);
 	void sendConnectSuccess(TCPSocket* peer);
 	void sendDisconnectSuccess(TCPSocket* peer);
+	void sendRoomNameExists(TCPSocket* peer);
+	void sendOpenRoomSuccess(TCPSocket* peer);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */

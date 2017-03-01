@@ -7,9 +7,6 @@
 
 #include "ServerPeersListener.h"
 
-// TODO
-#include "ServerTerminalPrinter.h"
-
 ServerPeersListener::ServerPeersListener(PeerMessagesObserver* observer)
 {
 	this->observer = observer;
@@ -50,6 +47,9 @@ int ServerPeersListener::readCommand(TCPSocket* socket)
 
 void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 {
+	// TODO: TCPProtocol
+	int OPEN_CHAT_ROOM = 11;
+
 	if (command == LOGIN)
 	{
 		routeLoginCommand(peer);
@@ -62,6 +62,18 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 	{
 		routeDisconnectCommand(peer);
 	}
+	else if (command == OPEN_CHAT_ROOM)
+	{
+		routeOpenChatRoomCommand(peer);
+	}
+}
+
+void ServerPeersListener::routeOpenChatRoomCommand(TCPSocket* peer)
+{
+	// Message = 1 argument = room name
+	string roomName = readMessage(peer);
+
+	observer->notifyOpenChatRoomRequest(peer, roomName);
 }
 
 void ServerPeersListener::routeLoginCommand(TCPSocket* peer)
@@ -74,7 +86,7 @@ void ServerPeersListener::routeLoginCommand(TCPSocket* peer)
 
 void ServerPeersListener::routeDisconnectCommand(TCPSocket* peer)
 {
-	observer->notifyDisconnectCommand(peer);
+	observer->notifyDisconnectRequest(peer);
 }
 
 void ServerPeersListener::routeRegisterCommand(TCPSocket* peer)

@@ -66,7 +66,40 @@ void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
 	peersMessageSender.sendConnectSuccess(peerSocket);
 }
 
-void ServerController::notifyDisconnectCommand(TCPSocket* peerSocket)
+void ServerController::notifyOpenChatRoomRequest(TCPSocket* peerSocket, string roomName)
+{
+	if (!isPeerLoggedIn(peerSocket))
+	{
+		peersMessageSender.sendNotLoggedIn(peerSocket);
+		printer.print(peerSocket->fromAddr() + " tried to open a room, but is not logged in.");
+	}
+	else
+	{
+		User* requestingUser = getUserByPeer(peerSocket);
+
+		// Check if a room by the requested name already exists.
+		// TODO: This "!= NULL" thing doesnt work..
+		if (getChatRoomByName(roomName) != NULL)
+		{
+			peersMessageSender.sendRoomNameExists(peerSocket);
+			printer.print(requestingUser->getUsername() + " tried to open a room named '" +
+						  roomName + ", but a room with that name already exists.");
+		}
+		else
+		{
+
+			ChatRoom* newRoom = new ChatRoom(roomName, requestingUser);
+
+			chatRooms.push_back(newRoom);
+
+			peersMessageSender.sendOpenRoomSuccess(peerSocket);
+			printer.print("ChatRoom '" + roomName + "' has been created by " +
+				      	  requestingUser->getUsername() + " (" + peerSocket->fromAddr() + ").");
+		}
+	}
+}
+
+void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 {
 	string notification;
 	if (isPeerLoggedIn(peerSocket))
