@@ -245,7 +245,7 @@ int USERNAME_EXISTS = 205;
 			// TODO: Get this from TCPProtocol
 int SESSION_ESTABLISHED = 6;
 int NOT_LOGGED_IN = 206;
-int ALREADY_IN_SESSION = 521;
+int ALREADY_BUSY = 462;
 int USER_NOT_FOUND = 522;
 int OTHER_USER_BUSY = 523;
 unsigned int OPEN_SESSION_WITH_PEER = 2;
@@ -275,7 +275,7 @@ int EXPECTED_COMMAND_BYTES_SIZE = 4;
 			{
 				printer.print("You are not logged in.");
 			}
-			else if (returnedCode == ALREADY_IN_SESSION)
+			else if (returnedCode == ALREADY_BUSY)
 			{
 				printer.print("You are already participating in a Session or ChatRoom.");
 			}
@@ -364,7 +364,7 @@ int NOT_LOGGED_IN = 206;
 int ROOM_DOES_NOT_EXIST = 461;
 unsigned int JOIN_CHAT_ROOMz = 14;
 int EXPECTED_COMMAND_BYTES_SIZE = 4;
-int ALREADY_IN_A_ROOM = 462;
+int int ALREADY_BUSY = 462;
 
 			int commandLength = htonl(JOIN_CHAT_ROOMz);
 			socket->send((char*)&commandLength,4);
@@ -392,7 +392,7 @@ int ALREADY_IN_A_ROOM = 462;
 			{
 				printer.print("There is no room named '" + roomName + "'.");
 			}
-			else if (returnedCode == ALREADY_IN_A_ROOM)
+			else if (returnedCode == ALREADY_BUSY)
 			{
 				printer.print("You are already inside a room or session.");
 			}

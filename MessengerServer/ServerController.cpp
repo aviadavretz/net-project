@@ -211,7 +211,7 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 		// Session
 		else if (isUserInSession(requestingUser))
 		{
-			// Remove the user from the session he is participating in
+			// Close the session the user is in
 			Session* userSession = getSessionByUser(requestingUser);
 
 			// TODO: Close the session?
@@ -324,11 +324,26 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 	{
 		User* user = getUserByPeer(peerSocket);
 
+		// Check if user is busy
 		if (isUserInChatRoom(user))
 		{
 			// Remove the user from the room he is inside
 			ChatRoom* usersRoom = getRoomByUser(user);
 			usersRoom->removeParticipant(user);
+		}
+		else if (isUserInSession(user))
+		{
+			// Close the session the user is in
+			Session* usersSession = getSessionByUser(user);
+
+			// TODO: Implement this without #include <algorithm>?
+			vector<Session*>::iterator position = std::find(sessions.begin(), sessions.end(), usersSession);
+
+			 // end() means the element was not found
+			if (position != sessions.end())
+			{
+				sessions.erase(position);
+			}
 		}
 
 		notification = user->getUsername() + " (" +peerSocket->fromAddr() + ") has disconnected.";
