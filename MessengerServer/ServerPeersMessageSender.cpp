@@ -20,13 +20,6 @@ void ServerPeersMessageSender::sendMessage(TCPSocket* peer, string message)
 	peer->send(message);
 }
 
-void ServerPeersMessageSender::sendAlreadyInSession(TCPSocket* peer)
-{
-	// TODO: Put this in TCPProtocol
-	int ALREADY_IN_SESSION = 521;
-	sendCode(peer, ALREADY_IN_SESSION);
-}
-
 void ServerPeersMessageSender::sendUserNotFound(TCPSocket* peer)
 {
 	// TODO: Put this in TCPProtocol
@@ -102,11 +95,11 @@ void ServerPeersMessageSender::sendJoinRoomSuccess(TCPSocket* peer)
 	sendCode(peer, JOIN_ROOM_SUCCESS);
 }
 
-void ServerPeersMessageSender::sendAlreadyInARoom(TCPSocket* peer)
+void ServerPeersMessageSender::sendAlreadyBusy(TCPSocket* peer)
 {
 	// TODO: Put this in TCPProtocol
-	int ALREADY_IN_A_ROOM = 462;
-	sendCode(peer, ALREADY_IN_A_ROOM);
+	int ALREADY_BUSY = 462;
+	sendCode(peer, ALREADY_BUSY);
 }
 
 void ServerPeersMessageSender::sendRoomNameExists(TCPSocket* peer)

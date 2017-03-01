@@ -33,13 +33,12 @@ public:
 	void sendOpenRoomSuccess(TCPSocket* peer);
 	void sendRoomDoesntExist(TCPSocket* peer);
 	void sendJoinRoomSuccess(TCPSocket* peer);
-	void sendAlreadyInARoom(TCPSocket* peer);
+	void sendAlreadyBusy(TCPSocket* peer);
 	void sendExitRoomSuccess(TCPSocket* peer);
 	void sendCloseSessionSuccess(TCPSocket* peer);
 	void sendNotInSessionOrRoom(TCPSocket* peer);
 	void sendNotRoomOwner(TCPSocket* peer);
 	void sendCloseRoomSuccess(TCPSocket* peer);
-	void sendAlreadyInSession(TCPSocket* peer);
 	void sendUserNotFound(TCPSocket* peer);
 	void sendOtherUserBusy(TCPSocket* peer);
 	void sendOpenSessionSuccess(TCPSocket* peer);

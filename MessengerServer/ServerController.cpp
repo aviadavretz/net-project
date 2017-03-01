@@ -91,7 +91,7 @@ void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string ot
 		// Make sure the requesting user is not currently in a session or room
 		if (isBusyUser(requestingUser))
 		{
-			peersMessageSender.sendAlreadyInSession(peerSocket);
+			peersMessageSender.sendAlreadyBusy(peerSocket);
 			printer.print(requestingUser->getUsername() + " wants to create a Session, but is currently in a Session or ChatRoom.");
 		}
 		else
@@ -260,7 +260,7 @@ void ServerController::notifyJoinChatRoomRequest(TCPSocket* peerSocket, string r
 		// Make sure the requesting user is not in a session or chat-room
 		if (isBusyUser(requestingUser))
 		{
-			peersMessageSender.sendAlreadyInARoom(peerSocket);
+			peersMessageSender.sendAlreadyBusy(peerSocket);
 			printer.print(requestingUser->getUsername() + " tried to join a room, but is already in a room or session.");
 		}
 		else
