@@ -47,7 +47,10 @@ int main()
 		else if (userCommand.compare(PRINT_ROOM_USERS) == 0)
 		{
 			// TODO: Get args: room name
-			printer.print(controller.getChatRoomByName("guh")->getParticipatingUsers());
+			string roomName = "GUH";
+
+			ChatRoom* room = controller.getChatRoomByName(roomName);
+			printer.printRoomUsers(room, roomName);
 		}
 		else if (userCommand.compare(SHUTDOWN_SERVER) == 0)
 		{
@@ -60,6 +63,7 @@ int main()
 		}
 	}
 
+	socket->close();
 
 	return 0;
 }

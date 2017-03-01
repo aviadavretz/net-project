@@ -1,4 +1,3 @@
-#include <iostream>
 #include "ClientController.h"
 #include "ClientTerminalPrinter.h"
 #include "UserInputCommands.h"
@@ -58,7 +57,7 @@ int main()
 	bool shouldContinue = true;
 
 	// Just for testing, should be removed.
-	TCPSocket* socket = NULL;
+	TCPSocket* socket;
 
 	while (shouldContinue)
 	{

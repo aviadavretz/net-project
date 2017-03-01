@@ -54,17 +54,81 @@ void ServerTerminalPrinter::printExitMessage()
 
 void ServerTerminalPrinter::print(vector<User*> users)
 {
+	if (users.empty())
+	{
+		cout << "There are no logged in users." << endl;
+	}
+	else
+	{
+		cout << "Online users:" << endl;
 
+		for (vector<User*>::iterator iterator = users.begin(); iterator != users.end(); iterator++)
+		{
+			cout << (*iterator)->getUsername() << endl;
+		}
+	}
+}
+
+void ServerTerminalPrinter::printRoomUsers(ChatRoom* room, string requestedRoomName)
+{
+	if (room == NULL)
+	{
+		cout << "The room '" << requestedRoomName << "' does not exist." << endl;;
+	}
+	else
+	{
+		vector<User*> roomUsers = room->getParticipatingUsers();
+
+		if (roomUsers.empty())
+		{
+			cout << "There are no users in the room '" << requestedRoomName << "'." << endl;;
+		}
+		else
+		{
+			cout << "Room users at '" << requestedRoomName << "':" << endl;
+
+			for (vector<User*>::iterator iterator = roomUsers.begin(); iterator != roomUsers.end(); iterator++)
+			{
+				cout << (*iterator)->getUsername() << endl;
+			}
+		}
+	}
 }
 
 void ServerTerminalPrinter::print(vector<Session*> sessions)
 {
+	if (sessions.empty())
+	{
+		cout << "There are no open sessions." << endl;
+	}
+	else
+	{
+		cout << "Sessions:" << endl;
 
+		for (vector<Session*>::iterator iterator = sessions.begin(); iterator != sessions.end(); iterator++)
+		{
+			cout << (*iterator)->getFirstUser()->getUsername()
+				 << " and "
+				 << (*iterator)->getSecondUser()->getUsername() << endl;
+		}
+	}
 }
 
 void ServerTerminalPrinter::print(vector<ChatRoom*> rooms)
 {
+	if (rooms.empty())
+	{
+		cout << "There are no open chat rooms." << endl;
+	}
+	else
+	{
+		cout << "Chat rooms:" << endl;
 
+		for (vector<ChatRoom*>::iterator iterator = rooms.begin(); iterator != rooms.end(); iterator++)
+		{
+			cout << (*iterator)->getName() << endl;
+		}
+	}
 }
 
 void ServerTerminalPrinter::printUsersName(vector<string> names)
