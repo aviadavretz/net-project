@@ -28,7 +28,7 @@ void ClientTerminalPrinter::printMenu()
 	cout << " 10. To join a room: " << JOIN_ROOM << " <RoomName>" << endl;
 	cout << " 11. To send a message: " << SEND_MESSAGE << " <Message>" << endl;
 	cout << " 12. To get your status: " << PRINT_STATUS << endl;
-	cout << " 13. To close session: " << CLOSE_SESSION << endl;
+	cout << " 13. To close session or exit room: " << CLOSE_SESSION_OR_EXIT_ROOM << endl;
 	cout << " 14. To close a room: " << CLOSE_ROOM << " <RoomName>" << endl;
 	cout << " 15. To disconnect from server: " << DISCONNECT << endl;
 	cout << " 16. To exit: " << EXIT << endl;

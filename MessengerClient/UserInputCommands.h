@@ -31,7 +31,7 @@
 #define PRINT_ROOM_USERS "lru"
 #define SEND_MESSAGE "s"
 #define PRINT_STATUS "l"
-#define CLOSE_SESSION "cs"
+#define CLOSE_SESSION_OR_EXIT_ROOM "cs"
 #define CLOSE_ROOM "cr"
 #define DISCONNECT "d"
 #define EXIT "x"

@@ -76,8 +76,60 @@ void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
 	peersMessageSender.sendConnectSuccess(peerSocket);
 }
 
+void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket)
+{
+	// Make sure the peer is logged in
+	if (!isPeerLoggedIn(peerSocket))
+	{
+		peersMessageSender.sendNotLoggedIn(peerSocket);
+		printer.print(peerSocket->fromAddr() + " tried to join a room, but is not logged in.");
+	}
+	else
+	{
+		User* requestingUser = getUserByPeer(peerSocket);
+
+		// Room
+		if (isUserInChatRoom(requestingUser))
+		{
+			// Remove the user from the room he is inside
+			ChatRoom* userRoom = getRoomByUser(requestingUser);
+			userRoom->removeParticipant(requestingUser);
+
+			peersMessageSender.sendExitRoomSuccess(peerSocket);
+			printer.print(requestingUser->getUsername() + " has left ChatRoom '" + userRoom->getName() + "'.");
+		}
+		// Session
+		else if (isUserInSession(requestingUser))
+		{
+			// Remove the user from the session he is participating in
+			Session* userSession = getSessionByUser(requestingUser);
+
+			// TODO: Close the session
+			// TODO: Implement this without #include <algorithm>?
+			vector<Session*>::iterator position = std::find(sessions.begin(), sessions.end(), userSession);
+
+			 // end() means the element was not found
+			if (position != sessions.end())
+			{
+				sessions.erase(position);
+			}
+
+			peersMessageSender.sendCloseSessionSuccess(peerSocket);
+			printer.print(requestingUser->getUsername() +
+						  " has closed the Session with " + userSession->getSecondUser()->getUsername() + ".");
+		}
+		else
+		{
+			peersMessageSender.sendNotInSessionOrRoom(peerSocket);
+			printer.print(requestingUser->getUsername() +
+					      " tried to close session or exit room, but does not participate in either.");
+		}
+	}
+}
+
 void ServerController::notifyJoinChatRoomRequest(TCPSocket* peerSocket, string roomName)
 {
+	// Make sure the peer is logged in
 	if (!isPeerLoggedIn(peerSocket))
 	{
 		peersMessageSender.sendNotLoggedIn(peerSocket);
@@ -238,7 +290,27 @@ void ServerController::notifyRegistrationRequest(TCPSocket* peerSocket, string u
 
 bool ServerController::isUserInSession(User* user)
 {
-	return true;
+	return getSessionByUser(user) != NULL;
+}
+
+// TODO: Maybe create a map<user*, Session*> for this?
+Session* ServerController::getSessionByUser(User* user)
+{
+ 	for (vector<Session*>::iterator iterator = sessions.begin(); iterator != sessions.end(); iterator++)
+	{
+ 		User* firstUser = (*iterator)->getFirstUser();
+ 		User* secondUser = (*iterator)->getSecondUser();
+
+		// TODO: Compare whole User* objects?
+		if ((firstUser->getUsername().compare(user->getUsername()) == 0) ||
+			(secondUser->getUsername().compare(user->getUsername()) == 0))
+		{
+			// Return the Session object
+			return (*iterator);
+		}
+	}
+
+ 	return NULL;
 }
 
 bool ServerController::isUserInChatRoom(User* user)
@@ -258,7 +330,7 @@ ChatRoom* ServerController::getRoomByUser(User* user)
 			// TODO: Compare whole User* objects?
 			if ((*iterator2)->getUsername().compare(user->getUsername()) == 0)
 			{
-				// Return the room object
+				// Return the ChatRoom object
 				return (*iterator);
 			}
 		}

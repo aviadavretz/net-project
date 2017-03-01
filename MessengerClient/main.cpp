@@ -352,9 +352,49 @@ int ALREADY_IN_A_ROOM = 462;
 				// Go to server and check client status
 			}
 		}
-		else if (userCommand.compare(CLOSE_SESSION) == 0)
+		else if (userCommand.compare(CLOSE_SESSION_OR_EXIT_ROOM) == 0)
 		{
+			if (!connected)
+			{
+				printer.print("You are not connected to a server.");
+				continue;
+			}
 
+			// TODO: TCPProtocol
+int EXPECTED_COMMAND_BYTES_SIZE = 4;
+int CLOSE_SESSION_OR_EXIT_ROOMz = 15;
+int NOT_LOGGED_IN = 206;
+int EXIT_ROOM_SUCCESS = 480;
+int NOT_IN_SESSION_OR_ROOM = 481;
+int CLOSE_SESSION_SUCCESS = 490;
+
+			// Notify the server
+			int commandLength = htonl(CLOSE_SESSION_OR_EXIT_ROOMz);
+			socket->send((char*)&commandLength,4);
+
+			int command = 0;
+
+			// Receive reply (the size should be as stated in the protocol)
+			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
+
+			int returnedCode = ntohl(command);
+
+			if (returnedCode == EXIT_ROOM_SUCCESS)
+			{
+				printer.print("You have left the room.");
+			}
+			else if (returnedCode == CLOSE_SESSION_SUCCESS)
+			{
+				printer.print("Session closed.");
+			}
+			else if (returnedCode == NOT_IN_SESSION_OR_ROOM)
+			{
+				printer.print("You are not in a ChatRoom or a Session.");
+			}
+			else if (returnedCode == NOT_LOGGED_IN)
+			{
+				printer.print("You are not logged in.");
+			}
 		}
 		else if (userCommand.compare(CLOSE_ROOM) == 0)
 		{

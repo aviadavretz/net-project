@@ -20,6 +20,27 @@ void ServerPeersMessageSender::sendMessage(TCPSocket* peer, string message)
 	peer->send(message);
 }
 
+void ServerPeersMessageSender::sendExitRoomSuccess(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int EXIT_ROOM_SUCCESS = 480;
+	sendCode(peer, EXIT_ROOM_SUCCESS);
+}
+
+void ServerPeersMessageSender::sendCloseSessionSuccess(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int CLOSE_SESSION_SUCCESS = 490;
+	sendCode(peer, CLOSE_SESSION_SUCCESS);
+}
+
+void ServerPeersMessageSender::sendNotInSessionOrRoom(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int NOT_IN_SESSION_OR_ROOM = 481;
+	sendCode(peer, NOT_IN_SESSION_OR_ROOM);
+}
+
 void ServerPeersMessageSender::sendNotLoggedIn(TCPSocket* peer)
 {
 	// TODO: Put this in TCPProtocol

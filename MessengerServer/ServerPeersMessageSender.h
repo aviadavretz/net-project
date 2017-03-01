@@ -19,6 +19,7 @@ class ServerPeersMessageSender
 	void sendCode(TCPSocket* peer, int code);
 	void sendMessage(TCPSocket* peer, string message);
 public:
+	// TODO: Don't really need all these functions, only: sendCode(TCPSocket* peer, int code) and a bunch of constants
 	void sendAlreadyLoggedIn(TCPSocket* peer);
 	void sendNotLoggedIn(TCPSocket* peer);
 	void sendBadUsernamePassword(TCPSocket* peer);
@@ -33,6 +34,9 @@ public:
 	void sendRoomDoesntExist(TCPSocket* peer);
 	void sendJoinRoomSuccess(TCPSocket* peer);
 	void sendAlreadyInARoom(TCPSocket* peer);
+	void sendExitRoomSuccess(TCPSocket* peer);
+	void sendCloseSessionSuccess(TCPSocket* peer);
+	void sendNotInSessionOrRoom(TCPSocket* peer);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */

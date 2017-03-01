@@ -43,6 +43,7 @@ class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 	bool isUserInChatRoom(User* user);
 	bool isBusyUser(User* user);
 	ChatRoom* getRoomByUser(User* user);
+	Session* getSessionByUser(User* user);
 
 public:
 	ServerController();
@@ -54,6 +55,7 @@ public:
 	void notifyOpenChatRoomRequest(TCPSocket* peerSocket, string roomName);
 	void notifyJoinChatRoomRequest(TCPSocket* peerSocket, string roomName);
 	void notifyDisconnectRequest(TCPSocket* peerSocket);
+	void notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket);
 	vector<string> getAllRegisteredUsersName();
 	vector<User*> getAllConnectedUsers();
 	vector<Session*> getAllSessions();

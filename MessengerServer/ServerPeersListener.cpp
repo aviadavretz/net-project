@@ -51,6 +51,7 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 	// TODO: TCPProtocol
 	int OPEN_CHAT_ROOM = 11;
 	int JOIN_CHAT_ROOM = 14;
+	int CLOSE_SESSION_OR_EXIT_ROOM = 15;
 
 	if (command == LOGIN)
 	{
@@ -72,6 +73,15 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 	{
 		routeJoinChatRoomCommand(peer);
 	}
+	else if (command == CLOSE_SESSION_OR_EXIT_ROOM)
+	{
+		routeCloseSessionOrExitRoom(peer);
+	}
+}
+
+void ServerPeersListener::routeCloseSessionOrExitRoom(TCPSocket* peer)
+{
+	observer->notifyCloseSessionOrExitRoomRequest(peer);
 }
 
 void ServerPeersListener::routeJoinChatRoomCommand(TCPSocket* peer)
