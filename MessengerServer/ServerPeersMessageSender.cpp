@@ -20,6 +20,20 @@ void ServerPeersMessageSender::sendMessage(TCPSocket* peer, string message)
 	peer->send(message);
 }
 
+void ServerPeersMessageSender::sendNotRoomOwner(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int NOT_ROOM_OWNER = 501;
+	sendCode(peer, NOT_ROOM_OWNER);
+}
+
+void ServerPeersMessageSender::sendCloseRoomSuccess(TCPSocket* peer)
+{
+	// TODO: Get this from TCPProtocol
+	int CLOSE_ROOM_SUCCESS = 500;
+	sendCode(peer, CLOSE_ROOM_SUCCESS);
+}
+
 void ServerPeersMessageSender::sendExitRoomSuccess(TCPSocket* peer)
 {
 	// TODO: Put this in TCPProtocol

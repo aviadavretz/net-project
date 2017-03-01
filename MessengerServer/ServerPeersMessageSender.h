@@ -37,6 +37,8 @@ public:
 	void sendExitRoomSuccess(TCPSocket* peer);
 	void sendCloseSessionSuccess(TCPSocket* peer);
 	void sendNotInSessionOrRoom(TCPSocket* peer);
+	void sendNotRoomOwner(TCPSocket* peer);
+	void sendCloseRoomSuccess(TCPSocket* peer);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */

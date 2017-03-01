@@ -76,6 +76,60 @@ void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
 	peersMessageSender.sendConnectSuccess(peerSocket);
 }
 
+void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string roomName)
+{
+	// Make sure the peer is logged in
+	if (!isPeerLoggedIn(peerSocket))
+	{
+		peersMessageSender.sendNotLoggedIn(peerSocket);
+		printer.print(peerSocket->fromAddr() + " tried to close a room, but is not logged in.");
+	}
+	else
+	{
+		User* requestingUser = getUserByPeer(peerSocket);
+
+		// Check if a room by the requested name exists.
+		if (getChatRoomByName(roomName) == NULL)
+		{
+			peersMessageSender.sendRoomDoesntExist(peerSocket);
+			printer.print(requestingUser->getUsername() + " tried to close a room named '" +
+						  roomName + "', but a room with that name doesn't exist.");
+		}
+		else
+		{
+			ChatRoom* roomToClose = getChatRoomByName(roomName);
+
+			// TODO: Bug: This always says it's the owner!!
+			// TODO: Only username? or User* object
+			if (roomToClose->getOwner()->getUsername().compare(requestingUser->getUsername()) != 0)
+			{
+				peersMessageSender.sendNotRoomOwner(peerSocket);
+				printer.print(requestingUser->getUsername() + " tried to close a room named '" +
+							roomName + "', but the owner is " + roomToClose->getOwner()->getUsername());
+			}
+			else
+			{
+				// TODO: Implement this without #include <algorithm>?
+				vector<ChatRoom*>::iterator position = std::find(chatRooms.begin(), chatRooms.end(), roomToClose);
+
+				// end() means the element was not found
+				if (position != chatRooms.end())
+				{
+					chatRooms.erase(position);
+
+					// TODO: Need to disconnect all users from it?
+
+					// TODO: Need to send notifications to all clients inside the room
+
+					peersMessageSender.sendCloseRoomSuccess(peerSocket);
+					printer.print("ChatRoom '" + roomName + "' has been closed by " +
+						      	  requestingUser->getUsername() + " (" + peerSocket->fromAddr() + ").");
+				}
+			}
+		}
+	}
+}
+
 void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket)
 {
 	// Make sure the peer is logged in
@@ -104,7 +158,7 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 			// Remove the user from the session he is participating in
 			Session* userSession = getSessionByUser(requestingUser);
 
-			// TODO: Close the session
+			// TODO: Close the session?
 			// TODO: Implement this without #include <algorithm>?
 			vector<Session*>::iterator position = std::find(sessions.begin(), sessions.end(), userSession);
 
@@ -112,11 +166,11 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 			if (position != sessions.end())
 			{
 				sessions.erase(position);
-			}
 
-			peersMessageSender.sendCloseSessionSuccess(peerSocket);
-			printer.print(requestingUser->getUsername() +
-						  " has closed the Session with " + userSession->getSecondUser()->getUsername() + ".");
+				peersMessageSender.sendCloseSessionSuccess(peerSocket);
+				printer.print(requestingUser->getUsername() +
+							  " has closed the Session with " + userSession->getSecondUser()->getUsername() + ".");
+			}
 		}
 		else
 		{

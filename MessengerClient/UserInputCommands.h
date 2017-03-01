@@ -25,6 +25,9 @@
 #define JOIN_ROOM "jr"
 #define JOIN_ROOM_ARGS_NUM 1
 
+#define CLOSE_ROOM "cr"
+#define CLOSE_ROOM_ARGS_NUM 1
+
 #define PRINT_ALL_USERS "lu"
 #define PRINT_CONNECTED_USERS "lcu"
 #define PRINT_ROOMS "lr"
@@ -32,7 +35,6 @@
 #define SEND_MESSAGE "s"
 #define PRINT_STATUS "l"
 #define CLOSE_SESSION_OR_EXIT_ROOM "cs"
-#define CLOSE_ROOM "cr"
 #define DISCONNECT "d"
 #define EXIT "x"
 

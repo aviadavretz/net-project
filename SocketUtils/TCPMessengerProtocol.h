@@ -28,11 +28,12 @@
 #define GET_CONNECTED_USERS			8
 #define GET_CHAT_ROOMS				9
 #define GET_USERS_IN_CHAT_ROOM		10
-//#define OPEN_CHAT_ROOM				11
+//#define OPEN_CHAT_ROOM			  11
 #define CLOSE_CHAT_ROOM				12
 #define DISCONNECT					13
-//#define JOIN_CHAT_ROOM				14
+//#define JOIN_CHAT_ROOM			  14
 //#define CLOSE_SESSION_OR_EXIT_ROOM  15
+//#define CLOSE_ROOMz 				  16
 
 #define LOGIN					    70
 #define REGISTER					71
@@ -59,6 +60,9 @@
 //#define EXIT_ROOM_SUCCESS 480
 //#define NOT_IN_SESSION_OR_ROOM 481
 //#define CLOSE_SESSION_SUCCESS 490
+
+//#define CLOSE_ROOM_SUCCESS 500
+//#define NOT_ROOM_OWNER 501
 
 #define EXPECTED_COMMAND_BYTES_SIZE 				 4
 #define EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE 4

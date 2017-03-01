@@ -56,6 +56,7 @@ public:
 	void notifyJoinChatRoomRequest(TCPSocket* peerSocket, string roomName);
 	void notifyDisconnectRequest(TCPSocket* peerSocket);
 	void notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket);
+	void notifyCloseChatRoomRequest(TCPSocket* peerSocket, string roomName);
 	vector<string> getAllRegisteredUsersName();
 	vector<User*> getAllConnectedUsers();
 	vector<Session*> getAllSessions();

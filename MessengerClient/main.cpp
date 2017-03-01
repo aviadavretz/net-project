@@ -396,9 +396,62 @@ int CLOSE_SESSION_SUCCESS = 490;
 				printer.print("You are not logged in.");
 			}
 		}
-		else if (userCommand.compare(CLOSE_ROOM) == 0)
+		else if (commandStartsWith(userCommand, CLOSE_ROOM))
 		{
+			if (!connected)
+			{
+				printer.print("You are not connected.");
+				continue;
+			}
 
+			vector<string> args = getCommandArgs(userCommand, CLOSE_ROOM);
+
+			if (args.size() != CLOSE_ROOM_ARGS_NUM)
+			{
+				printer.printInvalidArgsNum();
+				continue;
+			}
+
+			string roomName = args[0];
+
+// TODO: Get this from TCPProtocol
+int CLOSE_ROOM_SUCCESS = 500;
+int NOT_LOGGED_IN = 206;
+int ROOM_DOES_NOT_EXIST = 461;
+unsigned int CLOSE_ROOMz = 16;
+int EXPECTED_COMMAND_BYTES_SIZE = 4;
+int NOT_ROOM_OWNER = 501;
+
+			int commandLength = htonl(CLOSE_ROOMz);
+			socket->send((char*)&commandLength,4);
+
+			int messageLength = htonl(roomName.length());
+			socket->send((char*)&messageLength, 4);
+			socket->send(roomName);
+
+			int command = 0;
+
+			// Receive reply (the size should be as stated in the protocol)
+			int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
+
+			int returnedCode = ntohl(command);
+
+			if (returnedCode == CLOSE_ROOM_SUCCESS)
+			{
+				printer.print("You have closed '" + roomName + "'.");
+			}
+			else if (returnedCode == NOT_LOGGED_IN)
+			{
+				printer.print("You are not logged in.");
+			}
+			else if (returnedCode == ROOM_DOES_NOT_EXIST)
+			{
+				printer.print("There is no room named '" + roomName + "'.");
+			}
+			else if (returnedCode == NOT_ROOM_OWNER)
+			{
+				printer.print("You are not the room owner.");
+			}
 		}
 		else if (userCommand.compare(DISCONNECT) == 0)
 		{
