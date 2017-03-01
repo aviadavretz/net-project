@@ -119,6 +119,12 @@ int main()
 		}
 		else if (commandStartsWith(userCommand, LOGIN))
 		{
+			if (!connected)
+			{
+				printer.print("You are not connected.");
+				continue;
+			}
+
 			vector<string> args = getCommandArgs(userCommand, LOGIN);
 
 			if (args.size() != LOGIN_ARGS_NUM)
@@ -170,6 +176,12 @@ int BAD_USERNAME_PASSWORD = 201;
 		}
 		else if (commandStartsWith(userCommand, REGISTER))
 		{
+			if (!connected)
+			{
+				printer.print("You are not connected.");
+				continue;
+			}
+
 			vector<string> args = getCommandArgs(userCommand, REGISTER);
 
 			if (args.size() != REGISTER_ARGS_NUM)
@@ -399,13 +411,17 @@ int int ALREADY_BUSY = 462;
 		}
 		else if (userCommand.compare(SEND_MESSAGE) == 0)
 		{
-
+			if (!connected)
+			{
+				printer.print("You are not connected.");
+				continue;
+			}
 		}
 		else if (userCommand.compare(PRINT_STATUS) == 0)
 		{
 			if (!connected)
 			{
-				printer.print("You are not connected to server");
+				printer.print("You are not connected to a server");
 			}
 			else
 			{
