@@ -17,11 +17,15 @@ using namespace npl;
 
 class ClientController
 {
-	TCPSocket* socket;
+	TCPSocket* socketToServer;
 	ClientTerminalPrinter printer;
 	bool connected;
 
 	void manageReply(int replyCode, string relevantData);
+	int receiveReplyCode();
+	void sendCommandCode(int commandCode);
+	void sendArgs(string message);
+	void closeSocket();
 
 	public:
 		ClientController();

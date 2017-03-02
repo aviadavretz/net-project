@@ -8,9 +8,6 @@
 using namespace std;
 using namespace npl;
 
-// TODO: Find a better way for this
-bool connected = false;
-
 int main()
 {
 	ClientController controller;
@@ -19,9 +16,6 @@ int main()
 
 	printer.printWelcomeMessage();
 	bool shouldContinue = true;
-
-	// Just for testing, should be removed.
-	TCPSocket* socket;
 
 	while (shouldContinue)
 	{

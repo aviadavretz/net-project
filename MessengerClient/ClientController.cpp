@@ -166,8 +166,7 @@ void ClientController::manageReply(int replyCode, string relevantData)
 			printer.print("Disconnected from server.");
 
 			// Close the socket
-			socket->close();
-			socket = NULL;
+			closeSocket();
 			connected = false;
 
 			break;
@@ -183,26 +182,14 @@ void ClientController::connect(string address)
 {
 	// TODO: TCPProtocol
 	int MSGPORT = 3346;
-	int EXPECTED_COMMAND_BYTES_SIZE = 4;
-//	const int CONNECT_SUCCESS = 420;
 
 	// Create a socket to the address
-	socket = new TCPSocket(address, MSGPORT);
+	socketToServer = new TCPSocket(address, MSGPORT);
 
-	int reply = 0;
+	// Receive reply from server
+	int replyCode = receiveReplyCode();
 
-	// Receive reply (the size should be as stated in the protocol)
-	int bytesReceived = socket->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
-
-	int returnedCode = ntohl(reply);
-
-	manageReply(returnedCode, address);
-
-//	if (returnedCode == CONNECT_SUCCESS)
-//	{
-//		printer.print("Connected to " + address);
-//		connected = true;
-//	}
+	manageReply(replyCode, address);
 }
 
 void ClientController::login(string username, string password)
@@ -241,285 +228,152 @@ void ClientController::registerUser(string username, string password)
 {
 	// TODO: Get this from TCPProtocol
 	unsigned int REGISTERz = 71;
-	int EXPECTED_COMMAND_BYTES_SIZE = 4;
-
-//	const int ALREADY_LOGGED_IN = 200;
-//	const int REGISTER_FAILURE = 203;
-//	const int REGISTER_SUCCEEDED = 204;
-//	const int USERNAME_EXISTS = 205;
 
 	// Send the REGISTER command
-	int commandLength = htonl(REGISTERz);
-	socket->send((char*)&commandLength,4);
-
-	string message = username + " " + password;
-
-	printer.print("Trying to register: " + message);
+	sendCommandCode(REGISTERz);
 
 	// Send the username and password
-	int messageLength = htonl(message.length());
-	socket->send((char*)&messageLength, 4);
-	socket->send(message);
+	sendArgs(username + " " + password);
 
-	int reply = 0;
+	// Receive reply from server
+	int replyCode = receiveReplyCode();
 
-	// Receive reply (the size should be as stated in the protocol)
-	int bytesReceived = socket->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
-	int returnedCode = ntohl(reply);
-
-	manageReply(returnedCode, username);
+	manageReply(replyCode, username);
 }
 
 void ClientController::openSession(string otherUserName)
 {
 	// TODO: Get this from TCPProtocol
-//	int SESSION_ESTABLISHED = 6;
-//	int NOT_LOGGED_IN = 206;
-//	int ALREADY_BUSY = 462;
-//	int USER_NOT_FOUND = 522;
-//	int OTHER_USER_BUSY = 523;
 	unsigned int OPEN_SESSION_WITH_PEER = 2;
-	int EXPECTED_COMMAND_BYTES_SIZE = 4;
 
 	// Send the OPEN_SESSION command
-	int commandLength = htonl(OPEN_SESSION_WITH_PEER);
-	socket->send((char*)&commandLength,4);
+	sendCommandCode(OPEN_SESSION_WITH_PEER);
 
-	// Send the username to open session with
-	int messageLength = htonl(otherUserName.length());
-	socket->send((char*)&messageLength, 4);
-	socket->send(otherUserName);
+	// Send the username to open a session with
+	sendArgs(otherUserName);
 
-	int reply = 0;
+	// Receive reply from server
+	int replyCode = receiveReplyCode();
 
-	// Receive reply (the size should be as stated in the protocol)
-	int bytesReceived = socket->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
-	int returnedCode = ntohl(reply);
-
-	manageReply(reply, otherUserName);
-
-//	if (returnedCode == SESSION_ESTABLISHED)
-//	{
-//		printer.print("Session with " + otherUserName + " created.");
-//
-//		// TODO: Need to create the UDP socket here?
-//	}
-//	else if (returnedCode == NOT_LOGGED_IN)
-//	{
-//		printer.print("You are not logged in.");
-//	}
-//	else if (returnedCode == ALREADY_BUSY)
-//	{
-//		printer.print("You are already participating in a Session or ChatRoom.");
-//	}
-//	else if (returnedCode == USER_NOT_FOUND)
-//	{
-//		printer.print(otherUserName + " is either logged off or does not exist.");
-//	}
-//	else if (returnedCode == OTHER_USER_BUSY)
-//	{
-//		printer.print(otherUserName + " is busy.");
-//	}
+	manageReply(replyCode, otherUserName);
 }
 
 void ClientController::openRoom(string roomName)
 {
 	// TODO: Get this from TCPProtocol
-//	int OPEN_ROOM_SUCCESS = 440;
-//	int NOT_LOGGED_IN = 206;
-//	int ROOM_NAME_EXISTS = 441;
 	unsigned int OPEN_CHAT_ROOMz = 11;
 	int EXPECTED_COMMAND_BYTES_SIZE = 4;
 
 	// Send the OPEN_ROOM command
-	int commandLength = htonl(OPEN_CHAT_ROOMz);
-	socket->send((char*)&commandLength,4);
+	sendCommandCode(OPEN_CHAT_ROOMz);
 
 	// Send the room name
-	int messageLength = htonl(roomName.length());
-	socket->send((char*)&messageLength, 4);
-	socket->send(roomName);
+	sendArgs(roomName);
 
-	int reply = 0;
+	// Receive reply from server
+	int replyCode = receiveReplyCode();
 
-	// Receive reply (the size should be as stated in the protocol)
-	int bytesReceived = socket->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
-	int returnedCode = ntohl(reply);
-
-	manageReply(returnedCode, roomName);
-
-//	if (returnedCode == OPEN_ROOM_SUCCESS)
-//	{
-//		printer.print("Room '" + roomName + "' created.");
-//	}
-//	else if (returnedCode == NOT_LOGGED_IN)
-//	{
-//		printer.print("You are not logged in.");
-//	}
-//	else if (returnedCode == ROOM_NAME_EXISTS)
-//	{
-//		printer.print("A room with that name already exists.");
-//	}
+	manageReply(replyCode, roomName);
 }
 
 void ClientController::joinRoom(string roomName)
 {
 	// TODO: Get this from TCPProtocol
-//	int JOIN_ROOM_SUCCESS = 460;
-//	int NOT_LOGGED_IN = 206;
-//	int ROOM_DOES_NOT_EXIST = 461;
-//	int ALREADY_BUSY = 462;
 	unsigned int JOIN_CHAT_ROOMz = 14;
-	int EXPECTED_COMMAND_BYTES_SIZE = 4;
 
 	// Send the JOIN_ROOM command
-	int commandLength = htonl(JOIN_CHAT_ROOMz);
-	socket->send((char*)&commandLength,4);
+	sendCommandCode(JOIN_CHAT_ROOMz);
 
 	// Send the room name
-	int messageLength = htonl(roomName.length());
-	socket->send((char*)&messageLength, 4);
-	socket->send(roomName);
+	sendArgs(roomName);
 
-	int reply = 0;
+	// Receive reply from server
+	int replyCode = receiveReplyCode();
 
-	// Receive reply (the size should be as stated in the protocol)
-	int bytesReceived = socket->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
-	int returnedCode = ntohl(reply);
-
-	manageReply(returnedCode, roomName);
-
-//	if (returnedCode == JOIN_ROOM_SUCCESS)
-//	{
-//		printer.print("You have joined '" + roomName + "'.");
-//	}
-//	else if (returnedCode == NOT_LOGGED_IN)
-//	{
-//		printer.print("You are not logged in.");
-//	}
-//	else if (returnedCode == ROOM_DOES_NOT_EXIST)
-//	{
-//		printer.print("There is no room named '" + roomName + "'.");
-//	}
-//	else if (returnedCode == ALREADY_BUSY)
-//	{
-//		printer.print("You are already inside a room or session.");
-//	}
+	manageReply(replyCode, roomName);
 }
 
 void ClientController::closeSessionOrExitRoom()
 {
 	// TODO: TCPProtocol
-	int EXPECTED_COMMAND_BYTES_SIZE = 4;
 	int CLOSE_SESSION_OR_EXIT_ROOMz = 15;
-//	int NOT_LOGGED_IN = 206;
-//	int EXIT_ROOM_SUCCESS = 480;
-//	int NOT_IN_SESSION_OR_ROOM = 481;
-//	int CLOSE_SESSION_SUCCESS = 490;
 
 	// Send the CLOSE_SESSION_OR_EXIT_ROOM command
-	int commandLength = htonl(CLOSE_SESSION_OR_EXIT_ROOMz);
-	socket->send((char*)&commandLength,4);
+	sendCommandCode(CLOSE_SESSION_OR_EXIT_ROOMz);
 
-	int reply = 0;
+	// Receive reply from server
+	int replyCode = receiveReplyCode();
 
-	// Receive reply (the size should be as stated in the protocol)
-	int bytesReceived = socket->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
-	int returnedCode = ntohl(reply);
-
-	manageReply(returnedCode, "");
-
-//	if (returnedCode == EXIT_ROOM_SUCCESS)
-//	{
-//		printer.print("You have left the room.");
-//	}
-//	else if (returnedCode == CLOSE_SESSION_SUCCESS)
-//	{
-//		printer.print("Session closed.");
-//	}
-//	else if (returnedCode == NOT_IN_SESSION_OR_ROOM)
-//	{
-//		printer.print("You are not in a ChatRoom or a Session.");
-//	}
-//	else if (returnedCode == NOT_LOGGED_IN)
-//	{
-//		printer.print("You are not logged in.");
-//	}
+	manageReply(replyCode, "");
 }
 
 void ClientController::closeRoom(string roomName)
 {
 	// TODO: Get this from TCPProtocol
-//	int CLOSE_ROOM_SUCCESS = 500;
-//	int NOT_LOGGED_IN = 206;
-//	int ROOM_DOES_NOT_EXIST = 461;
-//	int NOT_ROOM_OWNER = 501;
 	unsigned int CLOSE_ROOMz = 16;
-	int EXPECTED_COMMAND_BYTES_SIZE = 4;
 
 	// Send the CLOSE_ROOM command
-	int commandLength = htonl(CLOSE_ROOMz);
-	socket->send((char*)&commandLength,4);
+	sendCommandCode(CLOSE_ROOMz);
 
 	// Send the room name
-	int messageLength = htonl(roomName.length());
-	socket->send((char*)&messageLength, 4);
-	socket->send(roomName);
+	sendArgs(roomName);
 
-	int reply = 0;
+	// Receive reply from server
+	int replyCode = receiveReplyCode();
 
-	// Receive reply (the size should be as stated in the protocol)
-	int bytesReceived = socket->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
-	int returnedCode = ntohl(reply);
-
-	manageReply(returnedCode, roomName);
-
-//	if (returnedCode == CLOSE_ROOM_SUCCESS)
-//	{
-//		printer.print("You have closed '" + roomName + "'.");
-//	}
-//	else if (returnedCode == NOT_LOGGED_IN)
-//	{
-//		printer.print("You are not logged in.");
-//	}
-//	else if (returnedCode == ROOM_DOES_NOT_EXIST)
-//	{
-//		printer.print("There is no room named '" + roomName + "'.");
-//	}
-//	else if (returnedCode == NOT_ROOM_OWNER)
-//	{
-//		printer.print("You are not the room owner.");
-//	}
+	manageReply(replyCode, roomName);
 }
 
 void ClientController::disconnect()
 {
 	// TODO: TCPProtocol
-	int EXPECTED_COMMAND_BYTES_SIZE = 4;
-//	int DISCONNECT_SUCCESS = 421;
 	int DISCONNECTz = 13;
 
 	// Send the DISCONNECT command
-	int commandLength = htonl(DISCONNECTz);
-	socket->send((char*)&commandLength,4);
+	sendCommandCode(DISCONNECTz);
 
-	int reply = 0;
+	// Receive reply from server
+	int replyCode = receiveReplyCode();
+
+	manageReply(replyCode, "");
+}
+
+int ClientController::receiveReplyCode()
+{
+	// TODO: TCPProtocol
+	int EXPECTED_COMMAND_BYTES_SIZE = 4;
 
 	// Receive reply (the size should be as stated in the protocol)
-	int bytesReceived = socket->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
+	int reply = 0;
+	int bytesReceived = socketToServer->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
 	int returnedCode = ntohl(reply);
 
-	manageReply(returnedCode, "");
+	return returnedCode;
+}
 
-//	if (returnedCode == DISCONNECT_SUCCESS)
-//	{
-//		printer.print("Disconnected from server.");
-//
-//		socket->close();
-//		socket = NULL;
-//
-//		connected = false;
-//	}
+void ClientController::sendCommandCode(int commandCode)
+{
+	// Send the command-code
+	int commandLength = htonl(commandCode);
+	socketToServer->send((char*)&commandLength,4);
+}
+
+void ClientController::sendArgs(string message)
+{
+	// Send the arguments as a single message
+	int messageLength = htonl(message.length());
+
+	// Send the message length first
+	socketToServer->send((char*)&messageLength, 4);
+
+	// Send the message itself
+	socketToServer->send(message);
+}
+
+void ClientController::closeSocket()
+{
+	socketToServer->close();
+	socketToServer = NULL;
 }
 
 
