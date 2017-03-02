@@ -18,7 +18,7 @@ ClientController.o : ClientController.cpp
 	$(CC) -g -c -I../SocketUtils  ClientController.cpp -o Debug/ClientController.o
 	
 ConnectionToServerManager.o : ConnectionToServerManager.cpp
-	$(CC) -g -c ConnectionToServerManager.cpp -o Debug/ConnectionToServerManager.o
+	$(CC) -g -c -I../SocketUtils ConnectionToServerManager.cpp -o Debug/ConnectionToServerManager.o
 	
 ClientTerminalPrinter.o : ClientTerminalPrinter.cpp
 	$(CC) -g -c ClientTerminalPrinter.cpp -o Debug/ClientTerminalPrinter.o

@@ -15,10 +15,6 @@ int main()
 	ServerController controller;
 	controller.startServer();
 
-	// Just for testing, should be removed.
-	TCPSocket* socket;
-	int kaki = true;
-
 	bool shouldContinue = true;
 
 	while (shouldContinue)
@@ -62,8 +58,6 @@ int main()
 			printer.printUnknownCommand();
 		}
 	}
-
-	socket->close();
 
 	return 0;
 }
