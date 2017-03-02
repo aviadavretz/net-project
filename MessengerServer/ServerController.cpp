@@ -425,11 +425,58 @@ void ServerController::notifyRegistrationRequest(TCPSocket* peerSocket, string u
 void ServerController::notifyListAllUsersRequest(TCPSocket* peerSocket)
 {
 	peersMessageSender.sendAllRegisterdUsers(peerSocket, getAllRegisteredUsersName());
+	printer.print(peerSocket->fromAddr() + " has requested a list of all registered users.");
 }
 
 void ServerController::notifyListAllConnectedUsersRequest(TCPSocket* peerSocket)
 {
 	peersMessageSender.sendAllConnectedUsers(peerSocket, getAllConnectedUsersName());
+	printer.print(peerSocket->fromAddr() + " has requested a list of all connected users.");
+}
+
+void ServerController::notifyListAllRoomsRequest(TCPSocket* peerSocket)
+{
+	vector<string> roomNames;
+
+	// Build a list containing the room names
+	for (vector<ChatRoom*>::iterator iterator = chatRooms.begin(); iterator != chatRooms.end(); iterator++)
+	{
+		roomNames.push_back((*iterator)->getName());
+	}
+
+	peersMessageSender.sendAllRooms(peerSocket, roomNames);
+
+	printer.print(peerSocket->fromAddr() + " has requested a list of all rooms.");
+}
+
+void ServerController::notifyListAllUsersInRoomRequest(TCPSocket* peerSocket, string roomName)
+{
+	ChatRoom* referencedRoom = getChatRoomByName(roomName);
+
+	// Make sure the room exists
+	if (referencedRoom == NULL)
+	{
+		peersMessageSender.sendRoomDoesntExist(peerSocket);
+		printer.print(peerSocket->fromAddr() + " has requested a list of all users in the room '" +
+					  roomName + "', but there is no room with that name.");
+	}
+	else
+	{
+		// Get the User* objects who are in that room
+		vector<User*> usersInRoom = referencedRoom->getParticipatingUsers();
+
+		vector<string> userNames;
+
+		// Build a list with the usernames instead of the User* objects
+		for (vector<User*>::iterator iterator = usersInRoom.begin(); iterator != usersInRoom.end(); iterator++)
+		{
+			userNames.push_back((*iterator)->getUsername());
+		}
+
+		peersMessageSender.sendAllUsersInRoom(peerSocket, userNames);
+
+		printer.print(peerSocket->fromAddr() + " has requested a list of all users in the room '" + roomName + "'.");
+	}
 }
 
 bool ServerController::isUserConnected(string username)

@@ -56,6 +56,13 @@ int main()
 		// ---------------
 		else if (userCommand.compare(PRINT_ALL_USERS) == 0)
 		{
+			// Make sure we're connected
+			if (!controller.isConnected())
+			{
+				printer.print("You are not connected to a server.");
+				continue;
+			}
+
 			controller.requestAllRegisterdUsersName();
 		}
 		// ---------------------
@@ -63,11 +70,54 @@ int main()
 		// ---------------------
 		else if (userCommand.compare(PRINT_CONNECTED_USERS) == 0)
 		{
+			// Make sure we're connected
+			if (!controller.isConnected())
+			{
+				printer.print("You are not connected to a server.");
+				continue;
+			}
+
 			controller.requestAllConnectedUsersName();
 		}
+		// -----------
+		// PRINT_ROOMS
+		// -----------
 		else if (userCommand.compare(PRINT_ROOMS) == 0)
 		{
+			// Make sure we're connected
+			if (!controller.isConnected())
+			{
+				printer.print("You are not connected to a server.");
+				continue;
+			}
 
+			controller.requestAllRooms();
+		}
+		// ---------------
+		// PRINT_ROOM_USERS
+		// ---------------
+		else if (commandUtils.doesCommandHavePrefix(userCommand, PRINT_ROOM_USERS))
+		{
+			// Make sure we're connected
+			if (!controller.isConnected())
+			{
+				printer.print("You are not connected to a server.");
+				continue;
+			}
+
+			// Get the args
+			vector<string> args = commandUtils.getCommandArgs(userCommand, PRINT_ROOM_USERS);
+
+			// Make sure we received the correct number of args
+			if (args.size() != PRINT_ROOM_USERS_ARGS_NUM)
+			{
+				printer.printInvalidArgsNum();
+				continue;
+			}
+
+			string roomName = args[0];
+
+			controller.requestAllUsersInRoom(roomName);
 		}
 		// -----
 		// LOGIN

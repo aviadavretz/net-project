@@ -42,6 +42,11 @@ void ServerTerminalPrinter::printLoginSuccessful(string username, string addr)
 	cout << username << " (" << addr << ") has logged in." << endl;
 }
 
+void ServerTerminalPrinter::printInvalidArgsNum()
+{
+	cout << "Invalid number of arguments." << endl;
+}
+
 void ServerTerminalPrinter::printUnknownCommand()
 {
 	cout << "The command you entered does not exist" << endl;

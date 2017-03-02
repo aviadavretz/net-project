@@ -47,6 +47,8 @@ public:
 	void sendOpenSessionSuccess(TCPSocket* peer);
 	void sendAllRegisterdUsers(TCPSocket* peer, vector<string> usernames);
 	void sendAllConnectedUsers(TCPSocket* peer, vector<string> usernames);
+	void sendAllRooms(TCPSocket* peer, vector<string> rooms);
+	void sendAllUsersInRoom(TCPSocket* peer, vector<string> usernames);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */

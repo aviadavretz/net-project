@@ -3,6 +3,7 @@
 #include "UserInputCommands.h"
 #include "ServerController.h"
 #include "TCPSocket.h"
+#include "CommandUtils.h"
 
 using namespace std;
 using namespace npl;
@@ -15,14 +16,18 @@ int main()
 	ServerController controller;
 	controller.startServer();
 
+	// TODO: CommandUtils... move it to a shared folder?
+	CommandUtils commandUtils;
+
 	bool shouldContinue = true;
 
 	while (shouldContinue)
 	{
 		printer.printMenu();
 
+		// Get the whole command line from the user
 		string userCommand;
-		cin >> userCommand;
+		std::getline(std::cin, userCommand);
 
 		if (userCommand.compare(PRINT_ALL_USERS) == 0)
 		{
@@ -40,10 +45,22 @@ int main()
 		{
 			printer.print(controller.getAllChatRooms());
 		}
-		else if (userCommand.compare(PRINT_ROOM_USERS) == 0)
+		else if (commandUtils.doesCommandHavePrefix(userCommand, PRINT_ROOM_USERS))
 		{
-			// TODO: Get args: room name
-			string roomName = "GUH";
+			// TODO: UserInputCommands... move it to a shared folder?
+			int PRINT_ROOM_USERS_ARGS_NUM = 1;
+
+			// Get the args
+			vector<string> args = commandUtils.getCommandArgs(userCommand, PRINT_ROOM_USERS);
+
+			// Make sure we received the correct number of args
+			if (args.size() != PRINT_ROOM_USERS_ARGS_NUM)
+			{
+				printer.printInvalidArgsNum();
+				continue;
+			}
+
+			string roomName = args[0];
 
 			ChatRoom* room = controller.getChatRoomByName(roomName);
 			printer.printRoomUsers(room, roomName);

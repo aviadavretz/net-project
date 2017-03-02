@@ -20,7 +20,8 @@ bool ClientController::isConnected()
 
 void ClientController::manageReply(int replyCode, string relevantData)
 {
-	// TCPProtocol
+	// TODO: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+	// TODO: Get these from TCPProtocol
 	const int CONNECT_SUCCESS = 420;
 
 	const int LOGIN_SUCCEEDED = 202;
@@ -52,8 +53,10 @@ void ClientController::manageReply(int replyCode, string relevantData)
 
 	const int DISCONNECT_SUCCESS = 421;
 
-	const int GET_ALL_REGISTERED_USERSz = 7;
-	const int GET_ALL_CONNECTED_USERSz = 8;
+	const int GET_REGISTERED_USERS = 7;
+	const int GET_CONNECTED_USERS = 8;
+	const int GET_CHAT_ROOMS = 9;
+	const int GET_USERS_IN_CHAT_ROOM = 10;
 
 	switch (replyCode)
 	{
@@ -175,35 +178,97 @@ void ClientController::manageReply(int replyCode, string relevantData)
 
 			break;
 		}
-		case (GET_ALL_REGISTERED_USERSz):
+		case (GET_REGISTERED_USERS):
 		{
+			// Get the number of registered users first
 			int usersNumber = atoi(srvConnection.receiveMessage().c_str());
 
-			printer.print("Registered Users :");
-
-			for (int i = 0; i < usersNumber; i++)
+			if (usersNumber > 0)
 			{
-				printer.print(srvConnection.receiveMessage());
+				printer.print("Registered Users:");
+
+				for (int i = 0; i < usersNumber; i++)
+				{
+					// Receive the current user name
+					printer.print(srvConnection.receiveMessage());
+				}
+			}
+			else
+			{
+				printer.print("There are no registered users.");
 			}
 
 			break;
 		}
-		case (GET_ALL_CONNECTED_USERSz):
+		case (GET_CONNECTED_USERS):
 		{
+			// Get the number of connected users first
 			int usersNumber = atoi(srvConnection.receiveMessage().c_str());
 
-			printer.print("Connected Users :");
-
-			for (int i = 0; i < usersNumber; i++)
+			if (usersNumber > 0)
 			{
-				printer.print(srvConnection.receiveMessage());
+				printer.print("Connected Users:");
+
+				for (int i = 0; i < usersNumber; i++)
+				{
+					// Receive the current user name
+					printer.print(srvConnection.receiveMessage());
+				}
+			}
+			else
+			{
+				printer.print("There are no connected users.");
+			}
+
+			break;
+		}
+		case (GET_CHAT_ROOMS):
+		{
+			// Get the number of rooms first
+			int roomsNumber = atoi(srvConnection.receiveMessage().c_str());
+
+			if (roomsNumber > 0)
+			{
+				printer.print("Open chat-rooms:");
+
+				for (int i = 0; i < roomsNumber; i++)
+				{
+					// Receive the current room name
+					printer.print(srvConnection.receiveMessage());
+				}
+			}
+			else
+			{
+				printer.print("There are no open chat-rooms.");
+			}
+
+			break;
+		}
+		case (GET_USERS_IN_CHAT_ROOM):
+		{
+			// Get the number of users in the room first
+			int usersNumber = atoi(srvConnection.receiveMessage().c_str());
+
+			if (usersNumber > 0)
+			{
+				printer.print("Users connected to '" + relevantData + "':");
+
+				for (int i = 0; i < usersNumber; i++)
+				{
+					// Receive the current user
+					printer.print(srvConnection.receiveMessage());
+				}
+			}
+			else
+			{
+				printer.print("There are no users in the room '" + relevantData + "'.");
 			}
 
 			break;
 		}
 		default:
 		{
-			printer.print("Unknown error. ");
+			printer.print("Unknown reply-code.");
 		}
 	}
 }
@@ -355,9 +420,10 @@ void ClientController::disconnect()
 
 void ClientController::requestAllRegisterdUsersName()
 {
-	unsigned int GET_REGISTERED_USERSz = 7;
+	// TODO: TCPProtocolz
+	const int GET_REGISTERED_USERS = 7;
 
-	srvConnection.sendCommandCode(GET_REGISTERED_USERSz);
+	srvConnection.sendCommandCode(GET_REGISTERED_USERS);
 
 	// Receive reply from server
 	int replyCode = srvConnection.receiveReplyCode();
@@ -367,13 +433,42 @@ void ClientController::requestAllRegisterdUsersName()
 
 void ClientController::requestAllConnectedUsersName()
 {
-	unsigned int GET_CONNECTED_USERSz = 8;
+	// TODO: TCPProtocolz
+	const int GET_CONNECTED_USERS = 8;
 
-	srvConnection.sendCommandCode(GET_CONNECTED_USERSz);
+	srvConnection.sendCommandCode(GET_CONNECTED_USERS);
 
 	// Receive reply from server
 	int replyCode = srvConnection.receiveReplyCode();
 
 	manageReply(replyCode, "");
+}
+
+void ClientController::requestAllRooms()
+{
+	// TODO: TCPProtocolz
+	const int GET_CHAT_ROOMS = 9;
+
+	srvConnection.sendCommandCode(GET_CHAT_ROOMS);
+
+	// Receive reply from server
+	int replyCode = srvConnection.receiveReplyCode();
+
+	manageReply(replyCode, "");
+}
+
+void ClientController::requestAllUsersInRoom(string roomName)
+{
+	// TODO: TCPProtocolz
+	const int GET_USERS_IN_CHAT_ROOM = 10;
+
+	// Send the command-code and the room name
+	srvConnection.sendCommandCode(GET_USERS_IN_CHAT_ROOM);
+	srvConnection.sendArgs(roomName);
+
+	// Receive reply from server
+	int replyCode = srvConnection.receiveReplyCode();
+
+	manageReply(replyCode, roomName);
 }
 

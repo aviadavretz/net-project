@@ -22,12 +22,15 @@ void ServerPeersMessageSender::sendMessage(TCPSocket* peer, string message)
 
 void ServerPeersMessageSender::sendStringList(TCPSocket* peer, int code, vector<string> strings)
 {
+	// Send the code first
 	sendCode(peer, code);
 
+	// Send the list length
     std::stringstream stringsSizeMessage;
     stringsSizeMessage << strings.size();
 	sendMessage(peer, stringsSizeMessage.str());
 
+	// Send the list itself
 	for (vector<string>::iterator iterator = strings.begin(); iterator != strings.end(); iterator++)
 	{
 		sendMessage(peer, *iterator);
@@ -182,4 +185,14 @@ void ServerPeersMessageSender::sendAllRegisterdUsers(TCPSocket* peer, vector<str
 void ServerPeersMessageSender::sendAllConnectedUsers(TCPSocket* peer, vector<string> usernames)
 {
 	sendStringList(peer, GET_CONNECTED_USERS, usernames);
+}
+
+void ServerPeersMessageSender::sendAllRooms(TCPSocket* peer, vector<string> roomNames)
+{
+	sendStringList(peer, GET_CHAT_ROOMS, roomNames);
+}
+
+void ServerPeersMessageSender::sendAllUsersInRoom(TCPSocket* peer, vector<string> usernames)
+{
+	sendStringList(peer, GET_USERS_IN_CHAT_ROOM, usernames);
 }

@@ -49,51 +49,74 @@ int ServerPeersListener::readCommand(TCPSocket* socket)
 void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 {
 	// TODO: TCPProtocol
-	int OPEN_CHAT_ROOM = 11;
-	int JOIN_CHAT_ROOM = 14;
-	int CLOSE_SESSION_OR_EXIT_ROOM = 15;
-	int CLOSE_ROOM = 16;
-	int OPEN_SESSION_WITH_PEER = 2;
+	const int OPEN_CHAT_ROOM = 11;
+	const int JOIN_CHAT_ROOM = 14;
+	const int CLOSE_SESSION_OR_EXIT_ROOM = 15;
+	const int CLOSE_ROOM = 16;
+	const int OPEN_SESSION_WITH_PEER = 2;
 
-	if (command == LOGIN)
+	switch (command)
 	{
-		routeLoginCommand(peer);
-	}
-	else if (command == REGISTER)
-	{
-		routeRegisterCommand(peer);
-	}
-	else if (command == DISCONNECT)
-	{
-		routeDisconnectCommand(peer);
-	}
-	else if (command == OPEN_CHAT_ROOM)
-	{
-		routeOpenChatRoomCommand(peer);
-	}
-	else if (command == JOIN_CHAT_ROOM)
-	{
-		routeJoinChatRoomCommand(peer);
-	}
-	else if (command == CLOSE_SESSION_OR_EXIT_ROOM)
-	{
-		routeCloseSessionOrExitRoomCommand(peer);
-	}
-	else if (command == CLOSE_ROOM)
-	{
-		routeCloseChatRoomCommand(peer);
-	}
-	else if (command == OPEN_SESSION_WITH_PEER)
-	{
-		routeOpenSessionCommand(peer);
-	}
-	else if (command == GET_REGISTERED_USERS)
-	{
-		routeGetAllRegisteredUsers(peer);
-	}
-	else if (command == GET_CONNECTED_USERS)
-	{
-		routeGetAllConnectedUsers(peer);
+		case (LOGIN):
+		{
+			routeLoginCommand(peer);
+			break;
+		}
+		case (REGISTER):
+		{
+			routeRegisterCommand(peer);
+			break;
+		}
+		case (DISCONNECT):
+		{
+			routeDisconnectCommand(peer);
+			break;
+		}
+		case (OPEN_CHAT_ROOM):
+		{
+			routeOpenChatRoomCommand(peer);
+			break;
+		}
+		case (JOIN_CHAT_ROOM):
+		{
+			routeJoinChatRoomCommand(peer);
+			break;
+		}
+		case (CLOSE_SESSION_OR_EXIT_ROOM):
+		{
+			routeCloseSessionOrExitRoomCommand(peer);
+			break;
+		}
+		case (CLOSE_ROOM):
+		{
+			routeCloseChatRoomCommand(peer);
+			break;
+		}
+		case (OPEN_SESSION_WITH_PEER):
+		{
+			routeOpenSessionCommand(peer);
+			break;
+		}
+		case (GET_REGISTERED_USERS):
+		{
+			routeGetAllRegisteredUsers(peer);
+			break;
+		}
+		case (GET_CONNECTED_USERS):
+		{
+			routeGetAllConnectedUsers(peer);
+			break;
+		}
+		case (GET_CHAT_ROOMS):
+		{
+			routeGetAllRooms(peer);
+			break;
+		}
+		case (GET_USERS_IN_CHAT_ROOM):
+		{
+			routeGetUsersInRoom(peer);
+			break;
+		}
 	}
 }
 
@@ -163,6 +186,19 @@ void ServerPeersListener::routeGetAllRegisteredUsers(TCPSocket* peer)
 void ServerPeersListener::routeGetAllConnectedUsers(TCPSocket* peer)
 {
 	observer->notifyListAllConnectedUsersRequest(peer);
+}
+
+void ServerPeersListener::routeGetAllRooms(TCPSocket* peer)
+{
+	observer->notifyListAllRoomsRequest(peer);
+}
+
+void ServerPeersListener::routeGetUsersInRoom(TCPSocket* peer)
+{
+	// Message = 1 argument = room name
+	string roomName = readMessage(peer);
+
+	observer->notifyListAllUsersInRoomRequest(peer, roomName);
 }
 
 string ServerPeersListener::readMessage(TCPSocket* socket)

@@ -62,6 +62,8 @@ public:
 	void notifyOpenSessionRequest(TCPSocket* peerSocket, string otherUserName);
 	void notifyListAllUsersRequest(TCPSocket* peerSocket);
 	void notifyListAllConnectedUsersRequest(TCPSocket* peerSocket);
+	void notifyListAllRoomsRequest(TCPSocket* peerSocket);
+	void notifyListAllUsersInRoomRequest(TCPSocket* peerSocket, string roomName);
 	vector<string> getAllRegisteredUsersName();
 	vector<string> getAllConnectedUsersName();
 	vector<Session*> getAllSessions();

@@ -22,6 +22,7 @@ class ServerTerminalPrinter
 	public:
 	void printWelcomeMessage();
 	void printMenu();
+	void printInvalidArgsNum();
 	void printUnknownCommand();
 	void printExitMessage();
 	void printConnectedUsersName(vector<string> users);
