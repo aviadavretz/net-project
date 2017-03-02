@@ -52,6 +52,9 @@ void ClientController::manageReply(int replyCode, string relevantData)
 
 	const int DISCONNECT_SUCCESS = 421;
 
+	const int GET_ALL_REGISTERED_USERSz = 7;
+	const int GET_ALL_CONNECTED_USERSz = 8;
+
 	switch (replyCode)
 	{
 		case (CONNECT_SUCCESS):
@@ -169,6 +172,32 @@ void ClientController::manageReply(int replyCode, string relevantData)
 			// Close the socket
 			srvConnection.closeSocket();
 			connected = false;
+
+			break;
+		}
+		case (GET_ALL_REGISTERED_USERSz):
+		{
+			int usersNumber = atoi(srvConnection.receiveMessage().c_str());
+
+			printer.print("Registered Users :");
+
+			for (int i = 0; i < usersNumber; i++)
+			{
+				printer.print(srvConnection.receiveMessage());
+			}
+
+			break;
+		}
+		case (GET_ALL_CONNECTED_USERSz):
+		{
+			int usersNumber = atoi(srvConnection.receiveMessage().c_str());
+
+			printer.print("Connected Users :");
+
+			for (int i = 0; i < usersNumber; i++)
+			{
+				printer.print(srvConnection.receiveMessage());
+			}
 
 			break;
 		}
@@ -324,4 +353,27 @@ void ClientController::disconnect()
 	manageReply(replyCode, "");
 }
 
+void ClientController::requestAllRegisterdUsersName()
+{
+	unsigned int GET_REGISTERED_USERSz = 7;
+
+	srvConnection.sendCommandCode(GET_REGISTERED_USERSz);
+
+	// Receive reply from server
+	int replyCode = srvConnection.receiveReplyCode();
+
+	manageReply(replyCode, "");
+}
+
+void ClientController::requestAllConnectedUsersName()
+{
+	unsigned int GET_CONNECTED_USERSz = 8;
+
+	srvConnection.sendCommandCode(GET_CONNECTED_USERSz);
+
+	// Receive reply from server
+	int replyCode = srvConnection.receiveReplyCode();
+
+	manageReply(replyCode, "");
+}
 

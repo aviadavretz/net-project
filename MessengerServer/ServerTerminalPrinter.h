@@ -24,7 +24,7 @@ class ServerTerminalPrinter
 	void printMenu();
 	void printUnknownCommand();
 	void printExitMessage();
-	void print(vector<User*> users);
+	void printConnectedUsersName(vector<string> users);
 	void print(vector<Session*> sessions);
 	void print(vector<ChatRoom*> rooms);
 	void printUsersName(vector<string> names);

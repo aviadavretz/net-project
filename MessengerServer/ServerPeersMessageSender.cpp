@@ -20,6 +20,20 @@ void ServerPeersMessageSender::sendMessage(TCPSocket* peer, string message)
 	peer->send(message);
 }
 
+void ServerPeersMessageSender::sendStringList(TCPSocket* peer, int code, vector<string> strings)
+{
+	sendCode(peer, code);
+
+    std::stringstream stringsSizeMessage;
+    stringsSizeMessage << strings.size();
+	sendMessage(peer, stringsSizeMessage.str());
+
+	for (vector<string>::iterator iterator = strings.begin(); iterator != strings.end(); iterator++)
+	{
+		sendMessage(peer, *iterator);
+	}
+}
+
 void ServerPeersMessageSender::sendUserNotFound(TCPSocket* peer)
 {
 	// TODO: Put this in TCPProtocol
@@ -160,5 +174,12 @@ void ServerPeersMessageSender::sendDisconnectSuccess(TCPSocket* peer)
 	sendCode(peer, DISCONNECT_SUCCESS);
 }
 
+void ServerPeersMessageSender::sendAllRegisterdUsers(TCPSocket* peer, vector<string> usernames)
+{
+	sendStringList(peer, GET_REGISTERED_USERS, usernames);
+}
 
-
+void ServerPeersMessageSender::sendAllConnectedUsers(TCPSocket* peer, vector<string> usernames)
+{
+	sendStringList(peer, GET_CONNECTED_USERS, usernames);
+}

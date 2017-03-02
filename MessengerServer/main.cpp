@@ -30,7 +30,7 @@ int main()
 		}
 		else if (userCommand.compare(PRINT_CONNECTED_USERS) == 0)
 		{
-			printer.print(controller.getAllConnectedUsers());
+			printer.printConnectedUsersName(controller.getAllConnectedUsersName());
 		}
 		else if (userCommand.compare(PRINT_SESSIONS) == 0)
 		{

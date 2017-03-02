@@ -11,6 +11,7 @@
 #include "string"
 #include "ClientTerminalPrinter.h"
 #include "ConnectionToServerManager.h"
+#include <stdlib.h>
 
 using namespace std;
 
@@ -34,6 +35,8 @@ class ClientController
 		void closeSessionOrExitRoom();
 		void closeRoom(string roomName);
 		void disconnect();
+		void requestAllRegisterdUsersName();
+		void requestAllConnectedUsersName();
 };
 
 #endif /* CLIENTCONTROLLER_H_ */

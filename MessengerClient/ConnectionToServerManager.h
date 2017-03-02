@@ -18,6 +18,7 @@ class ConnectionToServerManager {
 
 public:
 	int receiveReplyCode();
+	string receiveMessage();
 	void sendCommandCode(int commandCode);
 	void sendArgs(string message);
 	void openSocket(string address, int port);

@@ -60,8 +60,10 @@ public:
 	void notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket);
 	void notifyCloseChatRoomRequest(TCPSocket* peerSocket, string roomName);
 	void notifyOpenSessionRequest(TCPSocket* peerSocket, string otherUserName);
+	void notifyListAllUsersRequest(TCPSocket* peerSocket);
+	void notifyListAllConnectedUsersRequest(TCPSocket* peerSocket);
 	vector<string> getAllRegisteredUsersName();
-	vector<User*> getAllConnectedUsers();
+	vector<string> getAllConnectedUsersName();
 	vector<Session*> getAllSessions();
 	vector<ChatRoom*> getAllChatRooms();
 	ChatRoom* getChatRoomByName(string name);

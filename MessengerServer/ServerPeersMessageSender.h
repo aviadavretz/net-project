@@ -10,6 +10,8 @@
 
 #include "TCPSocket.h"
 #include "TCPMessengerProtocol.h"
+#include <sstream>
+#include <vector>
 
 using namespace std;
 using namespace npl;
@@ -18,6 +20,7 @@ class ServerPeersMessageSender
 {
 	void sendCode(TCPSocket* peer, int code);
 	void sendMessage(TCPSocket* peer, string message);
+	void sendStringList(TCPSocket* peer, int code, vector<string> strings);
 public:
 	// TODO: Don't really need all these functions, only: sendCode(TCPSocket* peer, int code) and a bunch of constants
 	void sendAlreadyLoggedIn(TCPSocket* peer);
@@ -42,6 +45,8 @@ public:
 	void sendUserNotFound(TCPSocket* peer);
 	void sendOtherUserBusy(TCPSocket* peer);
 	void sendOpenSessionSuccess(TCPSocket* peer);
+	void sendAllRegisterdUsers(TCPSocket* peer, vector<string> usernames);
+	void sendAllConnectedUsers(TCPSocket* peer, vector<string> usernames);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */

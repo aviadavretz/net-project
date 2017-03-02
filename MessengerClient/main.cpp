@@ -56,14 +56,14 @@ int main()
 		// ---------------
 		else if (userCommand.compare(PRINT_ALL_USERS) == 0)
 		{
-
+			controller.requestAllRegisterdUsersName();
 		}
 		// ---------------------
 		// PRINT_CONNECTED_USERS
 		// ---------------------
 		else if (userCommand.compare(PRINT_CONNECTED_USERS) == 0)
 		{
-
+			controller.requestAllConnectedUsersName();
 		}
 		else if (userCommand.compare(PRINT_ROOMS) == 0)
 		{

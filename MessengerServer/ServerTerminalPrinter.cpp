@@ -52,7 +52,7 @@ void ServerTerminalPrinter::printExitMessage()
 	cout << "Goodbye !" << endl;
 }
 
-void ServerTerminalPrinter::print(vector<User*> users)
+void ServerTerminalPrinter::printConnectedUsersName(vector<string> users)
 {
 	if (users.empty())
 	{
@@ -62,9 +62,9 @@ void ServerTerminalPrinter::print(vector<User*> users)
 	{
 		cout << "Online users:" << endl;
 
-		for (vector<User*>::iterator iterator = users.begin(); iterator != users.end(); iterator++)
+		for (vector<string>::iterator iterator = users.begin(); iterator != users.end(); iterator++)
 		{
-			cout << (*iterator)->getUsername() << endl;
+			cout << (*iterator) << endl;
 		}
 	}
 }

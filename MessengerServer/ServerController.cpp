@@ -28,14 +28,14 @@ vector<string> ServerController::getAllRegisteredUsersName()
 	return userCredentialsManager.getAllRegisteredUsersName();
 }
 
-vector<User*> ServerController::getAllConnectedUsers()
+vector<string> ServerController::getAllConnectedUsersName()
 {
-	vector<User*> users;
+	vector<string> users;
 	map<TCPSocket*,User*>::iterator iterator;
 
 	for (iterator = connectedUsers.begin(); iterator != connectedUsers.end(); iterator++)
 	{
-		users.push_back(iterator->second);
+		users.push_back(iterator->second->getUsername());
 	}
 
 	return users;
@@ -420,6 +420,16 @@ void ServerController::notifyRegistrationRequest(TCPSocket* peerSocket, string u
 			}
 		}
 	}
+}
+
+void ServerController::notifyListAllUsersRequest(TCPSocket* peerSocket)
+{
+	peersMessageSender.sendAllRegisterdUsers(peerSocket, getAllRegisteredUsersName());
+}
+
+void ServerController::notifyListAllConnectedUsersRequest(TCPSocket* peerSocket)
+{
+	peersMessageSender.sendAllConnectedUsers(peerSocket, getAllConnectedUsersName());
 }
 
 bool ServerController::isUserConnected(string username)

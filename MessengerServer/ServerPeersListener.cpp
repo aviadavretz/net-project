@@ -87,6 +87,14 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 	{
 		routeOpenSessionCommand(peer);
 	}
+	else if (command == GET_REGISTERED_USERS)
+	{
+		routeGetAllRegisteredUsers(peer);
+	}
+	else if (command == GET_CONNECTED_USERS)
+	{
+		routeGetAllConnectedUsers(peer);
+	}
 }
 
 void ServerPeersListener::routeOpenSessionCommand(TCPSocket* peer)
@@ -145,6 +153,16 @@ void ServerPeersListener::routeRegisterCommand(TCPSocket* peer)
 	pair<string, string> usernamePassword = getUsernameAndPasswordFromMessage(message);
 
 	observer->notifyRegistrationRequest(peer, usernamePassword.first, usernamePassword.second);
+}
+
+void ServerPeersListener::routeGetAllRegisteredUsers(TCPSocket* peer)
+{
+	observer->notifyListAllUsersRequest(peer);
+}
+
+void ServerPeersListener::routeGetAllConnectedUsers(TCPSocket* peer)
+{
+	observer->notifyListAllConnectedUsersRequest(peer);
 }
 
 string ServerPeersListener::readMessage(TCPSocket* socket)

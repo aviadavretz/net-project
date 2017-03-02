@@ -10,6 +10,26 @@
 ConnectionToServerManager::ConnectionToServerManager() {}
 ConnectionToServerManager::~ConnectionToServerManager() {}
 
+string ConnectionToServerManager::receiveMessage()
+{
+	char messageContent[256];
+	int messageLength;
+
+	// TODO: TCPProtocol
+	int EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE = 4;
+
+	// Receiving message length
+	socketToServer->recv((char*)&messageLength, EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE);
+
+	messageLength = ntohl(messageLength);
+
+	// Receiving the message content
+	socketToServer->recv(messageContent, messageLength);
+	messageContent[messageLength] = '\0';
+
+	return string(messageContent);
+}
+
 int ConnectionToServerManager::receiveReplyCode()
 {
 	// TODO: TCPProtocol
