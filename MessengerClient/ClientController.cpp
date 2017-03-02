@@ -196,32 +196,17 @@ void ClientController::login(string username, string password)
 {
 // TODO: Get this from TCPProtocol
 unsigned int LOGINz = 70;
-const int EXPECTED_COMMAND_BYTES_SIZE = 4;
-//const int LOGIN_SUCCEEDED = 202;
-//const int ALREADY_LOGGED_IN = 200;
-//const int BAD_USERNAME_PASSWORD = 201;
 
 	// Send the LOGIN command
-	int commandLength = htonl(LOGINz);
-	socket->send((char*)&commandLength,4);
-
-	string message = username + " " + password;
-
-	printer.print("Trying to login: " + message);
+	sendCommandCode(LOGINz);
 
 	// Send the username and password
-	int messageLength = htonl(message.length());
-	socket->send((char*)&messageLength, 4);
-	socket->send(message);
+	sendArgs(username + " " + password);
 
-	int reply = 0;
+	// Receive reply from server
+	int replyCode = receiveReplyCode();
 
-	// Receive reply (the size should be as stated in the protocol)
-	int bytesReceived = socket->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
-
-	int returnedCode = ntohl(reply);
-
-	manageReply(returnedCode, username);
+	manageReply(replyCode, username);
 }
 
 void ClientController::registerUser(string username, string password)
