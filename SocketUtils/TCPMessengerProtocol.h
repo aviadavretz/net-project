@@ -66,6 +66,7 @@
 
 //#define USER_NOT_FOUND 522
 //#define OTHER_USER_BUSY 523
+//#define SESSION_WITH_SELF 524
 
 //#define ALREADY_BUSY 462
 

@@ -88,45 +88,54 @@ void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string ot
 	{
 		User* requestingUser = getUserByPeer(peerSocket);
 
-		// Make sure the requesting user is not currently in a session or room
-		if (isBusyUser(requestingUser))
+		// Make sure the other user is not the requesting user.
+		if (otherUserName.compare(requestingUser->getUsername()) == 0)
 		{
-			peersMessageSender.sendAlreadyBusy(peerSocket);
-			printer.print(requestingUser->getUsername() + " wants to create a Session, but is currently in a Session or ChatRoom.");
+			peersMessageSender.sendSessionWithSelf(peerSocket);
+			printer.print(requestingUser->getUsername() + " tried to create a Session with himself.");
 		}
 		else
 		{
-			// Check if user exists and is logged in
-			if (isUserLoggedIn(otherUserName))
+			// Make sure the requesting user is not currently in a session or room
+			if (isBusyUser(requestingUser))
 			{
-				User* otherUser = getLoggedInUserByUsername(otherUserName);
-
-				// Make sure the other user is not busy
-				if (isBusyUser(otherUser))
-				{
-					peersMessageSender.sendOtherUserBusy(peerSocket);
-					printer.print(requestingUser->getUsername() + " wants to create a Session with " + otherUserName +
-								  ", but " + otherUserName + " is busy.");
-				}
-				else
-				{
-					// Other user is not busy. Create the session
-					Session* session = new Session(requestingUser, otherUser);
-
-					sessions.push_back(session);
-
-					peersMessageSender.sendOpenSessionSuccess(peerSocket);
-					printer.print(requestingUser->getUsername() + " has created a Session with " + otherUserName);
-
-					// TODO: Need to send the socket info to the users?
-				}
+				peersMessageSender.sendAlreadyBusy(peerSocket);
+				printer.print(requestingUser->getUsername() + " wants to create a Session, but is currently in a Session or ChatRoom.");
 			}
 			else
 			{
-				// User not found
-				peersMessageSender.sendUserNotFound(peerSocket);
-				printer.print(requestingUser->getUsername() + " tried to open a Session with " + otherUserName +
-						      ", but there is no logged in user named " + otherUserName);
+				// Check if user exists and is logged in
+				if (isUserLoggedIn(otherUserName))
+				{
+					User* otherUser = getLoggedInUserByUsername(otherUserName);
+
+					// Make sure the other user is not busy
+					if (isBusyUser(otherUser))
+					{
+						peersMessageSender.sendOtherUserBusy(peerSocket);
+						printer.print(requestingUser->getUsername() + " wants to create a Session with " + otherUserName +
+									  ", but " + otherUserName + " is busy.");
+					}
+					else
+					{
+						// Other user is not busy. Create the session
+						Session* session = new Session(requestingUser, otherUser);
+
+						sessions.push_back(session);
+
+						peersMessageSender.sendOpenSessionSuccess(peerSocket);
+						printer.print(requestingUser->getUsername() + " has created a Session with " + otherUserName);
+
+						// TODO: Need to send the socket info to the users?
+					}
+				}
+				else
+				{
+					// User not found
+					peersMessageSender.sendUserNotFound(peerSocket);
+					printer.print(requestingUser->getUsername() + " tried to open a Session with " + otherUserName +
+								  ", but there is no logged in user named " + otherUserName);
+				}
 			}
 		}
 	}
@@ -155,8 +164,7 @@ void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string 
 		{
 			ChatRoom* roomToClose = getChatRoomByName(roomName);
 
-			// TODO: Bug: This always says it's the owner!!
-			// TODO: Only username? or User* object
+			// Check if the requesting user is the owner of the room
 			if (roomToClose->getOwner()->getUsername().compare(requestingUser->getUsername()) != 0)
 			{
 				peersMessageSender.sendNotRoomOwner(peerSocket);
@@ -502,6 +510,7 @@ User* ServerController::getLoggedInUserByUsername(string username)
 	{
  		User* currentUser = (*iterator).second;
 
+ 		// TODO: Somewhere we insert the socket after it connects and the User* remains NULL.
  		// In case the map holds the socket as the key, but no value.
  		if (currentUser == NULL) { continue; }
 
@@ -515,8 +524,6 @@ User* ServerController::getLoggedInUserByUsername(string username)
 
  	return NULL;
 }
-
-
 
 bool ServerController::isUserInSession(User* user)
 {

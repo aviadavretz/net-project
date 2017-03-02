@@ -44,6 +44,13 @@ void ServerPeersMessageSender::sendUserAlreadyLoggedIn(TCPSocket* peer)
 	sendCode(peer, USER_ALREADY_LOGGED_IN);
 }
 
+void ServerPeersMessageSender::sendSessionWithSelf(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int SESSION_WITH_SELF = 524;
+	sendCode(peer, SESSION_WITH_SELF);
+}
+
 void ServerPeersMessageSender::sendUserNotFound(TCPSocket* peer)
 {
 	// TODO: Put this in TCPProtocol

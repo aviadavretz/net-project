@@ -38,6 +38,7 @@ void ClientController::manageReply(int replyCode, string relevantData)
 	const int ALREADY_BUSY = 462;
 	const int USER_NOT_FOUND = 522;
 	const int OTHER_USER_BUSY = 523;
+	const int SESSION_WITH_SELF = 524;
 
 	const int OPEN_ROOM_SUCCESS = 440;
 	const int ROOM_NAME_EXISTS = 441;
@@ -117,6 +118,11 @@ void ClientController::manageReply(int replyCode, string relevantData)
 		case (ALREADY_BUSY):
 		{
 			printer.print("You are already participating in a session or room.");
+			break;
+		}
+		case (SESSION_WITH_SELF):
+		{
+			printer.print("You can't create a session with yourself, " + relevantData + "!");
 			break;
 		}
 		case (USER_NOT_FOUND):
