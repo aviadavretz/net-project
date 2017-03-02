@@ -34,7 +34,7 @@ class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 	ServerPeersAcceptor peersAcceptor;
 	ServerPeersListener peersListener;
 	ServerPeersMessageSender peersMessageSender;
-	map<TCPSocket*, User*> connectedUsers;
+	map<TCPSocket*, User*> loggedInUsers;
 	vector<Session*> sessions;
 	vector<ChatRoom*> chatRooms;
 	ServerTerminalPrinter printer;
@@ -42,10 +42,10 @@ class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 	bool isUserInSession(User* user);
 	bool isUserInChatRoom(User* user);
 	bool isBusyUser(User* user);
-	bool isUserConnected(string username);
+	bool isUserLoggedIn(string username);
 	ChatRoom* getRoomByUser(User* user);
 	Session* getSessionByUser(User* user);
-	User* getConnectedUserByUsername(string username);
+	User* getLoggedInUserByUsername(string username);
 
 public:
 	ServerController();

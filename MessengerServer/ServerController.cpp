@@ -33,7 +33,7 @@ vector<string> ServerController::getAllConnectedUsersName()
 	vector<string> users;
 	map<TCPSocket*,User*>::iterator iterator;
 
-	for (iterator = connectedUsers.begin(); iterator != connectedUsers.end(); iterator++)
+	for (iterator = loggedInUsers.begin(); iterator != loggedInUsers.end(); iterator++)
 	{
 		users.push_back(iterator->second->getUsername());
 	}
@@ -97,9 +97,9 @@ void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string ot
 		else
 		{
 			// Check if user exists and is logged in
-			if (isUserConnected(otherUserName))
+			if (isUserLoggedIn(otherUserName))
 			{
-				User* otherUser = getConnectedUserByUsername(otherUserName);
+				User* otherUser = getLoggedInUserByUsername(otherUserName);
 
 				// Make sure the other user is not busy
 				if (isBusyUser(otherUser))
@@ -349,7 +349,7 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 		notification = user->getUsername() + " (" +peerSocket->fromAddr() + ") has disconnected.";
 
 		// Remove the user from the vector of connected users.
-		connectedUsers.erase(peerSocket);
+		loggedInUsers.erase(peerSocket);
 	}
 	else
 	{
@@ -369,25 +369,37 @@ void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username
 {
 	string address = peerSocket->fromAddr();
 
+	// Make sure the peer is not already logged in
 	if (isPeerLoggedIn(peerSocket))
 	{
-		peersMessageSender.sendAlreadyLoggedIn(peerSocket);
+		peersMessageSender.sendClientAlreadyLoggedIn(peerSocket);
 		printer.print(address.append(" tried to login but is already logged in."));
 	}
 	else
 	{
-		if (!userCredentialsManager.validateUserCredentials(username, password))
+		// Make sure the user we are trying to login to is not already logged in
+		if (isUserLoggedIn(username))
 		{
-			peersMessageSender.sendBadUsernamePassword(peerSocket);
-			printer.print(username.append(" (").append(address).append(") tried to login with a wrong username/password."));
+			peersMessageSender.sendUserAlreadyLoggedIn(peerSocket);
+			printer.print(username.append(" (").append(address).append(") tried to login, but is already logged in."));
 		}
 		else
 		{
-			User* user = new User(username);
-			connectedUsers[peerSocket] = user;
+			// Validate the username & password
+			if (!userCredentialsManager.validateUserCredentials(username, password))
+			{
+				peersMessageSender.sendBadUsernamePassword(peerSocket);
+				printer.print(username.append(" (").append(address).append(") tried to login with a wrong username/password."));
+			}
+			else
+			{
+				// User & PSW are correct.
+				User* user = new User(username);
+				loggedInUsers[peerSocket] = user;
 
-			peersMessageSender.sendLoginSuccessful(peerSocket);
-			printer.printLoginSuccessful(username, address);
+				peersMessageSender.sendLoginSuccessful(peerSocket);
+				printer.printLoginSuccessful(username, address);
+			}
 		}
 	}
 }
@@ -396,7 +408,7 @@ void ServerController::notifyRegistrationRequest(TCPSocket* peerSocket, string u
 {
 	if (isPeerLoggedIn(peerSocket))
 	{
-		peersMessageSender.sendAlreadyLoggedIn(peerSocket);
+		peersMessageSender.sendClientAlreadyLoggedIn(peerSocket);
 		printer.print(username.append(" tried to register, but is already logged in to another user."));
 	}
 	else
@@ -479,18 +491,22 @@ void ServerController::notifyListAllUsersInRoomRequest(TCPSocket* peerSocket, st
 	}
 }
 
-bool ServerController::isUserConnected(string username)
+bool ServerController::isUserLoggedIn(string username)
 {
-	return getConnectedUserByUsername(username) != NULL;
+	return getLoggedInUserByUsername(username) != NULL;
 }
 
-User* ServerController::getConnectedUserByUsername(string username)
+User* ServerController::getLoggedInUserByUsername(string username)
 {
- 	for (map<TCPSocket*, User*>::iterator iterator = connectedUsers.begin(); iterator != connectedUsers.end(); iterator++)
+ 	for (map<TCPSocket*, User*>::iterator iterator = loggedInUsers.begin(); iterator != loggedInUsers.end(); iterator++)
 	{
  		User* currentUser = (*iterator).second;
 
-		if (currentUser->getUsername().compare(username) == 0)
+ 		// In case the map holds the socket as the key, but no value.
+ 		if (currentUser == NULL) { continue; }
+
+ 		// Compare the usernames
+		if (username.compare(currentUser->getUsername()) == 0)
 		{
 			// Return the User object
 			return currentUser;
@@ -560,7 +576,7 @@ bool ServerController::isBusyUser(User* user)
 
 User* ServerController::getUserByPeer(TCPSocket* peer)
 {
-	return connectedUsers[peer];
+	return loggedInUsers[peer];
 }
 
 bool ServerController::isPeerLoggedIn(TCPSocket* peer)

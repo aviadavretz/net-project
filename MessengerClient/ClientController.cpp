@@ -25,7 +25,8 @@ void ClientController::manageReply(int replyCode, string relevantData)
 	const int CONNECT_SUCCESS = 420;
 
 	const int LOGIN_SUCCEEDED = 202;
-	const int ALREADY_LOGGED_IN = 200;
+	const int CLIENT_ALREADY_LOGGED_IN = 200;
+	const int USER_ALREADY_LOGGED_IN = 207;
 	const int BAD_USERNAME_PASSWORD = 201;
 
 	const int REGISTER_FAILURE = 203;
@@ -71,9 +72,14 @@ void ClientController::manageReply(int replyCode, string relevantData)
 			printer.print("Username or password is incorrect.");
 			break;
 		}
-		case (ALREADY_LOGGED_IN):
+		case (CLIENT_ALREADY_LOGGED_IN):
 		{
 			printer.print("You are already logged in.");
+			break;
+		}
+		case (USER_ALREADY_LOGGED_IN):
+		{
+			printer.print(relevantData + " is already logged in.");
 			break;
 		}
 		case (LOGIN_SUCCEEDED):

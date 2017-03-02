@@ -23,7 +23,8 @@ class ServerPeersMessageSender
 	void sendStringList(TCPSocket* peer, int code, vector<string> strings);
 public:
 	// TODO: Don't really need all these functions, only: sendCode(TCPSocket* peer, int code) and a bunch of constants
-	void sendAlreadyLoggedIn(TCPSocket* peer);
+	void sendClientAlreadyLoggedIn(TCPSocket* peer);
+	void sendUserAlreadyLoggedIn(TCPSocket* peer);
 	void sendNotLoggedIn(TCPSocket* peer);
 	void sendBadUsernamePassword(TCPSocket* peer);
 	void sendLoginSuccessful(TCPSocket* peer);

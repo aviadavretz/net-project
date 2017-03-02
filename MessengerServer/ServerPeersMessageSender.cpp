@@ -37,6 +37,13 @@ void ServerPeersMessageSender::sendStringList(TCPSocket* peer, int code, vector<
 	}
 }
 
+void ServerPeersMessageSender::sendUserAlreadyLoggedIn(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int USER_ALREADY_LOGGED_IN = 207;
+	sendCode(peer, USER_ALREADY_LOGGED_IN);
+}
+
 void ServerPeersMessageSender::sendUserNotFound(TCPSocket* peer)
 {
 	// TODO: Put this in TCPProtocol
@@ -133,9 +140,9 @@ void ServerPeersMessageSender::sendOpenRoomSuccess(TCPSocket* peer)
 	sendCode(peer, OPEN_CHAT_ROOM_SUCCESS);
 }
 
-void ServerPeersMessageSender::sendAlreadyLoggedIn(TCPSocket* peer)
+void ServerPeersMessageSender::sendClientAlreadyLoggedIn(TCPSocket* peer)
 {
-	sendCode(peer, ALREADY_LOGGED_IN);
+	sendCode(peer, CLIENT_ALREADY_LOGGED_IN);
 }
 
 void ServerPeersMessageSender::sendBadUsernamePassword(TCPSocket* peer)
