@@ -17,11 +17,14 @@ main.o : main.cpp
 ClientController.o : ClientController.cpp
 	$(CC) -g -c -I../SocketUtils  ClientController.cpp -o Debug/ClientController.o
 	
+ConnectionToServerManager.o : ConnectionToServerManager.cpp
+	$(CC) -g -c ConnectionToServerManager.cpp -o Debug/ConnectionToServerManager.o
+	
 ClientTerminalPrinter.o : ClientTerminalPrinter.cpp
 	$(CC) -g -c ClientTerminalPrinter.cpp -o Debug/ClientTerminalPrinter.o
 	
 CommandUtils.o : CommandUtils.cpp
 	$(CC) -g -c CommandUtils.cpp -o Debug/CommandUtils.o
 
-MessengerClient: ClientController.o ClientTerminalPrinter.o CommandUtils.o main.o
-	$(CC) Debug/ClientTerminalPrinter.o Debug/CommandUtils.o Debug/ClientController.o Debug/main.o -L../SocketUtils/Debug -lSocketUtils -o Debug/MessengerClient 
+MessengerClient: ClientController.o ConnectionToServerManager.o ClientTerminalPrinter.o CommandUtils.o main.o
+	$(CC) Debug/ClientTerminalPrinter.o Debug/CommandUtils.o Debug/ConnectionToServerManager.o Debug/ClientController.o Debug/main.o -L../SocketUtils/Debug -lSocketUtils -o Debug/MessengerClient 

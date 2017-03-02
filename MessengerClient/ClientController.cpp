@@ -1,3 +1,4 @@
+
 /*
  * ClientController.cpp
  *
@@ -166,7 +167,7 @@ void ClientController::manageReply(int replyCode, string relevantData)
 			printer.print("Disconnected from server.");
 
 			// Close the socket
-			closeSocket();
+			srvConnection.closeSocket();
 			connected = false;
 
 			break;
@@ -184,10 +185,10 @@ void ClientController::connect(string address)
 	int MSGPORT = 3346;
 
 	// Create a socket to the address
-	socketToServer = new TCPSocket(address, MSGPORT);
+	srvConnection.openSocket(address, MSGPORT);
 
 	// Receive reply from server
-	int replyCode = receiveReplyCode();
+	int replyCode = srvConnection.receiveReplyCode();
 
 	manageReply(replyCode, address);
 }
@@ -198,13 +199,13 @@ void ClientController::login(string username, string password)
 unsigned int LOGINz = 70;
 
 	// Send the LOGIN command
-	sendCommandCode(LOGINz);
+	srvConnection.sendCommandCode(LOGINz);
 
 	// Send the username and password
-	sendArgs(username + " " + password);
+	srvConnection.sendArgs(username + " " + password);
 
 	// Receive reply from server
-	int replyCode = receiveReplyCode();
+	int replyCode = srvConnection.receiveReplyCode();
 
 	manageReply(replyCode, username);
 }
@@ -215,13 +216,13 @@ void ClientController::registerUser(string username, string password)
 	unsigned int REGISTERz = 71;
 
 	// Send the REGISTER command
-	sendCommandCode(REGISTERz);
+	srvConnection.sendCommandCode(REGISTERz);
 
 	// Send the username and password
-	sendArgs(username + " " + password);
+	srvConnection.sendArgs(username + " " + password);
 
 	// Receive reply from server
-	int replyCode = receiveReplyCode();
+	int replyCode = srvConnection.receiveReplyCode();
 
 	manageReply(replyCode, username);
 }
@@ -232,13 +233,13 @@ void ClientController::openSession(string otherUserName)
 	unsigned int OPEN_SESSION_WITH_PEER = 2;
 
 	// Send the OPEN_SESSION command
-	sendCommandCode(OPEN_SESSION_WITH_PEER);
+	srvConnection.sendCommandCode(OPEN_SESSION_WITH_PEER);
 
 	// Send the username to open a session with
-	sendArgs(otherUserName);
+	srvConnection.sendArgs(otherUserName);
 
 	// Receive reply from server
-	int replyCode = receiveReplyCode();
+	int replyCode = srvConnection.receiveReplyCode();
 
 	manageReply(replyCode, otherUserName);
 }
@@ -250,13 +251,13 @@ void ClientController::openRoom(string roomName)
 	int EXPECTED_COMMAND_BYTES_SIZE = 4;
 
 	// Send the OPEN_ROOM command
-	sendCommandCode(OPEN_CHAT_ROOMz);
+	srvConnection.sendCommandCode(OPEN_CHAT_ROOMz);
 
 	// Send the room name
-	sendArgs(roomName);
+	srvConnection.sendArgs(roomName);
 
 	// Receive reply from server
-	int replyCode = receiveReplyCode();
+	int replyCode = srvConnection.receiveReplyCode();
 
 	manageReply(replyCode, roomName);
 }
@@ -267,13 +268,13 @@ void ClientController::joinRoom(string roomName)
 	unsigned int JOIN_CHAT_ROOMz = 14;
 
 	// Send the JOIN_ROOM command
-	sendCommandCode(JOIN_CHAT_ROOMz);
+	srvConnection.sendCommandCode(JOIN_CHAT_ROOMz);
 
 	// Send the room name
-	sendArgs(roomName);
+	srvConnection.sendArgs(roomName);
 
 	// Receive reply from server
-	int replyCode = receiveReplyCode();
+	int replyCode = srvConnection.receiveReplyCode();
 
 	manageReply(replyCode, roomName);
 }
@@ -284,10 +285,10 @@ void ClientController::closeSessionOrExitRoom()
 	int CLOSE_SESSION_OR_EXIT_ROOMz = 15;
 
 	// Send the CLOSE_SESSION_OR_EXIT_ROOM command
-	sendCommandCode(CLOSE_SESSION_OR_EXIT_ROOMz);
+	srvConnection.sendCommandCode(CLOSE_SESSION_OR_EXIT_ROOMz);
 
 	// Receive reply from server
-	int replyCode = receiveReplyCode();
+	int replyCode = srvConnection.receiveReplyCode();
 
 	manageReply(replyCode, "");
 }
@@ -298,13 +299,13 @@ void ClientController::closeRoom(string roomName)
 	unsigned int CLOSE_ROOMz = 16;
 
 	// Send the CLOSE_ROOM command
-	sendCommandCode(CLOSE_ROOMz);
+	srvConnection.sendCommandCode(CLOSE_ROOMz);
 
 	// Send the room name
-	sendArgs(roomName);
+	srvConnection.sendArgs(roomName);
 
 	// Receive reply from server
-	int replyCode = receiveReplyCode();
+	int replyCode = srvConnection.receiveReplyCode();
 
 	manageReply(replyCode, roomName);
 }
@@ -315,50 +316,12 @@ void ClientController::disconnect()
 	int DISCONNECTz = 13;
 
 	// Send the DISCONNECT command
-	sendCommandCode(DISCONNECTz);
+	srvConnection.sendCommandCode(DISCONNECTz);
 
 	// Receive reply from server
-	int replyCode = receiveReplyCode();
+	int replyCode = srvConnection.receiveReplyCode();
 
 	manageReply(replyCode, "");
-}
-
-int ClientController::receiveReplyCode()
-{
-	// TODO: TCPProtocol
-	int EXPECTED_COMMAND_BYTES_SIZE = 4;
-
-	// Receive reply (the size should be as stated in the protocol)
-	int reply = 0;
-	int bytesReceived = socketToServer->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
-	int returnedCode = ntohl(reply);
-
-	return returnedCode;
-}
-
-void ClientController::sendCommandCode(int commandCode)
-{
-	// Send the command-code
-	int commandLength = htonl(commandCode);
-	socketToServer->send((char*)&commandLength,4);
-}
-
-void ClientController::sendArgs(string message)
-{
-	// Send the arguments as a single message
-	int messageLength = htonl(message.length());
-
-	// Send the message length first
-	socketToServer->send((char*)&messageLength, 4);
-
-	// Send the message itself
-	socketToServer->send(message);
-}
-
-void ClientController::closeSocket()
-{
-	socketToServer->close();
-	socketToServer = NULL;
 }
 
 

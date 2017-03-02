@@ -9,23 +9,18 @@
 #define CLIENTCONTROLLER_H_
 
 #include "string"
-#include "TCPSocket.h"
 #include "ClientTerminalPrinter.h"
+#include "ConnectionToServerManager.h"
 
 using namespace std;
-using namespace npl;
 
 class ClientController
 {
-	TCPSocket* socketToServer;
+	ConnectionToServerManager srvConnection;
 	ClientTerminalPrinter printer;
 	bool connected;
 
 	void manageReply(int replyCode, string relevantData);
-	int receiveReplyCode();
-	void sendCommandCode(int commandCode);
-	void sendArgs(string message);
-	void closeSocket();
 
 	public:
 		ClientController();
