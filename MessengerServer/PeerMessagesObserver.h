@@ -25,9 +25,10 @@ public:
 	virtual void notifyCloseChatRoomRequest(TCPSocket* peerSocket, string roomName) = 0;
 	virtual void notifyOpenSessionRequest(TCPSocket* peerSocket, string otherUserName) = 0;
 	virtual void notifyListAllUsersRequest(TCPSocket* peerSocket) = 0;
-	virtual void notifyListAllConnectedUsersRequest(TCPSocket* peerSocekt) = 0;
+	virtual void notifyListAllConnectedUsersRequest(TCPSocket* peerSocket) = 0;
 	virtual void notifyListAllRoomsRequest(TCPSocket* peerSocket) = 0;
 	virtual void notifyListAllUsersInRoomRequest(TCPSocket* peerSocket, string roomName) = 0;
+	virtual void notifyStatusRequest(TCPSocket* peerSocket) = 0;
 	virtual ~PeerMessagesObserver() = 0;
 };
 

@@ -278,7 +278,8 @@ int main()
 				continue;
 			}
 
-			// TODO: Go to server and check client status
+			// Go to server and check client status
+			controller.requestStatus();
 		}
 		// -------------
 		// CLOSE_SESSION

@@ -53,6 +53,10 @@ void ClientController::manageReply(int replyCode, string relevantData)
 	const int CLOSE_ROOM_SUCCESS = 500;
 	const int NOT_ROOM_OWNER = 501;
 
+	const int STATUS_FREE = 540;
+	const int STATUS_IN_A_ROOM = 541;
+	const int STATUS_IN_A_SESSION = 542;
+
 	const int DISCONNECT_SUCCESS = 421;
 
 	const int GET_REGISTERED_USERS = 7;
@@ -278,6 +282,21 @@ void ClientController::manageReply(int replyCode, string relevantData)
 
 			break;
 		}
+		case (STATUS_FREE):
+		{
+			printer.print("You are logged in, but not in a room/session.");
+			break;
+		}
+		case (STATUS_IN_A_ROOM):
+		{
+			printer.print("You are in a room.");
+			break;
+		}
+		case (STATUS_IN_A_SESSION):
+		{
+			printer.print("You are in a session.");
+			break;
+		}
 		default:
 		{
 			printer.print("Unknown reply-code.");
@@ -482,5 +501,19 @@ void ClientController::requestAllUsersInRoom(string roomName)
 	int replyCode = srvConnection.receiveReplyCode();
 
 	manageReply(replyCode, roomName);
+}
+
+void ClientController::requestStatus()
+{
+	// TODO: TCPProtocolz
+	const int GET_STATUS = 17;
+
+	// Send the command-code
+	srvConnection.sendCommandCode(GET_STATUS);
+
+	// Receive reply from server
+	int replyCode = srvConnection.receiveReplyCode();
+
+	manageReply(replyCode, "");
 }
 

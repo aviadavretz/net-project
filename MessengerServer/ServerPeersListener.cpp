@@ -53,6 +53,7 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 	const int JOIN_CHAT_ROOM = 14;
 	const int CLOSE_SESSION_OR_EXIT_ROOM = 15;
 	const int CLOSE_ROOM = 16;
+	const int GET_STATUS = 17;
 	const int OPEN_SESSION_WITH_PEER = 2;
 
 	switch (command)
@@ -117,7 +118,21 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 			routeGetUsersInRoom(peer);
 			break;
 		}
+		case (GET_STATUS):
+		{
+			routeStatusRequest(peer);
+			break;
+		}
+		default:
+		{
+			break;
+		}
 	}
+}
+
+void ServerPeersListener::routeStatusRequest(TCPSocket* peer)
+{
+	observer->notifyStatusRequest(peer);
 }
 
 void ServerPeersListener::routeOpenSessionCommand(TCPSocket* peer)

@@ -37,6 +37,27 @@ void ServerPeersMessageSender::sendStringList(TCPSocket* peer, int code, vector<
 	}
 }
 
+void ServerPeersMessageSender::sendStatusFree(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int STATUS_FREE = 540;
+	sendCode(peer, STATUS_FREE);
+}
+
+void ServerPeersMessageSender::sendStatusInASession(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int STATUS_IN_A_SESSION = 542;
+	sendCode(peer, STATUS_IN_A_SESSION);
+}
+
+void ServerPeersMessageSender::sendStatusInARoom(TCPSocket* peer)
+{
+	// TODO: Put this in TCPProtocol
+	int STATUS_IN_A_ROOM = 541;
+	sendCode(peer, STATUS_IN_A_ROOM);
+}
+
 void ServerPeersMessageSender::sendUserAlreadyLoggedIn(TCPSocket* peer)
 {
 	// TODO: Put this in TCPProtocol

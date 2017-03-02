@@ -15,7 +15,7 @@
  */
 #define MSNGR_PORT 3346
 
-#define CLOSE_SESSION_WITH_PEER 	1
+//#define CLOSE_SESSION_WITH_PEER 	1
 //#define OPEN_SESSION_WITH_PEER 		2
 #define EXIT						3
 #define SEND_MSG_TO_PEER			4
@@ -34,6 +34,7 @@
 //#define JOIN_CHAT_ROOM			  14
 //#define CLOSE_SESSION_OR_EXIT_ROOM  15
 //#define CLOSE_ROOMz 				  16
+//#define GET_STATUS 				17
 
 #define LOGIN					    70
 #define REGISTER					71
@@ -67,6 +68,10 @@
 //#define USER_NOT_FOUND 522
 //#define OTHER_USER_BUSY 523
 //#define SESSION_WITH_SELF 524
+
+//#define STATUS_FREE 540
+//#define STATUS_IN_A_ROOM 541
+//#define STATUS_IN_A_SESSION 542
 
 //#define ALREADY_BUSY 462
 

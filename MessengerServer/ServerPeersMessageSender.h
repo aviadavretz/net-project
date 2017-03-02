@@ -51,6 +51,9 @@ public:
 	void sendAllConnectedUsers(TCPSocket* peer, vector<string> usernames);
 	void sendAllRooms(TCPSocket* peer, vector<string> rooms);
 	void sendAllUsersInRoom(TCPSocket* peer, vector<string> usernames);
+	void sendStatusFree(TCPSocket* peer);
+	void sendStatusInARoom(TCPSocket* peer);
+	void sendStatusInASession(TCPSocket* peer);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */

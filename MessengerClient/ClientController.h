@@ -39,6 +39,7 @@ class ClientController
 		void requestAllConnectedUsersName();
 		void requestAllRooms();
 		void requestAllUsersInRoom(string roomName);
+		void requestStatus();
 };
 
 #endif /* CLIENTCONTROLLER_H_ */

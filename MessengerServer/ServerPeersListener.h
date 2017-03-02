@@ -39,6 +39,7 @@ class ServerPeersListener: public MThread
 	void routeGetAllConnectedUsers(TCPSocket* peer);
 	void routeGetAllRooms(TCPSocket* peer);
 	void routeGetUsersInRoom(TCPSocket* peer);
+	void routeStatusRequest(TCPSocket* peer);
 	pair<string, string> getUsernameAndPasswordFromMessage(string message);
 
 public:
