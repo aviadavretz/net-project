@@ -14,6 +14,7 @@
 #include "string"
 #include "UserInputCommands.h"
 #include <vector>
+#include <strings.h>
 
 using namespace std;
 

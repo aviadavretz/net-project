@@ -12,6 +12,7 @@
 #include "TCPMessengerProtocol.h"
 #include <sstream>
 #include <vector>
+#include "string"
 
 using namespace std;
 using namespace npl;
