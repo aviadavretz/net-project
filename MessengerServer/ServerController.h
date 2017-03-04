@@ -24,6 +24,7 @@
 #include "UserCredentialsManager.h"
 #include "ServerPeersMessageSender.h"
 #include "ServerTerminalPrinter.h"
+#include "strings.h"
 
 using namespace std;
 using namespace npl;
