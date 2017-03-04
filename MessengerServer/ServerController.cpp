@@ -418,7 +418,7 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 
 	// Send back confirmation to the client
 	peersMessageSender.sendDisconnectSuccess(peerSocket);
-	peerSocket->close();
+	//peerSocket->close();
 }
 
 void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username, string password)

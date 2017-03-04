@@ -29,7 +29,7 @@ public:
 	void printRegisteredUsers(vector<string> registeredUsers);
 	void printConnectedUsers(vector<string> connectedUsers);
 	void printRooms(vector<string> rooms);
-	void printUsersInRoom(vector<string> roomUsers, string roomName);
+	void printUsersInRoom(vector<string> roomUsers);
 };
 
 #endif /* CLIENTTERMINALPRINTER_H_ */

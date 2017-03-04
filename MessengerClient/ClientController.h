@@ -11,18 +11,21 @@
 #include "string"
 #include "ClientTerminalPrinter.h"
 #include "ConnectionToServerManager.h"
+#include "ServerRepliesObserver.h"
+#include "ServerRepliesListener.h"
 #include <stdlib.h>
 
 using namespace std;
 
-class ClientController
+class ClientController: public ServerRepliesObserver
 {
 	ConnectionToServerManager srvConnection;
 	ClientTerminalPrinter printer;
+	ServerRepliesListener* listener;
 	bool connected;
 
-	int sendCommandWithArgsToServerAndReceiveReply(int commandCode, string args);
-	int sendCommandToServerAndReceiveReply(int commandCode);
+	void sendCommandToServer(int commandCode, string args);
+	void sendCommandToServer(int commandCode);
 
 	public:
 		ClientController();
@@ -41,6 +44,13 @@ class ClientController
 		void requestAllRooms();
 		void requestAllUsersInRoom(string roomName);
 		void requestStatus();
+		void notifyDisconnected();
+		void notifySessionEstablished();
+		void notifyChatRoomOpened();
+		void notifyJoinedRoom();
+		void notifyExitRoom();
+		void notifySessionClosed();
+		void notifyRoomClosed();
 };
 
 #endif /* CLIENTCONTROLLER_H_ */

@@ -13,6 +13,7 @@
 #include <sstream>
 #include <vector>
 #include "string"
+#include "User.h"
 
 using namespace std;
 using namespace npl;
