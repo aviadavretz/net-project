@@ -28,7 +28,7 @@ int main()
 		// -------
 		// CONNECT
 		// -------
-		if (commandUtils.doesCommandHavePrefix(userCommand, CONNECT))
+		if (commandUtils.doesCommandHavePrefix(userCommand, CONNECT_REQUEST))
 		{
 			// Make sure we're not connected already
 			if (controller.isConnected())
@@ -38,7 +38,7 @@ int main()
 			}
 
 			// Get the args
-			vector<string> args = commandUtils.getCommandArgs(userCommand, CONNECT);
+			vector<string> args = commandUtils.getCommandArgs(userCommand, CONNECT_REQUEST);
 
 			// Make sure we received the correct number of args
 			if (args.size() != CONNECT_ARGS_NUM)
@@ -122,7 +122,7 @@ int main()
 		// -----
 		// LOGIN
 		// -----
-		else if (commandUtils.doesCommandHavePrefix(userCommand, LOGIN))
+		else if (commandUtils.doesCommandHavePrefix(userCommand, LOGIN_REQUEST))
 		{
 			// Make sure we are connected
 			if (!controller.isConnected())
@@ -132,7 +132,7 @@ int main()
 			}
 
 			// Get the args, and make sure the number of args is correct
-			vector<string> args = commandUtils.getCommandArgs(userCommand, LOGIN);
+			vector<string> args = commandUtils.getCommandArgs(userCommand, LOGIN_REQUEST);
 
 			if (args.size() != LOGIN_ARGS_NUM)
 			{
@@ -148,7 +148,7 @@ int main()
 		// --------
 		// REGISTER
 		// --------
-		else if (commandUtils.doesCommandHavePrefix(userCommand, REGISTER))
+		else if (commandUtils.doesCommandHavePrefix(userCommand, REGISTER_REQUEST))
 		{
 			// Make sure we are connected
 			if (!controller.isConnected())
@@ -158,7 +158,7 @@ int main()
 			}
 
 			// Get the args, and make sure the number of args is correct
-			vector<string> args = commandUtils.getCommandArgs(userCommand, REGISTER);
+			vector<string> args = commandUtils.getCommandArgs(userCommand, REGISTER_REQUEST);
 			if (args.size() != REGISTER_ARGS_NUM)
 			{
 				printer.printInvalidArgsNum();
@@ -285,7 +285,7 @@ int main()
 		// CLOSE_SESSION
 		// EXIT_ROOM
 		// -------------
-		else if (userCommand.compare(CLOSE_SESSION_OR_EXIT_ROOM) == 0)
+		else if (userCommand.compare(CLOSE_SESSION_OR_EXIT_ROOM_REQUEST) == 0)
 		{
 			// Make sure we are connected
 			if (!controller.isConnected())
@@ -299,7 +299,7 @@ int main()
 		// ----------
 		// CLOSE_ROOM
 		// ----------
-		else if (commandUtils.doesCommandHavePrefix(userCommand, CLOSE_ROOM))
+		else if (commandUtils.doesCommandHavePrefix(userCommand, CLOSE_ROOM_REQUEST))
 		{
 			// Make sure we are connected
 			if (!controller.isConnected())
@@ -309,7 +309,7 @@ int main()
 			}
 
 			// Get the args, and make sure the number of args is correct
-			vector<string> args = commandUtils.getCommandArgs(userCommand, CLOSE_ROOM);
+			vector<string> args = commandUtils.getCommandArgs(userCommand, CLOSE_ROOM_REQUEST);
 			if (args.size() != CLOSE_ROOM_ARGS_NUM)
 			{
 				printer.printInvalidArgsNum();
@@ -323,7 +323,7 @@ int main()
 		// ----------
 		// DISCONNECT
 		// ----------
-		else if (userCommand.compare(DISCONNECT) == 0)
+		else if (userCommand.compare(DISCONNECT_REQUEST) == 0)
 		{
 			// Make sure we are connected
 			if (!controller.isConnected())
@@ -337,7 +337,7 @@ int main()
 		// ----
 		// EXIT
 		// ----
-		else if (userCommand.compare(EXIT) == 0)
+		else if (userCommand.compare(EXIT_REQUEST) == 0)
 		{
 			// Check if we are connected
 			if (controller.isConnected())

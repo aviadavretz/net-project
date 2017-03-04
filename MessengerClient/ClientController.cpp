@@ -20,50 +20,6 @@ bool ClientController::isConnected()
 
 void ClientController::manageReply(int replyCode, string relevantData)
 {
-	// TODO: @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-	// TODO: Get these from TCPProtocol
-	const int CONNECT_SUCCESS = 420;
-
-	const int LOGIN_SUCCEEDED = 202;
-	const int CLIENT_ALREADY_LOGGED_IN = 200;
-	const int USER_ALREADY_LOGGED_IN = 207;
-	const int BAD_USERNAME_PASSWORD = 201;
-
-	const int REGISTER_FAILURE = 203;
-	const int REGISTER_SUCCEEDED = 204;
-	const int USERNAME_EXISTS = 205;
-
-	const int SESSION_ESTABLISHED = 6;
-	const int NOT_LOGGED_IN = 206;
-	const int ALREADY_BUSY = 462;
-	const int USER_NOT_FOUND = 522;
-	const int OTHER_USER_BUSY = 523;
-	const int SESSION_WITH_SELF = 524;
-
-	const int OPEN_ROOM_SUCCESS = 440;
-	const int ROOM_NAME_EXISTS = 441;
-
-	const int JOIN_ROOM_SUCCESS = 460;
-	const int ROOM_DOES_NOT_EXIST = 461;
-
-	const int EXIT_ROOM_SUCCESS = 480;
-	const int NOT_IN_SESSION_OR_ROOM = 481;
-	const int CLOSE_SESSION_SUCCESS = 490;
-
-	const int CLOSE_ROOM_SUCCESS = 500;
-	const int NOT_ROOM_OWNER = 501;
-
-	const int STATUS_FREE = 540;
-	const int STATUS_IN_A_ROOM = 541;
-	const int STATUS_IN_A_SESSION = 542;
-
-	const int DISCONNECT_SUCCESS = 421;
-
-	const int GET_REGISTERED_USERS = 7;
-	const int GET_CONNECTED_USERS = 8;
-	const int GET_CHAT_ROOMS = 9;
-	const int GET_USERS_IN_CHAT_ROOM = 10;
-
 	switch (replyCode)
 	{
 		case (CONNECT_SUCCESS):
@@ -139,7 +95,7 @@ void ClientController::manageReply(int replyCode, string relevantData)
 			printer.print(relevantData + " is busy.");
 			break;
 		}
-		case (OPEN_ROOM_SUCCESS):
+		case (OPEN_CHAT_ROOM_SUCCESS):
 		{
 			printer.print("Room '" + relevantData + "' created.");
 			break;
@@ -306,11 +262,8 @@ void ClientController::manageReply(int replyCode, string relevantData)
 
 void ClientController::connect(string address)
 {
-	// TODO: TCPProtocol
-	int MSGPORT = 3346;
-
 	// Create a socket to the address
-	srvConnection.openSocket(address, MSGPORT);
+	srvConnection.openSocket(address, MSNGR_PORT);
 
 	// Receive reply from server
 	int replyCode = srvConnection.receiveReplyCode();
@@ -320,11 +273,8 @@ void ClientController::connect(string address)
 
 void ClientController::login(string username, string password)
 {
-// TODO: Get this from TCPProtocol
-unsigned int LOGINz = 70;
-
 	// Send the LOGIN command
-	srvConnection.sendCommandCode(LOGINz);
+	srvConnection.sendCommandCode(LOGIN);
 
 	// Send the username and password
 	srvConnection.sendArgs(username + " " + password);
@@ -337,11 +287,8 @@ unsigned int LOGINz = 70;
 
 void ClientController::registerUser(string username, string password)
 {
-	// TODO: Get this from TCPProtocol
-	unsigned int REGISTERz = 71;
-
 	// Send the REGISTER command
-	srvConnection.sendCommandCode(REGISTERz);
+	srvConnection.sendCommandCode(REGISTER);
 
 	// Send the username and password
 	srvConnection.sendArgs(username + " " + password);
@@ -354,9 +301,6 @@ void ClientController::registerUser(string username, string password)
 
 void ClientController::openSession(string otherUserName)
 {
-	// TODO: Get this from TCPProtocol
-	unsigned int OPEN_SESSION_WITH_PEER = 2;
-
 	// Send the OPEN_SESSION command
 	srvConnection.sendCommandCode(OPEN_SESSION_WITH_PEER);
 
@@ -371,12 +315,8 @@ void ClientController::openSession(string otherUserName)
 
 void ClientController::openRoom(string roomName)
 {
-	// TODO: Get this from TCPProtocol
-	unsigned int OPEN_CHAT_ROOMz = 11;
-	int EXPECTED_COMMAND_BYTES_SIZE = 4;
-
 	// Send the OPEN_ROOM command
-	srvConnection.sendCommandCode(OPEN_CHAT_ROOMz);
+	srvConnection.sendCommandCode(OPEN_CHAT_ROOM);
 
 	// Send the room name
 	srvConnection.sendArgs(roomName);
@@ -389,11 +329,8 @@ void ClientController::openRoom(string roomName)
 
 void ClientController::joinRoom(string roomName)
 {
-	// TODO: Get this from TCPProtocol
-	unsigned int JOIN_CHAT_ROOMz = 14;
-
 	// Send the JOIN_ROOM command
-	srvConnection.sendCommandCode(JOIN_CHAT_ROOMz);
+	srvConnection.sendCommandCode(JOIN_CHAT_ROOM);
 
 	// Send the room name
 	srvConnection.sendArgs(roomName);
@@ -406,11 +343,8 @@ void ClientController::joinRoom(string roomName)
 
 void ClientController::closeSessionOrExitRoom()
 {
-	// TODO: TCPProtocol
-	int CLOSE_SESSION_OR_EXIT_ROOMz = 15;
-
 	// Send the CLOSE_SESSION_OR_EXIT_ROOM command
-	srvConnection.sendCommandCode(CLOSE_SESSION_OR_EXIT_ROOMz);
+	srvConnection.sendCommandCode(CLOSE_SESSION_OR_EXIT_ROOM);
 
 	// Receive reply from server
 	int replyCode = srvConnection.receiveReplyCode();
@@ -420,11 +354,8 @@ void ClientController::closeSessionOrExitRoom()
 
 void ClientController::closeRoom(string roomName)
 {
-	// TODO: Get this from TCPProtocol
-	unsigned int CLOSE_ROOMz = 16;
-
 	// Send the CLOSE_ROOM command
-	srvConnection.sendCommandCode(CLOSE_ROOMz);
+	srvConnection.sendCommandCode(CLOSE_ROOM);
 
 	// Send the room name
 	srvConnection.sendArgs(roomName);
@@ -437,11 +368,8 @@ void ClientController::closeRoom(string roomName)
 
 void ClientController::disconnect()
 {
-	// TODO: TCPProtocol
-	int DISCONNECTz = 13;
-
 	// Send the DISCONNECT command
-	srvConnection.sendCommandCode(DISCONNECTz);
+	srvConnection.sendCommandCode(DISCONNECT);
 
 	// Receive reply from server
 	int replyCode = srvConnection.receiveReplyCode();
@@ -451,9 +379,6 @@ void ClientController::disconnect()
 
 void ClientController::requestAllRegisterdUsersName()
 {
-	// TODO: TCPProtocolz
-	const int GET_REGISTERED_USERS = 7;
-
 	srvConnection.sendCommandCode(GET_REGISTERED_USERS);
 
 	// Receive reply from server
@@ -464,9 +389,6 @@ void ClientController::requestAllRegisterdUsersName()
 
 void ClientController::requestAllConnectedUsersName()
 {
-	// TODO: TCPProtocolz
-	const int GET_CONNECTED_USERS = 8;
-
 	srvConnection.sendCommandCode(GET_CONNECTED_USERS);
 
 	// Receive reply from server
@@ -477,9 +399,6 @@ void ClientController::requestAllConnectedUsersName()
 
 void ClientController::requestAllRooms()
 {
-	// TODO: TCPProtocolz
-	const int GET_CHAT_ROOMS = 9;
-
 	srvConnection.sendCommandCode(GET_CHAT_ROOMS);
 
 	// Receive reply from server
@@ -490,9 +409,6 @@ void ClientController::requestAllRooms()
 
 void ClientController::requestAllUsersInRoom(string roomName)
 {
-	// TODO: TCPProtocolz
-	const int GET_USERS_IN_CHAT_ROOM = 10;
-
 	// Send the command-code and the room name
 	srvConnection.sendCommandCode(GET_USERS_IN_CHAT_ROOM);
 	srvConnection.sendArgs(roomName);
@@ -505,9 +421,6 @@ void ClientController::requestAllUsersInRoom(string roomName)
 
 void ClientController::requestStatus()
 {
-	// TODO: TCPProtocolz
-	const int GET_STATUS = 17;
-
 	// Send the command-code
 	srvConnection.sendCommandCode(GET_STATUS);
 

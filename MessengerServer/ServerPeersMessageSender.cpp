@@ -39,50 +39,36 @@ void ServerPeersMessageSender::sendStringList(TCPSocket* peer, int code, vector<
 
 void ServerPeersMessageSender::sendStatusFree(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int STATUS_FREE = 540;
 	sendCode(peer, STATUS_FREE);
 }
 
 void ServerPeersMessageSender::sendStatusInASession(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int STATUS_IN_A_SESSION = 542;
 	sendCode(peer, STATUS_IN_A_SESSION);
 }
 
 void ServerPeersMessageSender::sendStatusInARoom(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int STATUS_IN_A_ROOM = 541;
 	sendCode(peer, STATUS_IN_A_ROOM);
 }
 
 void ServerPeersMessageSender::sendUserAlreadyLoggedIn(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int USER_ALREADY_LOGGED_IN = 207;
 	sendCode(peer, USER_ALREADY_LOGGED_IN);
 }
 
 void ServerPeersMessageSender::sendSessionWithSelf(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int SESSION_WITH_SELF = 524;
 	sendCode(peer, SESSION_WITH_SELF);
 }
 
 void ServerPeersMessageSender::sendUserNotFound(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int USER_NOT_FOUND = 522;
 	sendCode(peer, USER_NOT_FOUND);
 }
 
 void ServerPeersMessageSender::sendOtherUserBusy(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int OTHER_USER_BUSY = 523;
 	sendCode(peer, OTHER_USER_BUSY);
 }
 
@@ -93,78 +79,56 @@ void ServerPeersMessageSender::sendOpenSessionSuccess(TCPSocket* peer)
 
 void ServerPeersMessageSender::sendNotRoomOwner(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int NOT_ROOM_OWNER = 501;
 	sendCode(peer, NOT_ROOM_OWNER);
 }
 
 void ServerPeersMessageSender::sendCloseRoomSuccess(TCPSocket* peer)
 {
-	// TODO: Get this from TCPProtocol
-	int CLOSE_ROOM_SUCCESS = 500;
 	sendCode(peer, CLOSE_ROOM_SUCCESS);
 }
 
 void ServerPeersMessageSender::sendExitRoomSuccess(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int EXIT_ROOM_SUCCESS = 480;
 	sendCode(peer, EXIT_ROOM_SUCCESS);
 }
 
 void ServerPeersMessageSender::sendCloseSessionSuccess(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int CLOSE_SESSION_SUCCESS = 490;
 	sendCode(peer, CLOSE_SESSION_SUCCESS);
 }
 
 void ServerPeersMessageSender::sendNotInSessionOrRoom(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int NOT_IN_SESSION_OR_ROOM = 481;
 	sendCode(peer, NOT_IN_SESSION_OR_ROOM);
 }
 
 void ServerPeersMessageSender::sendNotLoggedIn(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int NOT_LOGGED_IN = 206;
 	sendCode(peer, NOT_LOGGED_IN);
 }
 
 void ServerPeersMessageSender::sendRoomDoesntExist(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int ROOM_DOESNT_EXISTS = 461;
-	sendCode(peer, ROOM_DOESNT_EXISTS);
+	sendCode(peer, ROOM_DOES_NOT_EXIST);
 }
 
 void ServerPeersMessageSender::sendJoinRoomSuccess(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int JOIN_ROOM_SUCCESS = 460;
 	sendCode(peer, JOIN_ROOM_SUCCESS);
 }
 
 void ServerPeersMessageSender::sendAlreadyBusy(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int ALREADY_BUSY = 462;
 	sendCode(peer, ALREADY_BUSY);
 }
 
 void ServerPeersMessageSender::sendRoomNameExists(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int ROOM_NAME_EXISTS = 441;
 	sendCode(peer, ROOM_NAME_EXISTS);
 }
 
 void ServerPeersMessageSender::sendOpenRoomSuccess(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int OPEN_CHAT_ROOM_SUCCESS = 440;
 	sendCode(peer, OPEN_CHAT_ROOM_SUCCESS);
 }
 
@@ -200,15 +164,11 @@ void ServerPeersMessageSender::sendUsernameExists(TCPSocket* peer)
 
 void ServerPeersMessageSender::sendConnectSuccess(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int CONNECT_SUCCESS = 420;
 	sendCode(peer, CONNECT_SUCCESS);
 }
 
 void ServerPeersMessageSender::sendDisconnectSuccess(TCPSocket* peer)
 {
-	// TODO: Put this in TCPProtocol
-	int DISCONNECT_SUCCESS = 421;
 	sendCode(peer, DISCONNECT_SUCCESS);
 }
 

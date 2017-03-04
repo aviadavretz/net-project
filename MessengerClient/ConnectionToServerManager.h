@@ -9,6 +9,7 @@
 #define CONNECTIONTOSERVERMANAGER_H_
 
 #include "TCPSocket.h"
+#include "TCPMessengerProtocol.h"
 
 using namespace std;
 using namespace npl;
@@ -23,9 +24,6 @@ public:
 	void sendArgs(string message);
 	void openSocket(string address, int port);
 	void closeSocket();
-
-	ConnectionToServerManager();
-	virtual ~ConnectionToServerManager();
 };
 
 #endif /* CONNECTIONTOSERVERMANAGER_H_ */

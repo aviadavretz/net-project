@@ -8,13 +8,13 @@
 #ifndef USERINPUTCOMMANDS_H_
 #define USERINPUTCOMMANDS_H_
 
-#define CONNECT "c"
+#define CONNECT_REQUEST "c"
 #define CONNECT_ARGS_NUM 1
 
-#define LOGIN "login"
+#define LOGIN_REQUEST "login"
 #define LOGIN_ARGS_NUM 2
 
-#define REGISTER "register"
+#define REGISTER_REQUEST "register"
 #define REGISTER_ARGS_NUM 2
 
 #define OPEN_SESSION "o"
@@ -26,7 +26,7 @@
 #define JOIN_ROOM "jr"
 #define JOIN_ROOM_ARGS_NUM 1
 
-#define CLOSE_ROOM "cr"
+#define CLOSE_ROOM_REQUEST "cr"
 #define CLOSE_ROOM_ARGS_NUM 1
 
 #define SEND_MESSAGE "s"
@@ -39,9 +39,9 @@
 #define PRINT_CONNECTED_USERS "lcu"
 #define PRINT_ROOMS "lr"
 #define PRINT_STATUS "l"
-#define CLOSE_SESSION_OR_EXIT_ROOM "cs"
-#define DISCONNECT "d"
-#define EXIT "x"
+#define CLOSE_SESSION_OR_EXIT_ROOM_REQUEST "cs"
+#define DISCONNECT_REQUEST "d"
+#define EXIT_REQUEST "x"
 
 #endif /* USERINPUTCOMMANDS_H_ */
 

@@ -7,16 +7,10 @@
 
 #include "ConnectionToServerManager.h"
 
-ConnectionToServerManager::ConnectionToServerManager() {}
-ConnectionToServerManager::~ConnectionToServerManager() {}
-
 string ConnectionToServerManager::receiveMessage()
 {
 	char messageContent[256];
 	int messageLength;
-
-	// TODO: TCPProtocol
-	int EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE = 4;
 
 	// Receiving message length
 	socketToServer->recv((char*)&messageLength, EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE);
@@ -32,9 +26,6 @@ string ConnectionToServerManager::receiveMessage()
 
 int ConnectionToServerManager::receiveReplyCode()
 {
-	// TODO: TCPProtocol
-	int EXPECTED_COMMAND_BYTES_SIZE = 4;
-
 	// Receive reply (the size should be as stated in the protocol)
 	int reply = 0;
 	int bytesReceived = socketToServer->recv((char*)&reply, EXPECTED_COMMAND_BYTES_SIZE);
