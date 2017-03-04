@@ -55,3 +55,152 @@ void ClientTerminalPrinter::printExitMessage()
 {
 	cout << "Goodbye !" << endl;
 }
+
+void ClientTerminalPrinter::printServerReplyMessage(int replyCode)
+{
+	printServerReplyMessage(replyCode, "");
+}
+
+void ClientTerminalPrinter::printServerReplyMessage(int replyCode, string relevantData)
+{
+	switch (replyCode)
+	{
+		case (CONNECT_SUCCESS):
+		{
+			print("Connected to " + relevantData);
+			break;
+		}
+		case (BAD_USERNAME_PASSWORD):
+		{
+			print("Username or password is incorrect.");
+			break;
+		}
+		case (CLIENT_ALREADY_LOGGED_IN):
+		{
+			print("You are already logged in.");
+			break;
+		}
+		case (USER_ALREADY_LOGGED_IN):
+		{
+			print(relevantData + " is already logged in.");
+			break;
+		}
+		case (LOGIN_SUCCEEDED):
+		{
+			print("Login successful!\nWelcome, " + relevantData);
+			break;
+		}
+		case (REGISTER_FAILURE):
+		{
+			print("Registration failed, Please try again.");
+			break;
+		}
+		case (USERNAME_EXISTS):
+		{
+			print("Username '" + relevantData + "' already exists.");
+			break;
+		}
+		case (REGISTER_SUCCEEDED):
+		{
+			print("Register successful as " + relevantData);
+			break;
+		}
+		case (NOT_LOGGED_IN):
+		{
+			print("You are not logged in.");
+			break;
+		}
+		case (ALREADY_BUSY):
+		{
+			print("You are already participating in a session or room.");
+			break;
+		}
+		case (SESSION_WITH_SELF):
+		{
+			print("You can't create a session with yourself, " + relevantData + "!");
+			break;
+		}
+		case (USER_NOT_FOUND):
+		{
+			print(relevantData + " is either logged off or does not exist.");
+			break;
+		}
+		case (OTHER_USER_BUSY):
+		{
+			print(relevantData + " is busy.");
+			break;
+		}
+		case (ROOM_NAME_EXISTS):
+		{
+			print("A room named " + relevantData + " already exists.");
+			break;
+		}
+		case (ROOM_DOES_NOT_EXIST):
+		{
+			print("There is no room named '" + relevantData + "'.");
+			break;
+		}
+		case (NOT_IN_SESSION_OR_ROOM):
+		{
+			print("You are not in a session or room.");
+			break;
+		}
+		case (NOT_ROOM_OWNER):
+		{
+			print("You are not the room owner.");
+			break;
+		}
+		case (STATUS_FREE):
+		{
+			print("You are logged in, but not in a room/session.");
+			break;
+		}
+		case (STATUS_IN_A_ROOM):
+		{
+			print("You are in a room.");
+			break;
+		}
+		case (STATUS_IN_A_SESSION):
+		{
+			print("You are in a session.");
+			break;
+		}
+		default:
+		{
+			print("Unknown reply-code.");
+		}
+	}
+}
+
+void ClientTerminalPrinter::printStringList(vector<string> messages)
+{
+	for (vector<string>::iterator iterator = messages.begin(); iterator != messages.end(); iterator++)
+	{
+		print(*iterator);
+	}
+
+}
+
+void ClientTerminalPrinter::printRegisteredUsers(vector<string> registeredUsers)
+{
+	print("Registered Users:");
+	printStringList(registeredUsers);
+}
+
+void ClientTerminalPrinter::printConnectedUsers(vector<string> connectedUsers)
+{
+	print("Connected Users:");
+	printStringList(connectedUsers);
+}
+
+void ClientTerminalPrinter::printRooms(vector<string> rooms)
+{
+	print("Open chat-rooms:");
+	printStringList(rooms);
+}
+
+void ClientTerminalPrinter::printUsersInRoom(vector<string> roomUsers, string roomName)
+{
+	print("Users in connected to '" + roomName + "' :");
+	printStringList(roomUsers);
+}

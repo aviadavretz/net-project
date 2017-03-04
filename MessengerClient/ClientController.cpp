@@ -18,246 +18,25 @@ bool ClientController::isConnected()
 	return connected;
 }
 
-void ClientController::manageReply(int replyCode, string relevantData)
+int ClientController::sendCommandWithArgsToServerAndReceiveReply(int commandCode, string args)
 {
-	switch (replyCode)
-	{
-		case (CONNECT_SUCCESS):
-		{
-			printer.print("Connected to " + relevantData);
-			connected = true;
-			break;
-		}
-		case (BAD_USERNAME_PASSWORD):
-		{
-			printer.print("Username or password is incorrect.");
-			break;
-		}
-		case (CLIENT_ALREADY_LOGGED_IN):
-		{
-			printer.print("You are already logged in.");
-			break;
-		}
-		case (USER_ALREADY_LOGGED_IN):
-		{
-			printer.print(relevantData + " is already logged in.");
-			break;
-		}
-		case (LOGIN_SUCCEEDED):
-		{
-			printer.print("Login successful!\nWelcome, " + relevantData);
-			break;
-		}
-		case (REGISTER_FAILURE):
-		{
-			printer.print("Registration failed, Please try again.");
-			break;
-		}
-		case (USERNAME_EXISTS):
-		{
-			printer.print("Username '" + relevantData + "' already exists.");
-			break;
-		}
-		case (REGISTER_SUCCEEDED):
-		{
-			printer.print("Register successful as " + relevantData);
-			break;
-		}
-		case (SESSION_ESTABLISHED):
-		{
-			// TODO: Need to create the UDP socket here?
+	// Send the command to the server
+	srvConnection.sendCommandCode(commandCode);
 
-			printer.print("Session with " + relevantData + " created.");
-			break;
-		}
-		case (NOT_LOGGED_IN):
-		{
-			printer.print("You are not logged in.");
-			break;
-		}
-		case (ALREADY_BUSY):
-		{
-			printer.print("You are already participating in a session or room.");
-			break;
-		}
-		case (SESSION_WITH_SELF):
-		{
-			printer.print("You can't create a session with yourself, " + relevantData + "!");
-			break;
-		}
-		case (USER_NOT_FOUND):
-		{
-			printer.print(relevantData + " is either logged off or does not exist.");
-			break;
-		}
-		case (OTHER_USER_BUSY):
-		{
-			printer.print(relevantData + " is busy.");
-			break;
-		}
-		case (OPEN_CHAT_ROOM_SUCCESS):
-		{
-			printer.print("Room '" + relevantData + "' created.");
-			break;
-		}
-		case (ROOM_NAME_EXISTS):
-		{
-			printer.print("A room named " + relevantData + " already exists.");
-			break;
-		}
-		case (JOIN_ROOM_SUCCESS):
-		{
-			printer.print("You have joined '" + relevantData + "'.");
-			break;
-		}
-		case (ROOM_DOES_NOT_EXIST):
-		{
-			printer.print("There is no room named '" + relevantData + "'.");
-			break;
-		}
-		case (EXIT_ROOM_SUCCESS):
-		{
-			printer.print("You have left the room.");
-			break;
-		}
-		case (CLOSE_SESSION_SUCCESS):
-		{
-			printer.print("Session closed.");
-			break;
-		}
-		case (NOT_IN_SESSION_OR_ROOM):
-		{
-			printer.print("You are not in a session or room.");
-			break;
-		}
-		case (CLOSE_ROOM_SUCCESS):
-		{
-			printer.print("You have closed the room named '" + relevantData + "'.");
-			break;
-		}
-		case (NOT_ROOM_OWNER):
-		{
-			printer.print("You are not the room owner.");
-			break;
-		}
-		case (DISCONNECT_SUCCESS):
-		{
-			printer.print("Disconnected from server.");
+	// Send additional arguments to the server
+	srvConnection.sendArgs(args);
 
-			// Close the socket
-			srvConnection.closeSocket();
-			connected = false;
+	// Return the reply from the server
+	return srvConnection.receiveReplyCode();
+}
 
-			break;
-		}
-		case (GET_REGISTERED_USERS):
-		{
-			// Get the number of registered users first
-			int usersNumber = atoi(srvConnection.receiveMessage().c_str());
+int ClientController::sendCommandToServerAndReceiveReply(int commandCode)
+{
+	// Send the command to the server
+	srvConnection.sendCommandCode(commandCode);
 
-			if (usersNumber > 0)
-			{
-				printer.print("Registered Users:");
-
-				for (int i = 0; i < usersNumber; i++)
-				{
-					// Receive the current user name
-					printer.print(srvConnection.receiveMessage());
-				}
-			}
-			else
-			{
-				printer.print("There are no registered users.");
-			}
-
-			break;
-		}
-		case (GET_CONNECTED_USERS):
-		{
-			// Get the number of connected users first
-			int usersNumber = atoi(srvConnection.receiveMessage().c_str());
-
-			if (usersNumber > 0)
-			{
-				printer.print("Connected Users:");
-
-				for (int i = 0; i < usersNumber; i++)
-				{
-					// Receive the current user name
-					printer.print(srvConnection.receiveMessage());
-				}
-			}
-			else
-			{
-				printer.print("There are no connected users.");
-			}
-
-			break;
-		}
-		case (GET_CHAT_ROOMS):
-		{
-			// Get the number of rooms first
-			int roomsNumber = atoi(srvConnection.receiveMessage().c_str());
-
-			if (roomsNumber > 0)
-			{
-				printer.print("Open chat-rooms:");
-
-				for (int i = 0; i < roomsNumber; i++)
-				{
-					// Receive the current room name
-					printer.print(srvConnection.receiveMessage());
-				}
-			}
-			else
-			{
-				printer.print("There are no open chat-rooms.");
-			}
-
-			break;
-		}
-		case (GET_USERS_IN_CHAT_ROOM):
-		{
-			// Get the number of users in the room first
-			int usersNumber = atoi(srvConnection.receiveMessage().c_str());
-
-			if (usersNumber > 0)
-			{
-				printer.print("Users connected to '" + relevantData + "':");
-
-				for (int i = 0; i < usersNumber; i++)
-				{
-					// Receive the current user
-					printer.print(srvConnection.receiveMessage());
-				}
-			}
-			else
-			{
-				printer.print("There are no users in the room '" + relevantData + "'.");
-			}
-
-			break;
-		}
-		case (STATUS_FREE):
-		{
-			printer.print("You are logged in, but not in a room/session.");
-			break;
-		}
-		case (STATUS_IN_A_ROOM):
-		{
-			printer.print("You are in a room.");
-			break;
-		}
-		case (STATUS_IN_A_SESSION):
-		{
-			printer.print("You are in a session.");
-			break;
-		}
-		default:
-		{
-			printer.print("Unknown reply-code.");
-		}
-	}
+	// Return the reply from the ser
+	return srvConnection.receiveReplyCode();
 }
 
 void ClientController::connect(string address)
@@ -268,165 +47,233 @@ void ClientController::connect(string address)
 	// Receive reply from server
 	int replyCode = srvConnection.receiveReplyCode();
 
-	manageReply(replyCode, address);
+	if (replyCode == CONNECT_SUCCESS)
+	{
+		connected = true;
+	}
+
+	printer.printServerReplyMessage(replyCode, address);
 }
 
 void ClientController::login(string username, string password)
 {
-	// Send the LOGIN command
-	srvConnection.sendCommandCode(LOGIN);
+	// Send login command to the server with username and password
+	int replyCode = sendCommandWithArgsToServerAndReceiveReply(LOGIN, username + " " + password);
 
-	// Send the username and password
-	srvConnection.sendArgs(username + " " + password);
-
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
-
-	manageReply(replyCode, username);
+	printer.printServerReplyMessage(replyCode, username);
 }
 
 void ClientController::registerUser(string username, string password)
 {
-	// Send the REGISTER command
-	srvConnection.sendCommandCode(REGISTER);
+	// Send register command to the server with username and password
+	int replyCode = sendCommandWithArgsToServerAndReceiveReply(REGISTER, username + " " + password);
 
-	// Send the username and password
-	srvConnection.sendArgs(username + " " + password);
-
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
-
-	manageReply(replyCode, username);
+	printer.printServerReplyMessage(replyCode, username);
 }
 
 void ClientController::openSession(string otherUserName)
 {
-	// Send the OPEN_SESSION command
-	srvConnection.sendCommandCode(OPEN_SESSION_WITH_PEER);
+	// Send open session command to the server with the username we want the session with
+	int replyCode = sendCommandWithArgsToServerAndReceiveReply(OPEN_SESSION_WITH_PEER, otherUserName);
 
-	// Send the username to open a session with
-	srvConnection.sendArgs(otherUserName);
-
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
-
-	manageReply(replyCode, otherUserName);
+	if (replyCode == SESSION_ESTABLISHED)
+	{
+		// TODO: Need to create the UDP socket here?
+	}
+	else
+	{
+		printer.printServerReplyMessage(replyCode, otherUserName);
+	}
 }
 
 void ClientController::openRoom(string roomName)
 {
-	// Send the OPEN_ROOM command
-	srvConnection.sendCommandCode(OPEN_CHAT_ROOM);
+	// Send open chat room command to the server with the room's name
+	int replyCode = sendCommandWithArgsToServerAndReceiveReply(OPEN_CHAT_ROOM, roomName);
 
-	// Send the room name
-	srvConnection.sendArgs(roomName);
-
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
-
-	manageReply(replyCode, roomName);
+	if (replyCode == OPEN_CHAT_ROOM_SUCCESS)
+	{
+		// TODO : Some additional steps should be taken
+	}
+	else
+	{
+		printer.printServerReplyMessage(replyCode, roomName);
+	}
 }
 
 void ClientController::joinRoom(string roomName)
 {
-	// Send the JOIN_ROOM command
-	srvConnection.sendCommandCode(JOIN_CHAT_ROOM);
+	// Send join chat room command with the room's name
+	int replyCode = sendCommandWithArgsToServerAndReceiveReply(JOIN_CHAT_ROOM, roomName);
 
-	// Send the room name
-	srvConnection.sendArgs(roomName);
-
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
-
-	manageReply(replyCode, roomName);
+	if (replyCode == JOIN_ROOM_SUCCESS)
+	{
+		// TODO : Some additional steps should be taken
+	}
+	else
+	{
+		printer.printServerReplyMessage(replyCode, roomName);
+	}
 }
 
 void ClientController::closeSessionOrExitRoom()
 {
-	// Send the CLOSE_SESSION_OR_EXIT_ROOM command
-	srvConnection.sendCommandCode(CLOSE_SESSION_OR_EXIT_ROOM);
+	// Send close session or exit room command to the server
+	int replyCode = sendCommandToServerAndReceiveReply(CLOSE_SESSION_OR_EXIT_ROOM);
 
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
-
-	manageReply(replyCode, "");
+	if (replyCode == EXIT_ROOM_SUCCESS)
+	{
+		// TODO : Do something to exit the room
+	}
+	else if (replyCode == CLOSE_SESSION_SUCCESS)
+	{
+		// TODO : Do something to close the session
+	}
+	else
+	{
+		printer.printServerReplyMessage(replyCode);
+	}
 }
 
 void ClientController::closeRoom(string roomName)
 {
-	// Send the CLOSE_ROOM command
-	srvConnection.sendCommandCode(CLOSE_ROOM);
+	// Send close room command to the server with the room's name
+	int replyCode = sendCommandWithArgsToServerAndReceiveReply(CLOSE_ROOM, roomName);
 
-	// Send the room name
-	srvConnection.sendArgs(roomName);
-
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
-
-	manageReply(replyCode, roomName);
+	if (replyCode == CLOSE_ROOM_SUCCESS)
+	{
+		// TODO : Do something to exit the room
+	}
+	else
+	{
+		printer.printServerReplyMessage(replyCode, roomName);
+	}
 }
 
 void ClientController::disconnect()
 {
-	// Send the DISCONNECT command
-	srvConnection.sendCommandCode(DISCONNECT);
+	// Send disconnect command to the server
+	int replyCode = sendCommandToServerAndReceiveReply(DISCONNECT);
 
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
+	if (replyCode == DISCONNECT_SUCCESS)
+	{
+		// Close the socket
+		srvConnection.closeSocket();
+		connected = false;
 
-	manageReply(replyCode, "");
+		printer.print("Disconnected from server.");
+	}
+	else
+	{
+		printer.printServerReplyMessage(replyCode);
+	}
 }
 
 void ClientController::requestAllRegisterdUsersName()
 {
-	srvConnection.sendCommandCode(GET_REGISTERED_USERS);
+	// Send get registered users command to the server
+	int replyCode = sendCommandToServerAndReceiveReply(GET_REGISTERED_USERS);
 
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
+	if (replyCode == GET_REGISTERED_USERS)
+	{
+		// Get the number of registered users first
+		int usersNumber = atoi(srvConnection.receiveMessage().c_str());
 
-	manageReply(replyCode, "");
+		if (usersNumber > 0)
+		{
+			printer.printRegisteredUsers(srvConnection.receiveMessages(usersNumber));
+		}
+		else
+		{
+			printer.print("There are no registered users.");
+		}
+	}
+	else
+	{
+		printer.printServerReplyMessage(replyCode);
+	}
 }
 
 void ClientController::requestAllConnectedUsersName()
 {
-	srvConnection.sendCommandCode(GET_CONNECTED_USERS);
+	// Send get connected users command to the server
+	int replyCode = sendCommandToServerAndReceiveReply(GET_CONNECTED_USERS);
 
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
+	if (replyCode == GET_CONNECTED_USERS)
+	{
+		// Get the number of connected users first
+		int usersNumber = atoi(srvConnection.receiveMessage().c_str());
 
-	manageReply(replyCode, "");
+		if (usersNumber > 0)
+		{
+			printer.printConnectedUsers(srvConnection.receiveMessages(usersNumber));
+		}
+		else
+		{
+			printer.print("There are no connected users.");
+		}
+	}
+	else
+	{
+		printer.printServerReplyMessage(replyCode);
+	}
 }
 
 void ClientController::requestAllRooms()
 {
-	srvConnection.sendCommandCode(GET_CHAT_ROOMS);
+	// Send get chat rooms command to the server
+	int replyCode = sendCommandToServerAndReceiveReply(GET_CHAT_ROOMS);
 
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
+	if (replyCode == GET_CHAT_ROOMS)
+	{
+		// Get the number of rooms first
+		int roomsNumber = atoi(srvConnection.receiveMessage().c_str());
 
-	manageReply(replyCode, "");
+		if (roomsNumber > 0)
+		{
+			printer.printRooms(srvConnection.receiveMessages(roomsNumber));
+		}
+		else
+		{
+			printer.print("There are no open chat-rooms.");
+		}
+	}
+	else
+	{
+		printer.printServerReplyMessage(replyCode);
+	}
 }
 
 void ClientController::requestAllUsersInRoom(string roomName)
 {
-	// Send the command-code and the room name
-	srvConnection.sendCommandCode(GET_USERS_IN_CHAT_ROOM);
-	srvConnection.sendArgs(roomName);
+	// Send get users in chat room command to the server with the room's name
+	int replyCode = sendCommandWithArgsToServerAndReceiveReply(GET_USERS_IN_CHAT_ROOM, roomName);
 
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
+	if (replyCode == GET_USERS_IN_CHAT_ROOM)
+	{
+		// Get the number of users in the room first
+		int usersNumber = atoi(srvConnection.receiveMessage().c_str());
 
-	manageReply(replyCode, roomName);
+		if (usersNumber > 0)
+		{
+			printer.printUsersInRoom(srvConnection.receiveMessages(usersNumber), roomName);
+		}
+		else
+		{
+			printer.print("There are no users in the room '" + roomName + "'.");
+		}
+	}
+	else
+	{
+		printer.printServerReplyMessage(replyCode, roomName);
+	}
 }
 
 void ClientController::requestStatus()
 {
-	// Send the command-code
-	srvConnection.sendCommandCode(GET_STATUS);
+	// Send get status command to the server
+	int replyCode = sendCommandToServerAndReceiveReply(GET_STATUS);
 
-	// Receive reply from server
-	int replyCode = srvConnection.receiveReplyCode();
-
-	manageReply(replyCode, "");
+	printer.printServerReplyMessage(replyCode);
 }
 

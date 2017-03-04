@@ -10,6 +10,7 @@
 
 #include "TCPSocket.h"
 #include "TCPMessengerProtocol.h"
+#include <vector>
 
 using namespace std;
 using namespace npl;
@@ -20,6 +21,7 @@ class ConnectionToServerManager {
 public:
 	int receiveReplyCode();
 	string receiveMessage();
+	vector<string> receiveMessages(int messagesNumber);
 	void sendCommandCode(int commandCode);
 	void sendArgs(string message);
 	void openSocket(string address, int port);

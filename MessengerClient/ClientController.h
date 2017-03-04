@@ -21,7 +21,8 @@ class ClientController
 	ClientTerminalPrinter printer;
 	bool connected;
 
-	void manageReply(int replyCode, string relevantData);
+	int sendCommandWithArgsToServerAndReceiveReply(int commandCode, string args);
+	int sendCommandToServerAndReceiveReply(int commandCode);
 
 	public:
 		ClientController();

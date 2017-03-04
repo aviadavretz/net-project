@@ -24,6 +24,19 @@ string ConnectionToServerManager::receiveMessage()
 	return string(messageContent);
 }
 
+vector<string> ConnectionToServerManager::receiveMessages(int messagesNumber)
+{
+	vector<string> messages;
+
+	// Receive messages from the server and adding them to the vector, according to the messages number given
+	for (int i = 0; i < messagesNumber; i++)
+	{
+		messages.push_back(receiveMessage());
+	}
+
+	return messages;
+}
+
 int ConnectionToServerManager::receiveReplyCode()
 {
 	// Receive reply (the size should be as stated in the protocol)

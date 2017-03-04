@@ -21,7 +21,7 @@ ConnectionToServerManager.o : ConnectionToServerManager.cpp
 	$(CC) -g -c -I../SocketUtils ConnectionToServerManager.cpp -o Debug/ConnectionToServerManager.o
 	
 ClientTerminalPrinter.o : ClientTerminalPrinter.cpp
-	$(CC) -g -c ClientTerminalPrinter.cpp -o Debug/ClientTerminalPrinter.o
+	$(CC) -g -c -I../SocketUtils ClientTerminalPrinter.cpp -o Debug/ClientTerminalPrinter.o
 
 MessengerClient: ConnectionToServerManager.o ClientTerminalPrinter.o ClientController.o main.o
 	$(CC) Debug/ClientTerminalPrinter.o Debug/ConnectionToServerManager.o Debug/ClientController.o Debug/main.o -L../SocketUtils/Debug -lSocketUtils -o Debug/MessengerClient 
