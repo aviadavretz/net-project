@@ -191,3 +191,19 @@ void ServerPeersMessageSender::sendAllUsersInRoom(TCPSocket* peer, vector<string
 {
 	sendStringList(peer, GET_USERS_IN_CHAT_ROOM, usernames);
 }
+
+void ServerPeersMessageSender::sendEstablishedSessionCommunicationDetails(TCPSocket* initiatingPeer, User* initiatingUser,
+																          TCPSocket* receivingPeer, User* receivingUser)
+{
+	// send communication details to the session initiating peer
+	sendOpenSessionSuccess(initiatingPeer);
+	sendMessage(initiatingPeer, receivingUser->getUsername());
+	sendMessage(initiatingPeer, receivingPeer->fromAddr());
+
+	// send communication details to the session receiving peer
+	sendOpenSessionSuccess(receivingPeer);
+	sendMessage(receivingPeer, initiatingUser->getUsername());
+	sendMessage(receivingPeer, initiatingPeer->fromAddr());
+}
+
+

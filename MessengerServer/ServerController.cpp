@@ -142,7 +142,8 @@ void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string ot
 				// Check if user exists and is logged in
 				if (isUserLoggedIn(otherUserName))
 				{
-					User* otherUser = getLoggedInUserByUsername(otherUserName);
+					TCPSocket* otherPeer = getPeerSocketByUsername(otherUserName);
+					User* otherUser = getUserByPeer(otherPeer);
 
 					// Make sure the other user is not busy
 					if (isBusyUser(otherUser))
@@ -158,10 +159,10 @@ void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string ot
 
 						sessions.push_back(session);
 
-						peersMessageSender.sendOpenSessionSuccess(peerSocket);
-						printer.print(requestingUser->getUsername() + " has created a Session with " + otherUserName);
+						peersMessageSender.sendEstablishedSessionCommunicationDetails(
+								peerSocket, requestingUser, otherPeer, otherUser);
 
-						// TODO: Need to send the socket info to the users?
+						printer.print(requestingUser->getUsername() + " has created a Session with " + otherUserName);
 					}
 				}
 				else
@@ -551,27 +552,6 @@ bool ServerController::isUserLoggedIn(string username)
 	return getLoggedInUserByUsername(username) != NULL;
 }
 
-User* ServerController::getLoggedInUserByUsername(string username)
-{
- 	for (map<TCPSocket*, User*>::iterator iterator = loggedInUsers.begin(); iterator != loggedInUsers.end(); iterator++)
-	{
- 		User* currentUser = (*iterator).second;
-
- 		// TODO: Somewhere we insert the socket after it connects and the User* remains NULL.
- 		// In case the map holds the socket as the key, but no value.
- 		if (currentUser == NULL) { continue; }
-
- 		// Compare the usernames
-		if (username.compare(currentUser->getUsername()) == 0)
-		{
-			// Return the User object
-			return currentUser;
-		}
-	}
-
- 	return NULL;
-}
-
 bool ServerController::isUserInSession(User* user)
 {
 	return getSessionByUser(user) != NULL;
@@ -636,6 +616,39 @@ User* ServerController::getUserByPeer(TCPSocket* peer)
 bool ServerController::isPeerLoggedIn(TCPSocket* peer)
 {
 	return getUserByPeer(peer) != NULL;
+}
+
+TCPSocket* ServerController::getPeerSocketByUsername(string username)
+{
+ 	for (map<TCPSocket*, User*>::iterator iterator = loggedInUsers.begin(); iterator != loggedInUsers.end(); iterator++)
+	{
+ 		User* currentUser = (*iterator).second;
+
+ 		// TODO: Somewhere we insert the socket after it connects and the User* remains NULL.
+ 		// In case the map holds the socket as the key, but no value.
+ 		if (currentUser == NULL) { continue; }
+
+ 		// Compare the usernames
+		if (username.compare(currentUser->getUsername()) == 0)
+		{
+			// Return the User object
+			return iterator->first;
+		}
+	}
+
+ 	return NULL;
+}
+
+User* ServerController::getLoggedInUserByUsername(string username)
+{
+	TCPSocket* peerSocket = getPeerSocketByUsername(username);
+
+	if (peerSocket != NULL)
+	{
+		return getUserByPeer(peerSocket);
+	}
+
+	return NULL;
 }
 
 NewPeerAcceptedObserver::~NewPeerAcceptedObserver(){}

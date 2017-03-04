@@ -55,6 +55,8 @@ public:
 	void sendStatusFree(TCPSocket* peer);
 	void sendStatusInARoom(TCPSocket* peer);
 	void sendStatusInASession(TCPSocket* peer);
+	void sendEstablishedSessionCommunicationDetails(TCPSocket* initiatingPeer, User* initiatingUser,
+												    TCPSocket* receivingPeer, User* receivingUser);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */
