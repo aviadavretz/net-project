@@ -46,13 +46,10 @@ void ServerPeersMessageSender::sendRoomWasClosed(TCPSocket* peer, string roomNam
 	sendMessage(peer, roomName);
 }
 
-void ServerPeersMessageSender::sendSomeoneJoinedRoom(TCPSocket* peer, string joiningUsername)
+void ServerPeersMessageSender::sendSomeoneJoinedRoom(TCPSocket* peer)
 {
 	// Send the code
 	sendCode(peer, SOMEONE_JOINED_CHAT_ROOM);
-
-	// Send the joining username
-	sendMessage(peer, joiningUsername);
 }
 
 void ServerPeersMessageSender::sendSomeoneLeftRoom(TCPSocket* peer, string leavingUsername)
@@ -235,24 +232,24 @@ void ServerPeersMessageSender::sendAllUsersInRoom(TCPSocket* peer, vector<string
 void ServerPeersMessageSender::sendEstablishedSessionCommunicationDetails(TCPSocket* initiatingPeer, User* initiatingUser,
 																          TCPSocket* receivingPeer, User* receivingUser)
 {
-	// send communication details to the session initiating peer
+	// Notify both peers that a session has been established
 	sendOpenSessionSuccess(initiatingPeer);
-	sendMessage(initiatingPeer, receivingUser->getUsername());
-
-	// send communication details to the session receiving peer
 	sendOpenSessionSuccess(receivingPeer);
-	sendMessage(receivingPeer, initiatingUser->getUsername());
 
 	// Send both each others connection data
-	sendConnectionData(initiatingPeer, receivingPeer);
+	sendConnectionData(initiatingPeer, initiatingUser->getUsername(),
+					   receivingPeer, receivingUser->getUsername());
 }
 
-void ServerPeersMessageSender::sendConnectionData(TCPSocket* first, TCPSocket* second)
+void ServerPeersMessageSender::sendConnectionData(TCPSocket* first, string firstUsername,
+												  TCPSocket* second, string secondUsername)
 {
-	// Send the second address to the first user
+	// Send the second username & address to the first user
+	sendMessage(first, secondUsername);
 	sendMessage(first, second->fromAddr());
 
-	// Send the first address to the second user
+	// Send the first username & address to the second user
+	sendMessage(second, firstUsername);
 	sendMessage(second, first->fromAddr());
 }
 

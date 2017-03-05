@@ -13,6 +13,7 @@
 #include "ConnectionToServerManager.h"
 #include "ServerRepliesObserver.h"
 #include "ServerRepliesListener.h"
+#include "PeerMessageListener.h"
 #include <stdlib.h>
 
 using namespace std;
@@ -21,7 +22,8 @@ class ClientController: public ServerRepliesObserver
 {
 	ConnectionToServerManager srvConnection;
 	ClientTerminalPrinter printer;
-	ServerRepliesListener* listener;
+	ServerRepliesListener* srvListener;
+	PeerMessageListener peerListener;
 	bool connected;
 
 	void sendCommandToServer(int commandCode, string args);

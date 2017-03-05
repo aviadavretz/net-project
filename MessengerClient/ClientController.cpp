@@ -8,9 +8,7 @@
 
 #include "ClientController.h"
 
-ClientController::ClientController() : connected(false), listener(NULL)
-{
-}
+ClientController::ClientController() : connected(false), srvListener(NULL) {}
 
 bool ClientController::isConnected()
 {
@@ -46,8 +44,8 @@ void ClientController::connect(string address)
 		connected = true;
 
 		// Start listening for server responses
-		listener = new ServerRepliesListener(&srvConnection, &printer, this);
-		listener->start();
+		srvListener = new ServerRepliesListener(&srvConnection, &printer, this);
+		srvListener->start();
 	}
 	else
 	{
@@ -135,10 +133,11 @@ void ClientController::requestStatus()
 
 void ClientController::notifyDisconnected()
 {
-	// TODO: Close all UDP sockets.
+	// Close all UDP sockets.
+	peerListener.closeAllSockets();
 
 	// Stop listening for server responses
-	listener->stop();
+	srvListener->stop();
 
 	// Close the socket
 	srvConnection.closeSocket();
@@ -153,10 +152,8 @@ void ClientController::notifySessionEstablished()
 	string otherUsername = srvConnection.receiveMessage();
 	string otherUserAddr = srvConnection.receiveMessage();
 
-	// TODO: Open socket
-//	// TODO: Move this to TCPProtocol
-//	int SESSION_PORT = 3434;
-//	UDPSocket* sessionSocket = new UDPSocket(otherUserAddr, SESSION_PORT);
+	// Open a socket to the other user
+	peerListener.openSocket(otherUsername, otherUserAddr);
 
 	printer.print("Session with " + otherUsername + " (" + otherUserAddr + ") established.");
 }
@@ -173,13 +170,21 @@ void ClientController::notifyJoinedRoom()
 {
 	printer.print("Establishing connections...");
 
+	string currentUsername;
 	string currentUserAddress = srvConnection.receiveMessage();
 
 	// Get all the users' connection data ,and add another UDP socket for each
 	// While we haven't received the DONE_SENDING_ROOM_PARTICIPANTS code
 	while (currentUserAddress.compare(DONE_SENDING_ROOM_PARTICIPANTS) != 0)
 	{
-		// TODO: Add a UDPSocket
+		// Receive the username
+		currentUsername = srvConnection.receiveMessage();
+
+		// Open a socket to the other user
+		peerListener.openSocket(currentUsername, currentUserAddress);
+
+		// TODO: Remove this
+		printer.print("Connected to " + currentUsername + "( " + currentUserAddress + ").");
 
 		// Get the next user address
 		currentUserAddress = srvConnection.receiveMessage();
@@ -192,9 +197,10 @@ void ClientController::notifySomeoneJoinedRoom()
 {
 	// Receive the relevant data from the server.
 	string joiningUsername = srvConnection.receiveMessage();
-	string joininguserAddr = srvConnection.receiveMessage();
+	string joiningUserAddr = srvConnection.receiveMessage();
 
-	// TODO: Add another UDP socket
+	// Open another socket to the joining user
+	peerListener.openSocket(joiningUsername, joiningUserAddr);
 
 	printer.print(joiningUsername + " has joined the room.");
 }
@@ -204,14 +210,16 @@ void ClientController::notifySomeoneLeftRoom()
 	// Receive the relevant data from the server.
 	string exitingUsername = srvConnection.receiveMessage();
 
-	// TODO: Close the relevant socket
+	// Close the socket to the leaving user
+	peerListener.closeSocket(exitingUsername);
 
 	printer.print(exitingUsername + " has left the room.");
 }
 
 void ClientController::notifyExitRoom()
 {
-	// TODO: Close all UDP sockets
+	// Close all UDP sockets
+	peerListener.closeAllSockets();
 
 	printer.print("You have left the room.");
 }
@@ -221,7 +229,8 @@ void ClientController::notifySessionClosed()
 	// Receive the relevant data from the server.
 	string otherUsername = srvConnection.receiveMessage();
 
-	// TODO: Close socket
+	// Close the session socket
+	peerListener.closeSocket(otherUsername);
 
 	printer.print("Session with " + otherUsername + " has ended.");
 }
@@ -231,7 +240,8 @@ void ClientController::notifyRoomClosedByOwner()
 	// Receive the relevant data from the server.
 	string roomName = srvConnection.receiveMessage();
 
-	// TODO: Close all UDP sockets
+	// Close all UDP sockets
+	peerListener.closeAllSockets();
 
 	printer.print("ChatRoom '" + roomName + "' closed by its owner.");
 }

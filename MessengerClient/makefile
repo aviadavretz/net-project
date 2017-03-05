@@ -14,6 +14,9 @@ endif
 ConnectionToServerManager.o : ConnectionToServerManager.cpp
 	$(CC) -g -c -I../SocketUtils ConnectionToServerManager.cpp -o Debug/ConnectionToServerManager.o
 	
+PeerMessageListener.o : PeerMessageListener.cpp
+	$(CC) -g -c -I../SocketUtils PeerMessageListener.cpp -o Debug/PeerMessageListener.o
+	
 ClientTerminalPrinter.o : ClientTerminalPrinter.cpp
 	$(CC) -g -c -I../SocketUtils ClientTerminalPrinter.cpp -o Debug/ClientTerminalPrinter.o
 	
@@ -26,5 +29,5 @@ ClientController.o : ClientController.cpp
 main.o : main.cpp
 	$(CC) -g -c -I../SocketUtils  main.cpp -o Debug/main.o
 
-MessengerClient: ConnectionToServerManager.o ClientTerminalPrinter.o ServerRepliesListener.o ClientController.o main.o
-	$(CC) Debug/ClientTerminalPrinter.o Debug/ConnectionToServerManager.o Debug/ServerRepliesListener.o Debug/ClientController.o Debug/main.o -L../SocketUtils/Debug -lSocketUtils -o Debug/MessengerClient 
+MessengerClient: ConnectionToServerManager.o PeerMessageListener.o ClientTerminalPrinter.o ServerRepliesListener.o ClientController.o main.o
+	$(CC) Debug/ClientTerminalPrinter.o Debug/ConnectionToServerManager.o Debug/PeerMessageListener.o Debug/ServerRepliesListener.o Debug/ClientController.o Debug/main.o -L../SocketUtils/Debug -lSocketUtils -o Debug/MessengerClient 

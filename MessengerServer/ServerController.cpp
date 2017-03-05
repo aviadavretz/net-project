@@ -252,19 +252,34 @@ void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string 
 				{
 					chatRooms.erase(position);
 
-					// Notify the requesting user (In case he is not inside the room).
+					// Notify the requesting user that the room is being closed.
 					peersMessageSender.sendCloseRoomSuccess(peerSocket);
 
 					vector<User*> roomUsers = roomToClose->getParticipatingUsers();
+					bool ownerIsInside = false;
 
 					// Notify every user in the room.
 					for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
 					{
+						string currentUsername = (*iter)->getUsername();
+
+						// Check if the owner (requesting user) is in the room
+						if (currentUsername.compare(requestingUser->getUsername()) == 0)
+						{
+							ownerIsInside = true;
+						}
+
 						// Get the current relevant socket
-						TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
+						TCPSocket* currentUserSocket = getPeerSocketByUsername(currentUsername);
 
 						// Notify the user that the room closed
 						peersMessageSender.sendRoomWasClosed(currentUserSocket, roomName);
+					}
+
+					// If the owner wasn't in the room when it closed, notify him as well.
+					if (!ownerIsInside)
+					{
+						peersMessageSender.sendRoomWasClosed(peerSocket, roomName);
 					}
 
 					printer.print("ChatRoom '" + roomName + "' has been closed by " +
@@ -296,7 +311,7 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 	if (!isPeerLoggedIn(peerSocket))
 	{
 		peersMessageSender.sendNotLoggedIn(peerSocket);
-		printer.print(peerSocket->fromAddr() + " tried to join a room, but is not logged in.");
+		printer.print(peerSocket->fromAddr() + " tried to close session / exit a room, but is not logged in.");
 	}
 	else
 	{
@@ -405,14 +420,17 @@ void ServerController::notifyJoinChatRoomRequest(TCPSocket* peerSocket, string r
 				// Send the relevant data to every user.
 				for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
 				{
+					string currentUsername = (*iter)->getUsername();
+
 					// Get the current relevant socket
-					TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
+					TCPSocket* currentUserSocket = getPeerSocketByUsername(currentUsername);
 
 					// Notify the old user that someone has joined.
-					peersMessageSender.sendSomeoneJoinedRoom(currentUserSocket, requestingUser->getUsername());
+					peersMessageSender.sendSomeoneJoinedRoom(currentUserSocket);
 
 					// Send both the joining user and the old user each-other's information
-					peersMessageSender.sendConnectionData(peerSocket, currentUserSocket);
+					peersMessageSender.sendConnectionData(peerSocket, requestingUser->getUsername(),
+														  currentUserSocket, currentUsername);
 				}
 
 				// Notify the user that he has all the room users data.

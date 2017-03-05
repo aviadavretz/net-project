@@ -132,37 +132,31 @@ void ServerRepliesListener::run()
 		}
 		case (SESSION_ESTABLISHED):
 		{
-			// TODO : Complete this
 			observer->notifySessionEstablished();
 			break;
 		}
 		case (OPEN_CHAT_ROOM_SUCCESS):
 		{
-			// TODO : Complete
 			observer->notifyChatRoomOpened();
 			break;
 		}
 		case (JOIN_ROOM_SUCCESS):
 		{
-			// TODO : Complete
 			observer->notifyJoinedRoom();
 			break;
 		}
 		case (EXIT_ROOM_SUCCESS):
 		{
-			// TODO : Complete
 			observer->notifyExitRoom();
 			break;
 		}
 		case (CLOSE_SESSION_SUCCESS):
 		{
-			// TODO: Complete
 			observer->notifySessionClosed();
 			break;
 		}
 		case (CLOSE_ROOM_SUCCESS):
 		{
-			// TODO: Complete
 			observer->notifyRoomClosedSuccess();
 			break;
 		}

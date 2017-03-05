@@ -59,11 +59,12 @@ public:
 	void sendStatusFree(TCPSocket* peer);
 	void sendStatusInARoom(TCPSocket* peer);
 	void sendStatusInASession(TCPSocket* peer);
-	void sendConnectionData(TCPSocket* first, TCPSocket* second);
+	void sendConnectionData(TCPSocket* first, string firstUsername,
+							TCPSocket* second, string secondUsername);
 	void sendEstablishedSessionCommunicationDetails(TCPSocket* initiatingPeer, User* initiatingUser,
 												    TCPSocket* receivingPeer, User* receivingUser);
-	void sendSomeoneJoinedRoom(TCPSocket* peer, string joiningUsername);
-	void sendSomeoneLeftRoom(TCPSocket* peer, string joiningUsername);
+	void sendSomeoneJoinedRoom(TCPSocket* peer);
+	void sendSomeoneLeftRoom(TCPSocket* peer, string leavingUsername);
 	void sendRoomWasClosed(TCPSocket* peer, string roomName);
 };
 
