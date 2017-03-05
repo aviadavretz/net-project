@@ -50,7 +50,10 @@ class ClientController: public ServerRepliesObserver
 		void notifyJoinedRoom();
 		void notifyExitRoom();
 		void notifySessionClosed();
-		void notifyRoomClosed();
+		void notifyRoomClosedByOwner();
+		void notifyRoomClosedSuccess();
+		void notifySomeoneJoinedRoom();
+		void notifySomeoneLeftRoom();
 };
 
 #endif /* CLIENTCONTROLLER_H_ */

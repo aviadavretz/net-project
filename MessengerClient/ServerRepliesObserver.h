@@ -19,8 +19,12 @@ public:
 	virtual void notifyJoinedRoom() = 0;
 	virtual void notifyExitRoom() = 0;
 	virtual void notifySessionClosed() = 0;
-	virtual void notifyRoomClosed() = 0;
+	virtual void notifyRoomClosedSuccess() = 0;
+	virtual void notifyRoomClosedByOwner() = 0;
 	virtual void notifyDisconnected() = 0;
+	virtual void notifySomeoneJoinedRoom() = 0;
+	virtual void notifySomeoneLeftRoom() = 0;
+
 	virtual ~ServerRepliesObserver() = 0;
 };
 

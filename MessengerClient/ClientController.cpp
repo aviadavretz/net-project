@@ -162,27 +162,86 @@ void ClientController::notifySessionEstablished()
 
 void ClientController::notifyChatRoomOpened()
 {
-
+	printer.print("ChatRoom created.");
 }
 
 void ClientController::notifyJoinedRoom()
 {
+	// TODO: Get all the users' connection data , and add another UDP socket for each
 
+	printer.print("Establishing connections...");
+
+	string currentUserAddress = srvConnection.receiveMessage();
+
+	// While we haven't received the DONE_SENDING_ROOM_PARTICIPANTS code
+	while (currentUserAddress.compare(DONE_SENDING_ROOM_PARTICIPANTS) != 0)
+	{
+		// TODO: Add a UDPSocket
+
+		// TODO: Remove this once we establish real connections
+		printer.print(currentUserAddress);
+
+		// Get the next user address
+		currentUserAddress = srvConnection.receiveMessage();
+	}
+
+	printer.print("All connections established. You have joined the room.");
+}
+
+void ClientController::notifySomeoneJoinedRoom()
+{
+	// TODO: REMOVE THIS
+	printer.print("Someone joined the room.");
+
+	// Receive the relevant data from the server.
+	string joiningUsername = srvConnection.receiveMessage();
+	string joininguserAddr = srvConnection.receiveMessage();
+
+	// TODO: Add another UDP socket
+
+	printer.print(joiningUsername + " has joined the room.");
+}
+
+void ClientController::notifySomeoneLeftRoom()
+{
+	// Receive the relevant data from the server.
+	string exitingUsername = srvConnection.receiveMessage();
+
+	// TODO: Close the relevant socket
+
+	printer.print(exitingUsername + " has left the room.");
 }
 
 void ClientController::notifyExitRoom()
 {
+	// TODO: Close all UDP sockets
 
+	printer.print("You have left the room.");
 }
 
 void ClientController::notifySessionClosed()
 {
+	// Receive the relevant data from the server.
+	string otherUsername = srvConnection.receiveMessage();
 
+	// TODO: Close socket
+
+	printer.print("Session with " + otherUsername + " has ended.");
 }
 
-void ClientController::notifyRoomClosed()
+void ClientController::notifyRoomClosedByOwner()
 {
+	// Receive the relevant data from the server.
+	string roomName = srvConnection.receiveMessage();
 
+	// TODO: Close all UDP sockets
+
+	printer.print("ChatRoom '" + roomName + "' closed by its owner.");
+}
+
+void ClientController::notifyRoomClosedSuccess()
+{
+	printer.print("Closing the room for you..");
 }
 
 ServerRepliesObserver::~ServerRepliesObserver() {}

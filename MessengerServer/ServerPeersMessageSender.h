@@ -44,7 +44,7 @@ public:
 	void sendJoinRoomSuccess(TCPSocket* peer);
 	void sendAlreadyBusy(TCPSocket* peer);
 	void sendExitRoomSuccess(TCPSocket* peer);
-	void sendCloseSessionSuccess(TCPSocket* peer);
+	void sendCloseSessionSuccess(TCPSocket* peer, string otherUsername);
 	void sendNotInSessionOrRoom(TCPSocket* peer);
 	void sendNotRoomOwner(TCPSocket* peer);
 	void sendCloseRoomSuccess(TCPSocket* peer);
@@ -58,8 +58,12 @@ public:
 	void sendStatusFree(TCPSocket* peer);
 	void sendStatusInARoom(TCPSocket* peer);
 	void sendStatusInASession(TCPSocket* peer);
+	void sendConnectionData(TCPSocket* first, TCPSocket* second);
 	void sendEstablishedSessionCommunicationDetails(TCPSocket* initiatingPeer, User* initiatingUser,
 												    TCPSocket* receivingPeer, User* receivingUser);
+	void sendSomeoneJoinedRoom(TCPSocket* peer, string joiningUsername);
+	void sendSomeoneLeftRoom(TCPSocket* peer, string joiningUsername);
+	void sendRoomWasClosed(TCPSocket* peer);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */

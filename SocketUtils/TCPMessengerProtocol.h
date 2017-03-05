@@ -73,11 +73,16 @@
 #define STATUS_IN_A_ROOM 541
 #define STATUS_IN_A_SESSION 542
 
+#define SOMEONE_JOINED_CHAT_ROOM 560
+#define SOMEONE_LEFT_CHAT_ROOM   561
+#define ROOM_WAS_CLOSED          562
+
 #define ALREADY_BUSY 462
 
 #define EXPECTED_COMMAND_BYTES_SIZE 				 4
 #define EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE 4
 
+#define DONE_SENDING_ROOM_PARTICIPANTS "DONE_SENDING_ROOM_PARTICIPANTS"
 #define TEST_PEER_NAME "test"
 #define SESSION_REFUSED_MSG "Connection to peer refused, peer might be busy or disconnected, try again later"
 

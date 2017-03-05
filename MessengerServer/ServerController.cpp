@@ -242,11 +242,21 @@ void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string 
 				{
 					chatRooms.erase(position);
 
-					// TODO: Need to disconnect all users from it?
-
-					// TODO: Need to send notifications to all clients inside the room
-
+					// Notify the requesting user (In case he is not inside the room).
 					peersMessageSender.sendCloseRoomSuccess(peerSocket);
+
+					vector<User*> roomUsers = roomToClose->getParticipatingUsers();
+
+					// Notify every user in the room.
+					for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
+					{
+						// Get the current relevant socket
+						TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
+
+						// Notify the user that the room closed
+						peersMessageSender.sendRoomWasClosed(peerSocket);
+					}
+
 					printer.print("ChatRoom '" + roomName + "' has been closed by " +
 						      	  requestingUser->getUsername() + " (" + peerSocket->fromAddr() + ").");
 				}
@@ -289,7 +299,21 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 			ChatRoom* userRoom = getRoomByUser(requestingUser);
 			userRoom->removeParticipant(requestingUser);
 
+			vector<User*> roomUsers = userRoom->getParticipatingUsers();
+
+			// Notify every user in the room.
+			for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
+			{
+				// Get the current relevant socket
+				TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
+
+				// Notify the user that someone has left.
+				peersMessageSender.sendSomeoneLeftRoom(peerSocket, requestingUser->getUsername());
+			}
+
+			// Notify the user he has left the room
 			peersMessageSender.sendExitRoomSuccess(peerSocket);
+
 			printer.print(requestingUser->getUsername() + " has left ChatRoom '" + userRoom->getName() + "'.");
 		}
 		// Session
@@ -303,17 +327,20 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 
 			if (success)
 			{
-				peersMessageSender.sendCloseSessionSuccess(peerSocket);
-				string otherUserName = userSession->getSecondUser()->getUsername();
+				string otherUsername = userSession->getSecondUser()->getUsername();
 
 				// If the requesting user is the second user in the session
-				if (otherUserName.compare(requestingUser->getUsername()) == 0)
+				if (otherUsername.compare(requestingUser->getUsername()) == 0)
 				{
-					otherUserName = userSession->getFirstUser()->getUsername();
+					otherUsername = userSession->getFirstUser()->getUsername();
 				}
 
+				// Notify both users that the session has ended.
+				peersMessageSender.sendCloseSessionSuccess(peerSocket, otherUsername);
+				peersMessageSender.sendCloseSessionSuccess(peerSocket, requestingUser->getUsername());
+
 				printer.print(requestingUser->getUsername() +
-							  " has closed the Session with " + otherUserName + ".");
+							  " has closed the Session with " + otherUsername + ".");
 			}
 		}
 		else
@@ -357,9 +384,29 @@ void ServerController::notifyJoinChatRoomRequest(TCPSocket* peerSocket, string r
 			}
 			else
 			{
+				// Notify the user he has joined the room.
+				peersMessageSender.sendJoinRoomSuccess(peerSocket);
+				vector<User*> roomUsers = room->getParticipatingUsers();
+
+				// Send the relevant data to every user.
+				for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
+				{
+					// Get the current relevant socket
+					TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
+
+					// Notify the old user that someone has joined.
+					peersMessageSender.sendSomeoneJoinedRoom(peerSocket, requestingUser->getUsername());
+
+					// Send both the joining user and the old user each-other's information
+					peersMessageSender.sendConnectionData(peerSocket, currentUserSocket);
+				}
+
+				// Notify the user that he has all the room users data.
+				peersMessageSender.sendMessage(peerSocket, DONE_SENDING_ROOM_PARTICIPANTS);
+
+				// Add the requesting user to the room.
 				room->addParticipant(requestingUser);
 
-				peersMessageSender.sendJoinRoomSuccess(peerSocket);
 				printer.print(requestingUser->getUsername() + " (" + peerSocket->fromAddr() +
 					      	  ") joined ChatRoom '" + roomName + "'");
 			}

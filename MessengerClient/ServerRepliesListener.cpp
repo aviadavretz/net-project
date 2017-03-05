@@ -163,12 +163,27 @@ void ServerRepliesListener::run()
 		case (CLOSE_ROOM_SUCCESS):
 		{
 			// TODO: Complete
-			observer->notifyRoomClosed();
+			observer->notifyRoomClosedSuccess();
 			break;
 		}
 		case (DISCONNECT_SUCCESS):
 		{
 			observer->notifyDisconnected();
+			break;
+		}
+		case (SOMEONE_JOINED_CHAT_ROOM):
+		{
+			observer->notifySomeoneJoinedRoom();
+			break;
+		}
+		case (SOMEONE_LEFT_CHAT_ROOM):
+		{
+			observer->notifySomeoneLeftRoom();
+			break;
+		}
+		case (ROOM_WAS_CLOSED):
+		{
+			observer->notifyRoomClosedByOwner();
 			break;
 		}
 		case (GET_REGISTERED_USERS):

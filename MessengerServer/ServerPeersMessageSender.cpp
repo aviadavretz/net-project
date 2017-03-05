@@ -37,6 +37,29 @@ void ServerPeersMessageSender::sendStringList(TCPSocket* peer, int code, vector<
 	}
 }
 
+void ServerPeersMessageSender::sendRoomWasClosed(TCPSocket* peer)
+{
+	sendCode(peer, ROOM_WAS_CLOSED);
+}
+
+void ServerPeersMessageSender::sendSomeoneJoinedRoom(TCPSocket* peer, string joiningUsername)
+{
+	// Send the code
+	sendCode(peer, SOMEONE_JOINED_CHAT_ROOM);
+
+	// Send the joining username
+	sendMessage(peer, joiningUsername);
+}
+
+void ServerPeersMessageSender::sendSomeoneLeftRoom(TCPSocket* peer, string leavingUsername)
+{
+	// Send the code
+	sendCode(peer, SOMEONE_LEFT_CHAT_ROOM);
+
+	// Send the leaving username
+	sendMessage(peer, leavingUsername);
+}
+
 void ServerPeersMessageSender::sendStatusFree(TCPSocket* peer)
 {
 	sendCode(peer, STATUS_FREE);
@@ -92,9 +115,13 @@ void ServerPeersMessageSender::sendExitRoomSuccess(TCPSocket* peer)
 	sendCode(peer, EXIT_ROOM_SUCCESS);
 }
 
-void ServerPeersMessageSender::sendCloseSessionSuccess(TCPSocket* peer)
+void ServerPeersMessageSender::sendCloseSessionSuccess(TCPSocket* peer, string otherUsername)
 {
+	// Send the code
 	sendCode(peer, CLOSE_SESSION_SUCCESS);
+
+	// Send the other users name
+	sendMessage(peer, otherUsername);
 }
 
 void ServerPeersMessageSender::sendNotInSessionOrRoom(TCPSocket* peer)
@@ -198,12 +225,22 @@ void ServerPeersMessageSender::sendEstablishedSessionCommunicationDetails(TCPSoc
 	// send communication details to the session initiating peer
 	sendOpenSessionSuccess(initiatingPeer);
 	sendMessage(initiatingPeer, receivingUser->getUsername());
-	sendMessage(initiatingPeer, receivingPeer->fromAddr());
 
 	// send communication details to the session receiving peer
 	sendOpenSessionSuccess(receivingPeer);
 	sendMessage(receivingPeer, initiatingUser->getUsername());
-	sendMessage(receivingPeer, initiatingPeer->fromAddr());
+
+	// Send both each others connection data
+	sendConnectionData(initiatingPeer, receivingPeer);
+}
+
+void ServerPeersMessageSender::sendConnectionData(TCPSocket* first, TCPSocket* second)
+{
+	// Send the second address to the first user
+	sendMessage(first, second->fromAddr());
+
+	// Send the first address to the second user
+	sendMessage(second, first->fromAddr());
 }
 
 
