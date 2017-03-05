@@ -148,7 +148,16 @@ void ClientController::notifyDisconnected()
 
 void ClientController::notifySessionEstablished()
 {
+	// Receive the relevant data from the server.
+	string otherUsername = srvConnection.receiveMessage();
+	string otherUserAddr = srvConnection.receiveMessage();
 
+	// TODO: Open socket
+//	// TODO: Move this to TCPProtocol
+//	int SESSION_PORT = 3434;
+//	UDPSocket* sessionSocket = new UDPSocket(otherUserAddr, SESSION_PORT);
+
+	printer.print("Session with " + otherUsername + " (" + otherUserAddr + ") established.");
 }
 
 void ClientController::notifyChatRoomOpened()
@@ -176,5 +185,5 @@ void ClientController::notifyRoomClosed()
 
 }
 
-ServerRepliesObserver::~ServerRepliesObserver(){}
+ServerRepliesObserver::~ServerRepliesObserver() {}
 

@@ -21,6 +21,7 @@ public:
 	void printWelcomeMessage();
 	void printMenu();
 	void printUnknownCommand();
+	void printUnknownReplyCode(int replyCode);
 	void printExitMessage();
 	void printInvalidArgsNum();
 	void printServerReplyMessage(int replyCode, string relevantData);

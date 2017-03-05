@@ -237,7 +237,7 @@ void ServerRepliesListener::run()
 		}
 		default:
 		{
-			printer->print("Unknown reply-code.");
+			printer->printUnknownReplyCode(replyCode);
 		}
 		}
 	}

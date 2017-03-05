@@ -7,6 +7,7 @@
 
 #include "ClientTerminalPrinter.h"
 #include <iostream>
+#include <sstream>
 
 void ClientTerminalPrinter::printWelcomeMessage()
 {
@@ -35,10 +36,16 @@ void ClientTerminalPrinter::printMenu()
 	cout << "----------------------------------------------" << endl;
 }
 
-// TODO: Delete this when finished with the project
 void ClientTerminalPrinter::print(string str)
 {
 	cout << str << endl;
+}
+
+void ClientTerminalPrinter::printUnknownReplyCode(int replyCode)
+{
+	std::ostringstream strStream;
+	strStream << "Unknown Reply-code: " << replyCode;
+	cout << strStream.str() << endl;
 }
 
 void ClientTerminalPrinter::printInvalidArgsNum()
