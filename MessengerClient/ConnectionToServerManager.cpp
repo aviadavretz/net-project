@@ -24,6 +24,16 @@ string ConnectionToServerManager::receiveMessage()
 	return string(messageContent);
 }
 
+string ConnectionToServerManager::getAddr()
+{
+	if (socketToServer != NULL)
+	{
+		return socketToServer->fromAddr();
+	}
+
+	return "N/A";
+}
+
 vector<string> ConnectionToServerManager::receiveMessages(int messagesNumber)
 {
 	vector<string> messages;

@@ -93,14 +93,36 @@ void ServerController::notifyStatusRequest(TCPSocket* peerSocket)
 		{
 			// The user is in a room
 			peersMessageSender.sendStatusInARoom(peerSocket);
-			printer.print(requestingUser->getUsername() + " requested status: In a room.");
+
+			// Get the room in which the user is
+			ChatRoom* usersRoom = getRoomByUser(requestingUser);
+			string roomName = usersRoom->getName();
+
+			// Send the roomName to the user
+			peersMessageSender.sendMessage(peerSocket, roomName);
+
+			printer.print(requestingUser->getUsername() + " requested status: In a room (" + roomName + ").");
 		}
 		// Check if the user is in a session
 		else if (isUserInSession(requestingUser))
 		{
 			// The user is in a session
 			peersMessageSender.sendStatusInASession(peerSocket);
-			printer.print(requestingUser->getUsername() + " requested status: In a session.");
+
+			// Get the session in which the user is
+			Session* usersSession = getSessionByUser(requestingUser);
+			string otherUserName = usersSession->getSecondUser()->getUsername();
+
+			// In case requesting user is the second one in the session
+			if (otherUserName.compare(requestingUser->getUsername()))
+			{
+				otherUserName = usersSession->getFirstUser()->getUsername();
+			}
+
+			// Send the otherUserName to the user
+			peersMessageSender.sendMessage(peerSocket, otherUserName);
+
+			printer.print(requestingUser->getUsername() + " requested status: In a session with " + otherUserName + ".");
 		}
 		else
 		{
@@ -108,6 +130,9 @@ void ServerController::notifyStatusRequest(TCPSocket* peerSocket)
 			peersMessageSender.sendStatusFree(peerSocket);
 			printer.print(requestingUser->getUsername() + " requested status: Not in a room or session.");
 		}
+
+		// Send the username to the user.
+		peersMessageSender.sendMessage(peerSocket, requestingUser->getUsername());
 	}
 }
 

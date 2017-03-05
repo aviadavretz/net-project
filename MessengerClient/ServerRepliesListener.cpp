@@ -61,7 +61,7 @@ void ServerRepliesListener::run()
 		}
 		case (NOT_LOGGED_IN):
 		{
-			printer->print("You are not logged in.");
+			printer->print("Connected to " + connection->getAddr() + ", but not Logged-in.");
 			break;
 		}
 		case (ALREADY_BUSY):
@@ -106,17 +106,28 @@ void ServerRepliesListener::run()
 		}
 		case (STATUS_FREE):
 		{
-			printer->print("You are logged in, but not in a room/session.");
+			string addr = connection->getAddr();
+			string username = connection->receiveMessage();
+
+			printer->print("Connected to " + addr + ", Logged-in as " + username + ".");
 			break;
 		}
 		case (STATUS_IN_A_ROOM):
 		{
-			printer->print("You are in a room.");
+			string addr = connection->getAddr();
+			string roomName = connection->receiveMessage();
+			string username = connection->receiveMessage();
+
+			printer->print("Connected to " + addr + ", Logged-in as " + username + ", in a ChatRoom named '" + roomName + "'.");
 			break;
 		}
 		case (STATUS_IN_A_SESSION):
 		{
-			printer->print("You are in a session.");
+			string addr = connection->getAddr();
+			string otherUsername = connection->receiveMessage();
+			string username = connection->receiveMessage();
+
+			printer->print("Connected to " + addr + ", Logged-in as " + username + ", in a Session with " + otherUsername + ".");
 			break;
 		}
 		case (SESSION_ESTABLISHED):

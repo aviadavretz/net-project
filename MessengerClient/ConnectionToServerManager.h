@@ -19,6 +19,7 @@ class ConnectionToServerManager {
 	TCPSocket* socketToServer;
 
 public:
+	string getAddr();
 	int receiveReplyCode();
 	string receiveMessage();
 	vector<string> receiveMessages(int messagesNumber);
