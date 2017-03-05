@@ -114,7 +114,7 @@ void ServerController::notifyStatusRequest(TCPSocket* peerSocket)
 			string otherUserName = usersSession->getSecondUser()->getUsername();
 
 			// In case requesting user is the second one in the session
-			if (otherUserName.compare(requestingUser->getUsername()))
+			if (otherUserName.compare(requestingUser->getUsername()) == 0)
 			{
 				otherUserName = usersSession->getFirstUser()->getUsername();
 			}
@@ -509,7 +509,7 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 			peersMessageSender.sendCloseSessionSuccess(otherSocket, requestingUser->getUsername());
 		}
 
-		notification = user->getUsername() + " (" +peerSocket->fromAddr() + ") has disconnected.";
+		notification = requestingUser->getUsername() + " (" +peerSocket->fromAddr() + ") has disconnected.";
 
 		// Remove the user from the vector of connected users.
 		loggedInUsers.erase(peerSocket);
@@ -519,13 +519,13 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 		notification = peerSocket->fromAddr() + " has disconnected.";
 	}
 
+	// Stop listening to this peer.
 	peersListener.removePeer(peerSocket);
 
 	printer.print(notification);
 
 	// Send back confirmation to the client
 	peersMessageSender.sendDisconnectSuccess(peerSocket);
-	//peerSocket->close();
 }
 
 void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username, string password)
