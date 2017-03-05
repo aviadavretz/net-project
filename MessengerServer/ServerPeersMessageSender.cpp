@@ -40,7 +40,7 @@ void ServerPeersMessageSender::sendStringList(TCPSocket* peer, int code, vector<
 void ServerPeersMessageSender::sendRoomWasClosed(TCPSocket* peer, string roomName)
 {
 	// Send the code
-	sendCode(peer, ROOM_WAS_CLOSED);
+	sendCode(peer, ROOM_CLOSED_BY_OWNER);
 
 	// Send the roomName
 	sendMessage(peer, roomName);
@@ -205,6 +205,11 @@ void ServerPeersMessageSender::sendConnectSuccess(TCPSocket* peer)
 void ServerPeersMessageSender::sendDisconnectSuccess(TCPSocket* peer)
 {
 	sendCode(peer, DISCONNECT_SUCCESS);
+}
+
+void ServerPeersMessageSender::sendServerShuttingDown(TCPSocket* peer)
+{
+	sendCode(peer, SERVER_SHUTTING_DOWN);
 }
 
 void ServerPeersMessageSender::sendAllRegisterdUsers(TCPSocket* peer, vector<string> usernames)

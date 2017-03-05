@@ -19,6 +19,16 @@ void ServerController::startServer()
 
 void ServerController::stopServer()
 {
+	vector<TCPSocket*> allConnectedSockets = peersListener.getAllConnectedSockets();
+
+	// Notify every connected socket that the server is shutting down (Not just logged-in, but also just connected sockets).
+	for (vector<TCPSocket*>::iterator iterator = allConnectedSockets.begin(); iterator != allConnectedSockets.end(); iterator++)
+	{
+		// Notify the current user that the server is shutting down
+		peersMessageSender.sendServerShuttingDown((*iterator));
+	}
+
+	// Stop listening and accepting incoming connections
 	peersAcceptor.stop();
 	peersListener.stop();
 }
@@ -732,6 +742,7 @@ TCPSocket* ServerController::getPeerSocketByUsername(string username)
  		User* currentUser = (*iterator).second;
 
  		// TODO: Somewhere we insert the socket after it connects and the User* remains NULL.
+ 		// TODO: It's ok though, because that way, when we shutdown server we notify all connected (and just logged-in) users.
  		// In case the map holds the socket as the key, but no value.
  		if (currentUser == NULL) { continue; }
 

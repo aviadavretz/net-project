@@ -181,9 +181,14 @@ void ServerRepliesListener::run()
 			observer->notifySomeoneLeftRoom();
 			break;
 		}
-		case (ROOM_WAS_CLOSED):
+		case (ROOM_CLOSED_BY_OWNER):
 		{
 			observer->notifyRoomClosedByOwner();
+			break;
+		}
+		case (SERVER_SHUTTING_DOWN):
+		{
+			observer->notifyServerShuttingDown();
 			break;
 		}
 		case (GET_REGISTERED_USERS):

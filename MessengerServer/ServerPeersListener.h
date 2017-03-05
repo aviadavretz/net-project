@@ -47,6 +47,7 @@ public:
 	void addPeer(TCPSocket* peer);
 	void removePeer(TCPSocket* peer);
 	void stop();
+	vector<TCPSocket*> getAllConnectedSockets();
 };
 
 

@@ -135,12 +135,13 @@ void ClientController::requestStatus()
 
 void ClientController::notifyDisconnected()
 {
+	// TODO: Close all UDP sockets.
+
 	// Stop listening for server responses
 	listener->stop();
 
 	// Close the socket
 	srvConnection.closeSocket();
-
 	connected = false;
 
 	printer.print("Disconnected from server.");
@@ -238,6 +239,14 @@ void ClientController::notifyRoomClosedByOwner()
 void ClientController::notifyRoomClosedSuccess()
 {
 	printer.print("Closing the room..");
+}
+
+void ClientController::notifyServerShuttingDown()
+{
+	printer.print("Server is shutting down, Disconnecting..");
+
+	// Disconnect and stop listening to the server.
+	notifyDisconnected();
 }
 
 ServerRepliesObserver::~ServerRepliesObserver() {}

@@ -24,6 +24,7 @@ public:
 	virtual void notifyDisconnected() = 0;
 	virtual void notifySomeoneJoinedRoom() = 0;
 	virtual void notifySomeoneLeftRoom() = 0;
+	virtual void notifyServerShuttingDown() = 0;
 
 	virtual ~ServerRepliesObserver() = 0;
 };

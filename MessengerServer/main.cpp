@@ -67,6 +67,8 @@ int main()
 		}
 		else if (userCommand.compare(SHUTDOWN_SERVER) == 0)
 		{
+			// Stop the server
+			controller.stopServer();
 			printer.printExitMessage();
 			shouldContinue = false;
 		}

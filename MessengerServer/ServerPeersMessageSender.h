@@ -26,6 +26,7 @@ class ServerPeersMessageSender
 	void sendOpenSessionSuccess(TCPSocket* peer);
 
 public:
+	void sendServerShuttingDown(TCPSocket* peer);
 	void sendMessage(TCPSocket* peer, string message);
 	// TODO: Don't really need all these functions, only: sendCode(TCPSocket* peer, int code) and a bunch of constants
 	void sendClientAlreadyLoggedIn(TCPSocket* peer);

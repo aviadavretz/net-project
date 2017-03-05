@@ -54,6 +54,7 @@ class ClientController: public ServerRepliesObserver
 		void notifyRoomClosedSuccess();
 		void notifySomeoneJoinedRoom();
 		void notifySomeoneLeftRoom();
+		void notifyServerShuttingDown();
 };
 
 #endif /* CLIENTCONTROLLER_H_ */

@@ -14,6 +14,11 @@ ServerPeersListener::ServerPeersListener(PeerMessagesObserver* observer)
 	shouldContinue = true;
 }
 
+vector<TCPSocket*> ServerPeersListener::getAllConnectedSockets()
+{
+	return peers;
+}
+
 void ServerPeersListener::run()
 {
 	while (shouldContinue)
