@@ -162,24 +162,23 @@ void ClientController::notifySessionEstablished()
 
 void ClientController::notifyChatRoomOpened()
 {
-	printer.print("ChatRoom created.");
+	// Receive the relevant data from the server.
+	string roomName = srvConnection.receiveMessage();
+
+	printer.print("ChatRoom '" + roomName + "' created.");
 }
 
 void ClientController::notifyJoinedRoom()
 {
-	// TODO: Get all the users' connection data , and add another UDP socket for each
-
 	printer.print("Establishing connections...");
 
 	string currentUserAddress = srvConnection.receiveMessage();
 
+	// Get all the users' connection data ,and add another UDP socket for each
 	// While we haven't received the DONE_SENDING_ROOM_PARTICIPANTS code
 	while (currentUserAddress.compare(DONE_SENDING_ROOM_PARTICIPANTS) != 0)
 	{
 		// TODO: Add a UDPSocket
-
-		// TODO: Remove this once we establish real connections
-		printer.print(currentUserAddress);
 
 		// Get the next user address
 		currentUserAddress = srvConnection.receiveMessage();
@@ -190,9 +189,6 @@ void ClientController::notifyJoinedRoom()
 
 void ClientController::notifySomeoneJoinedRoom()
 {
-	// TODO: REMOVE THIS
-	printer.print("Someone joined the room.");
-
 	// Receive the relevant data from the server.
 	string joiningUsername = srvConnection.receiveMessage();
 	string joininguserAddr = srvConnection.receiveMessage();
@@ -241,7 +237,7 @@ void ClientController::notifyRoomClosedByOwner()
 
 void ClientController::notifyRoomClosedSuccess()
 {
-	printer.print("Closing the room for you..");
+	printer.print("Closing the room..");
 }
 
 ServerRepliesObserver::~ServerRepliesObserver() {}

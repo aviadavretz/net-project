@@ -254,7 +254,7 @@ void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string 
 						TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
 
 						// Notify the user that the room closed
-						peersMessageSender.sendRoomWasClosed(peerSocket);
+						peersMessageSender.sendRoomWasClosed(currentUserSocket, roomName);
 					}
 
 					printer.print("ChatRoom '" + roomName + "' has been closed by " +
@@ -308,7 +308,7 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 				TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
 
 				// Notify the user that someone has left.
-				peersMessageSender.sendSomeoneLeftRoom(peerSocket, requestingUser->getUsername());
+				peersMessageSender.sendSomeoneLeftRoom(currentUserSocket, requestingUser->getUsername());
 			}
 
 			// Notify the user he has left the room
@@ -327,6 +327,7 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 
 			if (success)
 			{
+				// Get the other username
 				string otherUsername = userSession->getSecondUser()->getUsername();
 
 				// If the requesting user is the second user in the session
@@ -335,9 +336,12 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 					otherUsername = userSession->getFirstUser()->getUsername();
 				}
 
+				// Get the other socket
+				TCPSocket* otherSocket = getPeerSocketByUsername(otherUsername);
+
 				// Notify both users that the session has ended.
 				peersMessageSender.sendCloseSessionSuccess(peerSocket, otherUsername);
-				peersMessageSender.sendCloseSessionSuccess(peerSocket, requestingUser->getUsername());
+				peersMessageSender.sendCloseSessionSuccess(otherSocket, requestingUser->getUsername());
 
 				printer.print(requestingUser->getUsername() +
 							  " has closed the Session with " + otherUsername + ".");
@@ -395,7 +399,7 @@ void ServerController::notifyJoinChatRoomRequest(TCPSocket* peerSocket, string r
 					TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
 
 					// Notify the old user that someone has joined.
-					peersMessageSender.sendSomeoneJoinedRoom(peerSocket, requestingUser->getUsername());
+					peersMessageSender.sendSomeoneJoinedRoom(currentUserSocket, requestingUser->getUsername());
 
 					// Send both the joining user and the old user each-other's information
 					peersMessageSender.sendConnectionData(peerSocket, currentUserSocket);
@@ -438,7 +442,7 @@ void ServerController::notifyOpenChatRoomRequest(TCPSocket* peerSocket, string r
 
 			chatRooms.push_back(newRoom);
 
-			peersMessageSender.sendOpenRoomSuccess(peerSocket);
+			peersMessageSender.sendOpenRoomSuccess(peerSocket, roomName);
 			printer.print("ChatRoom '" + roomName + "' has been created by " +
 				      	  requestingUser->getUsername() + " (" + peerSocket->fromAddr() + ").");
 		}
@@ -450,19 +454,34 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 	string notification;
 	if (isPeerLoggedIn(peerSocket))
 	{
-		User* user = getUserByPeer(peerSocket);
+		User* requestingUser = getUserByPeer(peerSocket);
 
 		// Check if user is busy
-		if (isUserInChatRoom(user))
+		if (isUserInChatRoom(requestingUser))
 		{
 			// Remove the user from the room he is inside
-			ChatRoom* usersRoom = getRoomByUser(user);
-			usersRoom->removeParticipant(user);
+			ChatRoom* usersRoom = getRoomByUser(requestingUser);
+			usersRoom->removeParticipant(requestingUser);
+
+			// Notify all other room users that the requesting user has left
+			vector<User*> roomUsers = usersRoom->getParticipatingUsers();
+
+			// Notify every user in the room.
+			for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
+			{
+				// Get the current relevant socket
+				TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
+
+				// Notify the user that someone has left.
+				peersMessageSender.sendSomeoneLeftRoom(currentUserSocket, requestingUser->getUsername());
+			}
 		}
-		else if (isUserInSession(user))
+		else if (isUserInSession(requestingUser))
 		{
 			// Close the session the user is in
-			Session* usersSession = getSessionByUser(user);
+			Session* usersSession = getSessionByUser(requestingUser);
+
+			// TODO: closeSession(userSession); instead of the next few lines
 
 			// TODO: Implement this without #include <algorithm>?
 			vector<Session*>::iterator position = std::find(sessions.begin(), sessions.end(), usersSession);
@@ -472,6 +491,22 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 			{
 				sessions.erase(position);
 			}
+
+			// Notify the other user
+			// Get the other username
+			string otherUsername = usersSession->getSecondUser()->getUsername();
+
+			// If the requesting user is the second user in the session
+			if (otherUsername.compare(requestingUser->getUsername()) == 0)
+			{
+				otherUsername = usersSession->getFirstUser()->getUsername();
+			}
+
+			// Get the other socket
+			TCPSocket* otherSocket = getPeerSocketByUsername(otherUsername);
+
+			// Notify the other user that the session has ended.
+			peersMessageSender.sendCloseSessionSuccess(otherSocket, requestingUser->getUsername());
 		}
 
 		notification = user->getUsername() + " (" +peerSocket->fromAddr() + ") has disconnected.";

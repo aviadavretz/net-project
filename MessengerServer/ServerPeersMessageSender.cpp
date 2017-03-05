@@ -37,9 +37,13 @@ void ServerPeersMessageSender::sendStringList(TCPSocket* peer, int code, vector<
 	}
 }
 
-void ServerPeersMessageSender::sendRoomWasClosed(TCPSocket* peer)
+void ServerPeersMessageSender::sendRoomWasClosed(TCPSocket* peer, string roomName)
 {
+	// Send the code
 	sendCode(peer, ROOM_WAS_CLOSED);
+
+	// Send the roomName
+	sendMessage(peer, roomName);
 }
 
 void ServerPeersMessageSender::sendSomeoneJoinedRoom(TCPSocket* peer, string joiningUsername)
@@ -154,9 +158,13 @@ void ServerPeersMessageSender::sendRoomNameExists(TCPSocket* peer)
 	sendCode(peer, ROOM_NAME_EXISTS);
 }
 
-void ServerPeersMessageSender::sendOpenRoomSuccess(TCPSocket* peer)
+void ServerPeersMessageSender::sendOpenRoomSuccess(TCPSocket* peer, string roomName)
 {
+	// Send the code
 	sendCode(peer, OPEN_CHAT_ROOM_SUCCESS);
+
+	// Send the room name
+	sendMessage(peer, roomName);
 }
 
 void ServerPeersMessageSender::sendClientAlreadyLoggedIn(TCPSocket* peer)

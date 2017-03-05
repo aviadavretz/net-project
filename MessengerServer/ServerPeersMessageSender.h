@@ -39,7 +39,7 @@ public:
 	void sendConnectSuccess(TCPSocket* peer);
 	void sendDisconnectSuccess(TCPSocket* peer);
 	void sendRoomNameExists(TCPSocket* peer);
-	void sendOpenRoomSuccess(TCPSocket* peer);
+	void sendOpenRoomSuccess(TCPSocket* peer, string roomName);
 	void sendRoomDoesntExist(TCPSocket* peer);
 	void sendJoinRoomSuccess(TCPSocket* peer);
 	void sendAlreadyBusy(TCPSocket* peer);
@@ -63,7 +63,7 @@ public:
 												    TCPSocket* receivingPeer, User* receivingUser);
 	void sendSomeoneJoinedRoom(TCPSocket* peer, string joiningUsername);
 	void sendSomeoneLeftRoom(TCPSocket* peer, string joiningUsername);
-	void sendRoomWasClosed(TCPSocket* peer);
+	void sendRoomWasClosed(TCPSocket* peer, string roomName);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */
