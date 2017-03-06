@@ -17,6 +17,11 @@ PeerMessageListener::PeerMessageListener(SessionMessageObserver* observer)
 	this->sessionSocket = new UDPSocket(SESSION_PORT);
 }
 
+bool PeerMessageListener::arePeersEmpty()
+{
+	return peers.size() == 0;
+}
+
 int PeerMessageListener::getListeningPort()
 {
 	return sessionSocket->getListeningPort();
@@ -86,8 +91,6 @@ void PeerMessageListener::removePeer(PeerInfo* peer)
 	 // end() means the element was not found
 	if (position != peers.end())
 	{
-		ClientTerminalPrinter printer;
-
 		peers.erase(position);
 	}
 }

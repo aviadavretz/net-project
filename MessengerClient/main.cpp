@@ -254,30 +254,31 @@ int main()
 				continue;
 			}
 
-			// Get the args, and make sure the number of args is correct
-			vector<string> args = commandUtils.getCommandArgs(userCommand, SEND_MESSAGE);
-			if (args.size() != SEND_MESSAGE_ARGS_NUM)
+			// Get the message (the single arg).
+			string message = commandUtils.getCommandSingleArg(userCommand, SEND_MESSAGE);
+
+			// Check if logged-in.
+			if (controller.isLoggedIn())
 			{
-				printer.printInvalidArgsNum();
-				continue;
-			}
+				// Make sure we are in a session/room, otherwise there's no recipient to the message.
+				if (controller.isInSessionOrRoom())
+				{
+					// Get the username we saved when we logged-in successfully
+					string sendingUsername = controller.getLoggedInUsername();
 
-			// TODO: Check if logged-in.
-
-			// Make sure we are in a session/room, otherwise there's no recipient to the message.
-			if (controller.isInSessionOrRoom())
-			{
-				string message = args[0];
-				// TODO: Save the username when we login successfully
-				string sendingUsername = "DUDEWUT";
-
-				// Send the message
-				controller.sendMessage(sendingUsername, message);
+					// Send the message
+					controller.sendMessage(sendingUsername, message);
+				}
+				else
+				{
+					printer.print("No one to send messages to.");
+				}
 			}
 			else
 			{
-				printer.print("You are not in a session or room.");
+				printer.print("You are not logged-in.");
 			}
+
 		}
 		// ------------
 		// PRINT_STATUS

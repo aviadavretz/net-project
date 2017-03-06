@@ -41,7 +41,7 @@ void ServerRepliesListener::run()
 		}
 		case (LOGIN_SUCCEEDED):
 		{
-			printer->print("Login successful!");
+			observer->notifyLogInSuccess();
 			break;
 		}
 		case (REGISTER_FAILURE):

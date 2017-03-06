@@ -63,3 +63,14 @@ vector<string> CommandUtils::getCommandArgs(string command, string prefix)
 	return args;
 }
 
+/**
+ * Returns one single argument.
+ */
+string CommandUtils::getCommandSingleArg(string command, string prefix)
+{
+	// Cut the command itself, and stay only with the arg
+	string argsString = command.substr(prefix.length()+1, command.length());
+
+	return argsString;
+}
+

@@ -17,6 +17,7 @@ class CommandUtils {
 public:
 	bool doesCommandHavePrefix(string command, string prefix);
 	vector<string> getCommandArgs(string command, string prefix);
+	string getCommandSingleArg(string command, string prefix);
 
 	CommandUtils();
 	virtual ~CommandUtils();

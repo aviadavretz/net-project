@@ -14,7 +14,6 @@
 #include "ServerRepliesObserver.h"
 #include "ServerRepliesListener.h"
 #include "PeerMessageListener.h"
-//#include <stdlib.h>
 #include <sstream>
 
 using namespace std;
@@ -26,6 +25,8 @@ class ClientController: public ServerRepliesObserver, SessionMessageObserver
 	ServerRepliesListener* srvListener;
 	PeerMessageListener* peerListener;
 	bool connected;
+	bool loggedIn;
+	string username;
 
 	void sendCommandToServer(int commandCode, string args);
 	void sendCommandToServer(int commandCode);
@@ -33,6 +34,8 @@ class ClientController: public ServerRepliesObserver, SessionMessageObserver
 	public:
 		ClientController();
 		bool isConnected();
+		bool isLoggedIn();
+		string getLoggedInUsername();
 		bool isInSessionOrRoom();
 		void connect(string address);
 		void login(string username, string password);
@@ -48,6 +51,7 @@ class ClientController: public ServerRepliesObserver, SessionMessageObserver
 		void requestAllRooms();
 		void requestAllUsersInRoom(string roomName);
 		void requestStatus();
+		void notifyLogInSuccess();
 		void notifyDisconnected();
 		void notifySessionEstablished();
 		void notifyChatRoomOpened();

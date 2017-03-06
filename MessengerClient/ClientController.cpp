@@ -8,7 +8,7 @@
 
 #include "ClientController.h"
 
-ClientController::ClientController() : connected(false), srvListener(NULL), peerListener(NULL) {}
+ClientController::ClientController() : connected(false), loggedIn(false), username("N/A"), srvListener(NULL), peerListener(NULL) {}
 
 bool ClientController::isConnected()
 {
@@ -17,7 +17,17 @@ bool ClientController::isConnected()
 
 bool ClientController::isInSessionOrRoom()
 {
-	return peerListener != NULL;
+	return !peerListener->arePeersEmpty();
+}
+
+bool ClientController::isLoggedIn()
+{
+	return loggedIn;
+}
+
+string ClientController::getLoggedInUsername()
+{
+	return username;
 }
 
 void ClientController::sendMessage(string sendingUsername, string message)
@@ -89,6 +99,9 @@ void ClientController::login(string username, string password)
 {
 	// Send login command to the server with username and password
 	sendCommandToServer(LOGIN, username + " " + password);
+
+	// Save the username for later (If login fails, we won't use it anyway).
+	this->username = username;
 }
 
 void ClientController::registerUser(string username, string password)
@@ -163,6 +176,12 @@ void ClientController::requestStatus()
 	sendCommandToServer(GET_STATUS);
 }
 
+void ClientController::notifyLogInSuccess()
+{
+	loggedIn = true;
+	printer.print("Login successful as " + username + ".");
+}
+
 void ClientController::notifyDisconnected()
 {
 	// Stop listening to peers messages
@@ -173,6 +192,8 @@ void ClientController::notifyDisconnected()
 
 	// Close the socket
 	srvConnection.closeSocket();
+	username = "N/A";
+	loggedIn = false;
 	connected = false;
 
 	printer.print("Disconnected from server.");

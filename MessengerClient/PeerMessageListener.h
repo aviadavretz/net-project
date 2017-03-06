@@ -34,6 +34,7 @@ public:
 	void addPeer(string username, string ip, int port);
 	void removePeerByUsername(string username);
 	void removeAllPeers();
+	bool arePeersEmpty();
 	void stop();
 	int getListeningPort();
 
