@@ -14,7 +14,8 @@
 #include "ServerRepliesObserver.h"
 #include "ServerRepliesListener.h"
 #include "PeerMessageListener.h"
-#include <stdlib.h>
+//#include <stdlib.h>
+#include <sstream>
 
 using namespace std;
 

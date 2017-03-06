@@ -33,6 +33,7 @@ class ServerTerminalPrinter
 	void printRoomUsers(ChatRoom* room, string requestedRoomName);
 	void printNewPeerAccepted(string addr);
 	void printLoginSuccessful(string username, string addr);
+	void printListenPort(string addr, int port);
 
 	void print(string str);
 };

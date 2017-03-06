@@ -16,6 +16,11 @@ PeerMessageListener::PeerMessageListener(SessionMessageObserver* observer)
 	this->sessionSocket = new UDPSocket(SESSION_PORT);
 }
 
+int PeerMessageListener::getListeningPort()
+{
+	return sessionSocket->getListeningPort();
+}
+
 void PeerMessageListener::run()
 {
 	while (shouldContinue)
@@ -23,11 +28,7 @@ void PeerMessageListener::run()
 		// Try to receive a message
 		string message = readMessage();
 
-		// TODO: Fix this..
-		if (message.compare("") != 0)
-		{
-			observer->notifyMessageReceived(message);
-		}
+		observer->notifyMessageReceived(message);
 	}
 }
 
@@ -37,17 +38,11 @@ void PeerMessageListener::run()
 string PeerMessageListener::readMessage()
 {
 	char messageContent[256];
-	int messageLength;
+	int messageLength = 256;
 
-	// Receiving message length
-	sessionSocket->recv((char*)&messageLength, EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE);
-	messageLength = ntohl(messageLength);
-
-	// TODO: Fix this.. recv always returns empty message
-	if (messageLength == 0)
-	{
-		return "";
-	}
+//	// Receiving message length
+//	sessionSocket->recv((char*)&messageLength, EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE);
+//	messageLength = ntohl(messageLength);
 
 	// Receiving the message content
 	sessionSocket->recv(messageContent, messageLength);
@@ -55,8 +50,6 @@ string PeerMessageListener::readMessage()
 
 	return string(messageContent);
 }
-
-#include "ClientTerminalPrinter.h"
 
 void PeerMessageListener::sendMessage(string message)
 {
@@ -66,9 +59,6 @@ void PeerMessageListener::sendMessage(string message)
 		// Send the message to every one
 		PeerInfo peerInfo = *iterator;
 		sessionSocket->sendTo(message, peerInfo.getIp(), peerInfo.getPort());
-
-		ClientTerminalPrinter printer;
-		printer.print("Sent message: " + message);
 	}
 }
 
@@ -89,6 +79,11 @@ void PeerMessageListener::removePeerByUsername(string username)
 			peers.erase(iterator);
 		}
 	}
+}
+
+void PeerMessageListener::removeAllPeers()
+{
+	peers.clear();
 }
 
 /**

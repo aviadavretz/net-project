@@ -24,6 +24,23 @@ string ConnectionToServerManager::receiveMessage()
 	return string(messageContent);
 }
 
+int ConnectionToServerManager::receiveIntMessage()
+{
+	char messageContent[256];
+	int messageLength;
+
+	// Receiving message length
+	socketToServer->recv((char*)&messageLength, EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE);
+
+	messageLength = ntohl(messageLength);
+
+	// Receiving the message content
+	socketToServer->recv(messageContent, messageLength);
+	messageContent[messageLength] = '\0';
+
+	return atoi(messageContent);
+}
+
 string ConnectionToServerManager::getAddr()
 {
 	if (socketToServer != NULL)

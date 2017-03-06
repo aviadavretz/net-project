@@ -86,6 +86,14 @@ void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
 	peersMessageSender.sendConnectSuccess(peerSocket);
 }
 
+void ServerController::notifyListeningPort(TCPSocket* peerSocket, int listeningPort)
+{
+	// Save the users port.
+	peerListeningPorts[peerSocket] = listeningPort;
+
+	printer.printListenPort(peerSocket->fromAddr(), listeningPort);
+}
+
 void ServerController::notifyStatusRequest(TCPSocket* peerSocket)
 {
 	// Make sure the peer is logged in
@@ -189,13 +197,18 @@ void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string ot
 					}
 					else
 					{
+						// Get the listening port of each participant
+						int requestingUserPort = peerListeningPorts[peerSocket];
+						int otherUserPort = peerListeningPorts[otherPeer];
+
 						// Other user is not busy. Create the session
 						Session* session = new Session(requestingUser, otherUser);
 
 						sessions.push_back(session);
 
 						peersMessageSender.sendEstablishedSessionCommunicationDetails(
-								peerSocket, requestingUser, otherPeer, otherUser);
+								peerSocket, requestingUser, requestingUserPort,
+								otherPeer, otherUser, otherUserPort);
 
 						printer.print(requestingUser->getUsername() + " has created a Session with " + otherUserName);
 					}
@@ -416,6 +429,8 @@ void ServerController::notifyJoinChatRoomRequest(TCPSocket* peerSocket, string r
 				// Notify the user he has joined the room.
 				peersMessageSender.sendJoinRoomSuccess(peerSocket);
 				vector<User*> roomUsers = room->getParticipatingUsers();
+				int requestingUserPort = peerListeningPorts[peerSocket];
+				int otherUserPort;
 
 				// Send the relevant data to every user.
 				for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
@@ -425,12 +440,15 @@ void ServerController::notifyJoinChatRoomRequest(TCPSocket* peerSocket, string r
 					// Get the current relevant socket
 					TCPSocket* currentUserSocket = getPeerSocketByUsername(currentUsername);
 
+					// Get the listening port of the other participant
+					int otherUserPort = peerListeningPorts[currentUserSocket];
+
 					// Notify the old user that someone has joined.
 					peersMessageSender.sendSomeoneJoinedRoom(currentUserSocket);
 
 					// Send both the joining user and the old user each-other's information
-					peersMessageSender.sendConnectionData(peerSocket, requestingUser->getUsername(),
-														  currentUserSocket, currentUsername);
+					peersMessageSender.sendConnectionData(peerSocket, requestingUser->getUsername(), requestingUserPort,
+														  currentUserSocket, currentUsername, otherUserPort);
 				}
 
 				// Notify the user that he has all the room users data.
@@ -549,6 +567,9 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 
 	// Stop listening to this peer.
 	peersListener.removePeer(peerSocket);
+
+	// Delete the users listening port
+	peerListeningPorts.erase(peerSocket);
 
 	printer.print(notification);
 

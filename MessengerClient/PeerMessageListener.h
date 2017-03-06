@@ -32,7 +32,9 @@ public:
 	void sendMessage(string message);
 	void addPeer(string username, string ip, int port);
 	void removePeerByUsername(string username);
+	void removeAllPeers();
 	void stop();
+	int getListeningPort();
 
 	PeerMessageListener(SessionMessageObserver* observer);
 	virtual ~PeerMessageListener();

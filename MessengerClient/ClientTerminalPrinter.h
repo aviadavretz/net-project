@@ -31,6 +31,7 @@ public:
 	void printConnectedUsers(vector<string> connectedUsers);
 	void printRooms(vector<string> rooms);
 	void printUsersInRoom(vector<string> roomUsers);
+	void printConnectionEstablished(string otherUsername, string otherUserAddr, int otherUserListeningPort);
 };
 
 #endif /* CLIENTTERMINALPRINTER_H_ */

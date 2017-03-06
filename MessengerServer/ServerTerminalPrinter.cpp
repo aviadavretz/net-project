@@ -26,10 +26,14 @@ void ServerTerminalPrinter::printMenu()
 	cout << "----------------------------------------------" <<endl;
 }
 
-// TODO: Delete this when finished with the project
 void ServerTerminalPrinter::print(string str)
 {
 	cout << str << endl;
+}
+
+void ServerTerminalPrinter::printListenPort(string addr, int port)
+{
+	cout << addr + " is listening on port " << port << endl;
 }
 
 void ServerTerminalPrinter::printNewPeerAccepted(string addr)

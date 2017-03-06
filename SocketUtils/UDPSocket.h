@@ -28,7 +28,7 @@ public:
 	int reply(const string& msg);
 	void close();
 	string fromAddr();
-	int getPort();
+	int getListeningPort();
 };
 
 }

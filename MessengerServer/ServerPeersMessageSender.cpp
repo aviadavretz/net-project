@@ -229,28 +229,39 @@ void ServerPeersMessageSender::sendAllUsersInRoom(TCPSocket* peer, vector<string
 	sendStringList(peer, GET_USERS_IN_CHAT_ROOM, usernames);
 }
 
-void ServerPeersMessageSender::sendEstablishedSessionCommunicationDetails(TCPSocket* initiatingPeer, User* initiatingUser,
-																          TCPSocket* receivingPeer, User* receivingUser)
+void ServerPeersMessageSender::sendEstablishedSessionCommunicationDetails(TCPSocket* initiatingPeer, User* initiatingUser, int initiatingListenPort,
+																          TCPSocket* receivingPeer, User* receivingUser, int receivingListenPort)
 {
 	// Notify both peers that a session has been established
 	sendOpenSessionSuccess(initiatingPeer);
 	sendOpenSessionSuccess(receivingPeer);
 
 	// Send both each others connection data
-	sendConnectionData(initiatingPeer, initiatingUser->getUsername(),
-					   receivingPeer, receivingUser->getUsername());
+	sendConnectionData(initiatingPeer, initiatingUser->getUsername(), initiatingListenPort,
+					   receivingPeer, receivingUser->getUsername(), receivingListenPort);
 }
 
-void ServerPeersMessageSender::sendConnectionData(TCPSocket* first, string firstUsername,
-												  TCPSocket* second, string secondUsername)
+// TODO: Maybe use sendCode instead?
+#include <sstream>
+
+void ServerPeersMessageSender::sendConnectionData(TCPSocket* first, string firstUsername, int firstListenPort,
+												  TCPSocket* second, string secondUsername, int secondListenPort)
 {
-	// Send the second username & address to the first user
+	// Convert the ports to strings
+	ostringstream port1;
+	ostringstream port2;
+	port1 << firstListenPort;
+	port2 << secondListenPort;
+
+	// Send the second username, address & port to the first user
 	sendMessage(first, secondUsername);
 	sendMessage(first, second->fromAddr());
+	sendMessage(first, port2.str());
 
-	// Send the first username & address to the second user
+	// Send the first username, address & port to the second user
 	sendMessage(second, firstUsername);
 	sendMessage(second, first->fromAddr());
+	sendMessage(second, port1.str());
 }
 
 

@@ -29,6 +29,7 @@ public:
 	virtual void notifyListAllRoomsRequest(TCPSocket* peerSocket) = 0;
 	virtual void notifyListAllUsersInRoomRequest(TCPSocket* peerSocket, string roomName) = 0;
 	virtual void notifyStatusRequest(TCPSocket* peerSocket) = 0;
+	virtual void notifyListeningPort(TCPSocket* peerSocket, int listeningPort) = 0;
 	virtual ~PeerMessagesObserver() = 0;
 };
 

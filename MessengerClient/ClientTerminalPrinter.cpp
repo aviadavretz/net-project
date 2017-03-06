@@ -7,7 +7,6 @@
 
 #include "ClientTerminalPrinter.h"
 #include <iostream>
-#include <sstream>
 
 void ClientTerminalPrinter::printWelcomeMessage()
 {
@@ -41,11 +40,14 @@ void ClientTerminalPrinter::print(string str)
 	cout << str << endl;
 }
 
+void printConnectionEstablished(string otherUsername, string otherUserAddr, int otherUserListeningPort)
+{
+	cout << "Connection with " << otherUsername << " (" << otherUserAddr << ":" << otherUserListeningPort << ") established." << endl;
+}
+
 void ClientTerminalPrinter::printUnknownReplyCode(int replyCode)
 {
-	std::ostringstream strStream;
-	strStream << "Unknown Reply-code: " << replyCode;
-	cout << strStream.str() << endl;
+	cout << "Unknown Reply-code: " << replyCode << endl;
 }
 
 void ClientTerminalPrinter::printInvalidArgsNum()

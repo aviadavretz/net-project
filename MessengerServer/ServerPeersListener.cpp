@@ -120,11 +120,24 @@ void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
 			routeStatusRequest(peer);
 			break;
 		}
+		case (NOTIFY_LISTENING_PORT):
+		{
+			routeNotifyListeningPort(peer);
+			break;
+		}
 		default:
 		{
 			break;
 		}
 	}
+}
+
+void ServerPeersListener::routeNotifyListeningPort(TCPSocket* peer)
+{
+	// Message = 1 argument = user's port
+	int listeningPort = readIntMessage(peer);
+
+	observer->notifyListeningPort(peer, listeningPort);
 }
 
 void ServerPeersListener::routeStatusRequest(TCPSocket* peer)
@@ -211,6 +224,23 @@ void ServerPeersListener::routeGetUsersInRoom(TCPSocket* peer)
 	string roomName = readMessage(peer);
 
 	observer->notifyListAllUsersInRoomRequest(peer, roomName);
+}
+
+int ServerPeersListener::readIntMessage(TCPSocket* socket)
+{
+	char messageContent[256];
+	int messageLength;
+
+	// Receiving message length
+	socket->recv((char*)&messageLength, EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE);
+
+	messageLength = ntohl(messageLength);
+
+	// Receiving the message content
+	socket->recv(messageContent, messageLength);
+	messageContent[messageLength] = '\0';
+
+	return atoi(messageContent);
 }
 
 string ServerPeersListener::readMessage(TCPSocket* socket)

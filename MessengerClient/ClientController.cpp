@@ -66,6 +66,18 @@ void ClientController::connect(string address)
 		// Start listening for server responses
 		srvListener = new ServerRepliesListener(&srvConnection, &printer, this);
 		srvListener->start();
+
+		// Start listening to incoming messages from peers
+		startPeerListening();
+
+		// Send the listening port to the server.
+		int listeningPort = peerListener->getListeningPort();
+
+		// Convert the int port to a string value
+		ostringstream ss;
+		ss << listeningPort;
+
+		sendCommandToServer(NOTIFY_LISTENING_PORT, ss.str());
 	}
 	else
 	{
@@ -171,21 +183,23 @@ void ClientController::notifySessionEstablished()
 	// Receive the relevant data from the server.
 	string otherUsername = srvConnection.receiveMessage();
 	string otherUserAddr = srvConnection.receiveMessage();
+	int otherUserListeningPort = srvConnection.receiveIntMessage();
 
 	// Open a socket to the other user
-	startPeerListening();
-	peerListener->addPeer(otherUsername, otherUserAddr, SESSION_PORT);
+	peerListener->addPeer(otherUsername, otherUserAddr, otherUserListeningPort);
 
-	printer.print("Session with " + otherUsername + " (" + otherUserAddr + ") established.");
+	ostringstream oss;
+	oss << "Connection with " << otherUsername << " (" << otherUserAddr << ":" << otherUserListeningPort << ") established." << endl;
+	printer.print(oss.str());
+
+	// TODO: Why doesnt this compile?
+//	printer.printConnectionEstablished(otherUsername, otherUserAddr, otherUserListeningPort);
 }
 
 void ClientController::notifyChatRoomOpened()
 {
 	// Receive the relevant data from the server.
 	string roomName = srvConnection.receiveMessage();
-
-	// TODO: Why? the room was only opened but we are not inside.
-	startPeerListening();
 
 	printer.print("ChatRoom '" + roomName + "' created.");
 }
@@ -194,23 +208,28 @@ void ClientController::notifyJoinedRoom()
 {
 	printer.print("Establishing connections...");
 
-	startPeerListening();
-
-	string currentUsername;
-	string currentUserAddress = srvConnection.receiveMessage();
+	string currentUsername = srvConnection.receiveMessage();
+	string currentUserAddress;
+	int otherUserListeningPort;
 
 	// Get all the users' connection data ,and add another UDP socket for each
 	// While we haven't received the DONE_SENDING_ROOM_PARTICIPANTS code
-	while (currentUserAddress.compare(DONE_SENDING_ROOM_PARTICIPANTS) != 0)
+	while (currentUsername.compare(DONE_SENDING_ROOM_PARTICIPANTS) != 0)
 	{
-		// Receive the username
-		currentUsername = srvConnection.receiveMessage();
+		// Receive the address & port
+		currentUserAddress = srvConnection.receiveMessage();
+		otherUserListeningPort = srvConnection.receiveIntMessage();
 
 		// Open a socket to the other user
-		peerListener->addPeer(currentUsername, currentUserAddress, SESSION_PORT);
+		peerListener->addPeer(currentUsername, currentUserAddress, otherUserListeningPort);
 
-		// Get the next user address
-		currentUserAddress = srvConnection.receiveMessage();
+		// TODO: Debug prints
+		ostringstream oss;
+		oss << "Connection with " << currentUsername << " (" << currentUserAddress << ":" << otherUserListeningPort << ") established." << endl;
+		printer.print(oss.str());
+
+		// Get the next username
+		currentUsername = srvConnection.receiveMessage();
 	}
 
 	printer.print("All connections established. You have joined the room.");
@@ -221,11 +240,17 @@ void ClientController::notifySomeoneJoinedRoom()
 	// Receive the relevant data from the server.
 	string joiningUsername = srvConnection.receiveMessage();
 	string joiningUserAddr = srvConnection.receiveMessage();
+	int otherUserListeningPort = srvConnection.receiveIntMessage();
 
 	// Open another socket to the joining user
-	peerListener->addPeer(joiningUsername, joiningUserAddr, SESSION_PORT);
+	peerListener->addPeer(joiningUsername, joiningUserAddr, otherUserListeningPort);
 
 	printer.print(joiningUsername + " has joined the room.");
+
+	// TODO: Debug prints
+	ostringstream oss;
+	oss << "Connection with " << joiningUsername << " (" << joiningUserAddr << ":" << otherUserListeningPort << ") established." << endl;
+	printer.print(oss.str());
 }
 
 void ClientController::notifySomeoneLeftRoom()
@@ -241,7 +266,8 @@ void ClientController::notifySomeoneLeftRoom()
 
 void ClientController::notifyExitRoom()
 {
-	stopPeerListening();
+	// Remove all peers from listener
+	peerListener->removeAllPeers();
 
 	printer.print("You have left the room.");
 }
@@ -251,7 +277,8 @@ void ClientController::notifySessionClosed()
 	// Receive the relevant data from the server.
 	string otherUsername = srvConnection.receiveMessage();
 
-	stopPeerListening();
+	// Remove peer from listener
+	peerListener->removePeerByUsername(otherUsername);
 
 	printer.print("Session with " + otherUsername + " has ended.");
 }
@@ -261,7 +288,8 @@ void ClientController::notifyRoomClosedByOwner()
 	// Receive the relevant data from the server.
 	string roomName = srvConnection.receiveMessage();
 
-	stopPeerListening();
+	// Remove all peers from listener
+	peerListener->removeAllPeers();
 
 	printer.print("ChatRoom '" + roomName + "' closed by its owner.");
 }

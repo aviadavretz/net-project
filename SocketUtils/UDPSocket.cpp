@@ -15,11 +15,11 @@
 
 using namespace npl;
 
-int port = 9999;
+int listeningPort = 9999;
 
-int UDPSocket::getPort()
+int UDPSocket::getListeningPort()
 {
-	return port;
+	return listeningPort;
 }
 
 UDPSocket::UDPSocket(int port){
@@ -29,32 +29,41 @@ UDPSocket::UDPSocket(int port){
 	while (!success && port != 9999)
 	{
 		socket_fd = socket (AF_INET, SOCK_DGRAM, 0);
-//		if(port != 9999){
-			struct sockaddr_in  s_in;
-			bzero((char *) &s_in, sizeof(s_in));
-			s_in.sin_family = (short)AF_INET;
-			s_in.sin_addr.s_addr = htonl(INADDR_ANY);    /* WILDCARD any system ip*/
-			s_in.sin_port = htons(port);
+		struct sockaddr_in  s_in;
+		bzero((char *) &s_in, sizeof(s_in));
+		s_in.sin_family = (short)AF_INET;
+		s_in.sin_addr.s_addr = htonl(INADDR_ANY);    /* WILDCARD any system ip*/
+		s_in.sin_port = htons(port);
 
-			if (bind(socket_fd, (struct sockaddr *)&s_in, sizeof(s_in))<0){
-				cout<<"Error naming channel on port " << port << endl;
-				::close(socket_fd);
-
-				port++;
-			}
-			else
-			{
-				success = true;
-				cout << "Socket opened on port " << port << endl;
-			}
-//		}
+		if (bind(socket_fd, (struct sockaddr *)&s_in, sizeof(s_in))<0){
+			// Close this socket and try again on the next port.
+			::close(socket_fd);
+			port++;
+		}
+		else
+		{
+			listeningPort = port;
+			success = true;
+			cout << "Socket opened on port " << port << endl;
+		}
 	}
 }
 
 int UDPSocket::recv(char* buffer, int length){
 //	printf("UDP server receive...\n");
+
 	socklen_t fromSize = sizeof(from);
+
 	int rc = recvfrom(socket_fd, buffer, length, 0,(sockaddr*)&from,&fromSize);
+	cout << "rc = " << rc << endl;
+
+	while (rc < 0)
+	{
+		rc = recvfrom(socket_fd, buffer, length, 0,(sockaddr*)&from,&fromSize);
+		cout << "rc = " << rc << endl;
+	}
+
+	printf("UDP socket received a message.");
 	return rc;
 }
 
