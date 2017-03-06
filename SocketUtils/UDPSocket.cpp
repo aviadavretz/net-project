@@ -50,20 +50,15 @@ UDPSocket::UDPSocket(int port){
 }
 
 int UDPSocket::recv(char* buffer, int length){
-//	printf("UDP server receive...\n");
-
 	socklen_t fromSize = sizeof(from);
 
 	int rc = recvfrom(socket_fd, buffer, length, 0,(sockaddr*)&from,&fromSize);
-	cout << "rc = " << rc << endl;
 
 	while (rc < 0)
 	{
 		rc = recvfrom(socket_fd, buffer, length, 0,(sockaddr*)&from,&fromSize);
-		cout << "rc = " << rc << endl;
 	}
 
-	printf("UDP socket received a message.");
 	return rc;
 }
 

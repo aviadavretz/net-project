@@ -32,21 +32,15 @@ void PeerMessageListener::run()
 	}
 }
 
-// TODO : This message sending/reading implementation is not safe.
-// 	      Multiple clients can send a message at the same time which can make things mix up.
-//        Maybe sending the message in one piece (without first stating what's the size in bytes) can fix that.
 string PeerMessageListener::readMessage()
 {
-	char messageContent[256];
-	int messageLength = 256;
-
-//	// Receiving message length
-//	sessionSocket->recv((char*)&messageLength, EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE);
-//	messageLength = ntohl(messageLength);
+	// TODO: Put this in UDPProtocol or smthn
+	const int MESSAGE_LENGTH = 256;
+	char messageContent[MESSAGE_LENGTH];
 
 	// Receiving the message content
-	sessionSocket->recv(messageContent, messageLength);
-	messageContent[messageLength] = '\0';
+	sessionSocket->recv(messageContent, MESSAGE_LENGTH);
+	messageContent[MESSAGE_LENGTH] = '\0';
 
 	return string(messageContent);
 }
