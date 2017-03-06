@@ -16,7 +16,6 @@ int main()
 	ServerController controller;
 	controller.startServer();
 
-	// TODO: CommandUtils... move it to a shared folder?
 	CommandUtils commandUtils;
 
 	bool shouldContinue = true;
@@ -47,9 +46,6 @@ int main()
 		}
 		else if (commandUtils.doesCommandHavePrefix(userCommand, PRINT_ROOM_USERS))
 		{
-			// TODO: UserInputCommands... move it to a shared folder?
-			int PRINT_ROOM_USERS_ARGS_NUM = 1;
-
 			// Get the args
 			vector<string> args = commandUtils.getCommandArgs(userCommand, PRINT_ROOM_USERS);
 
