@@ -9,9 +9,9 @@
 #define UDPMESSENGERPROTOCOL_H_
 
 /**
- * UDP Messenger protocol:
+ * UDP Messenger protocol: No need to send the messageLength. Just send the message.
  */
 #define SESSION_PORT 3347
-#define EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE 4
+#define MESSAGE_LENGTH 256
 
 #endif /* UDPMESSENGERPROTOCOL_H_ */

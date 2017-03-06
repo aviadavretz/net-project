@@ -213,7 +213,7 @@ void ClientController::notifySessionEstablished()
 	oss << "Connection with " << otherUsername << " (" << otherUserAddr << ":" << otherUserListeningPort << ") established." << endl;
 	printer.print(oss.str());
 
-	// TODO: Why doesnt this compile?
+//	// TODO: Why doesnt this compile? no need to use ostringstream here..
 //	printer.printConnectionEstablished(otherUsername, otherUserAddr, otherUserListeningPort);
 }
 
@@ -244,11 +244,6 @@ void ClientController::notifyJoinedRoom()
 		// Open a socket to the other user
 		peerListener->addPeer(currentUsername, currentUserAddress, otherUserListeningPort);
 
-		// TODO: Debug prints
-		ostringstream oss;
-		oss << "Connection with " << currentUsername << " (" << currentUserAddress << ":" << otherUserListeningPort << ") established." << endl;
-		printer.print(oss.str());
-
 		// Get the next username
 		currentUsername = srvConnection.receiveMessage();
 	}
@@ -267,11 +262,6 @@ void ClientController::notifySomeoneJoinedRoom()
 	peerListener->addPeer(joiningUsername, joiningUserAddr, otherUserListeningPort);
 
 	printer.print(joiningUsername + " has joined the room.");
-
-	// TODO: Debug prints
-	ostringstream oss;
-	oss << "Connection with " << joiningUsername << " (" << joiningUserAddr << ":" << otherUserListeningPort << ") established." << endl;
-	printer.print(oss.str());
 }
 
 void ClientController::notifySomeoneLeftRoom()

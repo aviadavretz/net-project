@@ -16,10 +16,17 @@ int main()
 
 	printer.printWelcomeMessage();
 	bool shouldContinue = true;
+	bool shouldPrintMenu = true;
 
 	while (shouldContinue)
 	{
-		printer.printMenu();
+		if (shouldPrintMenu)
+		{
+			printer.printMenu();
+		}
+
+		// Reset it
+		shouldPrintMenu = true;
 
 		// Get the whole command line from the user
 		string userCommand;
@@ -268,6 +275,9 @@ int main()
 
 					// Send the message
 					controller.sendMessage(sendingUsername, message);
+
+					// A message was sent. Don't print menu now.
+					shouldPrintMenu = false;
 				}
 				else
 				{

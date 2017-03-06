@@ -40,8 +40,6 @@ void PeerMessageListener::run()
 
 string PeerMessageListener::readMessage()
 {
-	// TODO: Put this in UDPProtocol or smthn
-	const int MESSAGE_LENGTH = 256;
 	char messageContent[MESSAGE_LENGTH];
 
 	// Receiving the message content
