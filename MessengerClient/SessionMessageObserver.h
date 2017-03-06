@@ -1,7 +1,7 @@
 /*
  * SessionMessageObserver.h
  *
- *  Created on: March 6, 2017
+ *  Created on: Mar 6, 2017
  *      Author: user
  */
 

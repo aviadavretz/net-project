@@ -81,7 +81,10 @@ void UDPSocket::close(){
 
 string UDPSocket::fromAddr(){
 	return inet_ntoa(from.sin_addr);
+}
 
+int UDPSocket::getSocketFd(){
+	return socket_fd;
 }
 
 

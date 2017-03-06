@@ -11,25 +11,32 @@ void PeerMessageListener::run()
 {
 	while (shouldContinue)
 	{
-		// TODO: Create MUDPListener... :(
+		MUDPListener listener;
+		vector<UDPSocket*> peers;
+		map<string, UDPSocket*>::iterator iter;
 
-//		MUDPListener listener;
-//		listener.add(peers);
-//
-//		int timeout = 3;
-//		UDPSocket* readyPeer = listener.listen(timeout);
-//
-//		// No message received for the past given timeout seconds
-//		if (readyPeer == NULL)
-//		{
-//			continue;
-//		}
-//
-//		// Get the message & username
-//		string message = readMessage(readyPeer);
-//		string username = getUsernameBySocket(readyPeer);
-//
-//		observer->notifyMessageReceived(username, message);
+		// TODO: Think of a better way to do this..
+		for (iter = sockets.begin(); iter != sockets.end(); iter++)
+		{
+			peers.push_back((*iter).second);
+		}
+
+		listener.add(peers);
+
+		int timeout = 3;
+		UDPSocket* readyPeer = listener.listen(timeout);
+
+		// No message received for the past given timeout seconds
+		if (readyPeer == NULL)
+		{
+			continue;
+		}
+
+		// Get the message & username
+		string message = readMessage(readyPeer);
+		string username = getUsernameBySocket(readyPeer);
+
+		observer->notifyMessageReceived(username, message);
 	}
 }
 

@@ -194,7 +194,7 @@ void ClientController::notifyJoinedRoom()
 		peerListener->openSocket(currentUsername, currentUserAddress);
 
 		// TODO: Remove this
-		printer.print("Connected to " + currentUsername + "( " + currentUserAddress + ").");
+		printer.print("Connected to " + currentUsername + " (" + currentUserAddress + ").");
 
 		// Get the next user address
 		currentUserAddress = srvConnection.receiveMessage();

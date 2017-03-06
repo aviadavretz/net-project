@@ -29,6 +29,12 @@ public:
 	int reply(const string& msg);
 	void close();
 	string fromAddr();
+
+	// TODO: Is this necessary!?
+	/**
+	 * return the socket_fd
+	 */
+	int getSocketFd();
 };
 
 }
