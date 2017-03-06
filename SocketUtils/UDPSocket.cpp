@@ -15,23 +15,39 @@
 
 using namespace npl;
 
-UDPSocket::UDPSocket(int port){
-	socket_fd = socket (AF_INET, SOCK_DGRAM, 0);
-	if(port != 9999){
-		struct sockaddr_in  s_in;
-		bzero((char *) &s_in, sizeof(s_in));
-		s_in.sin_family = (short)AF_INET;
-		s_in.sin_addr.s_addr = htonl(INADDR_ANY);    /* WILDCARD any system ip*/
-		s_in.sin_port = htons(port);
+int port = 9999;
 
-		if (bind(socket_fd, (struct sockaddr *)&s_in, sizeof(s_in))<0){
-			cout<<"Error naming channel on port " << port << endl;
-			::close(socket_fd);
-		}
-		else
-		{
-			cout << "Socket opened on port " << port << endl;
-		}
+int UDPSocket::getPort()
+{
+	return port;
+}
+
+UDPSocket::UDPSocket(int port){
+	int iteration = 0;
+	bool success = false;
+
+	while (!success && port != 9999)
+	{
+		socket_fd = socket (AF_INET, SOCK_DGRAM, 0);
+//		if(port != 9999){
+			struct sockaddr_in  s_in;
+			bzero((char *) &s_in, sizeof(s_in));
+			s_in.sin_family = (short)AF_INET;
+			s_in.sin_addr.s_addr = htonl(INADDR_ANY);    /* WILDCARD any system ip*/
+			s_in.sin_port = htons(port);
+
+			if (bind(socket_fd, (struct sockaddr *)&s_in, sizeof(s_in))<0){
+				cout<<"Error naming channel on port " << port << endl;
+				::close(socket_fd);
+
+				port++;
+			}
+			else
+			{
+				success = true;
+				cout << "Socket opened on port " << port << endl;
+			}
+//		}
 	}
 }
 
