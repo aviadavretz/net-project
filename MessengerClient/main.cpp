@@ -262,9 +262,22 @@ int main()
 				continue;
 			}
 
-			string message = args[0];
+			// TODO: Check if logged-in.
 
-			// TODO: Implement it (don't forget to put the name inside the message aka >[Aviad] : I'm a douche
+			// Make sure we are in a session/room, otherwise there's no recipient to the message.
+			if (controller.isInSessionOrRoom())
+			{
+				string message = args[0];
+				// TODO: Save the username when we login successfully
+				string sendingUsername = "DUDEWUT";
+
+				// Send the message
+				controller.sendMessage(sendingUsername, message);
+			}
+			else
+			{
+				printer.print("You are not in a session or room.");
+			}
 		}
 		// ------------
 		// PRINT_STATUS

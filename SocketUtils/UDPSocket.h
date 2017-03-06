@@ -23,18 +23,11 @@ class UDPSocket{
 
 public:
 	UDPSocket(int port = 9999);
-	UDPSocket(const string& peerIp, int port);
 	int recv(char* buffer, int length);
 	int sendTo(const string& msg, const string& ip, int port);
 	int reply(const string& msg);
 	void close();
 	string fromAddr();
-
-	// TODO: Is this necessary!?
-	/**
-	 * return the socket_fd
-	 */
-	int getSocketFd();
 };
 
 }

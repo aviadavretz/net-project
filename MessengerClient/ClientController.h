@@ -32,6 +32,7 @@ class ClientController: public ServerRepliesObserver, SessionMessageObserver
 	public:
 		ClientController();
 		bool isConnected();
+		bool isInSessionOrRoom();
 		void connect(string address);
 		void login(string username, string password);
 		void registerUser(string username, string password);
@@ -60,6 +61,7 @@ class ClientController: public ServerRepliesObserver, SessionMessageObserver
 		void startPeerListening();
 		void stopPeerListening();
 		void notifyMessageReceived(string message);
+		void sendMessage(string sendingUsername, string message);
 };
 
 #endif /* CLIENTCONTROLLER_H_ */

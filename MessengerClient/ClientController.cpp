@@ -15,6 +15,20 @@ bool ClientController::isConnected()
 	return connected;
 }
 
+bool ClientController::isInSessionOrRoom()
+{
+	return peerListener != NULL;
+}
+
+void ClientController::sendMessage(string sendingUsername, string message)
+{
+	// Append the username to the message
+	string messageToSend = "[" + sendingUsername + "]: " + message;
+
+	// Send the message to all peers
+	peerListener->sendMessage(messageToSend);
+}
+
 void ClientController::notifyMessageReceived(string message)
 {
 	// Print out the received message.
@@ -170,6 +184,7 @@ void ClientController::notifyChatRoomOpened()
 	// Receive the relevant data from the server.
 	string roomName = srvConnection.receiveMessage();
 
+	// TODO: Why? the room was only opened but we are not inside.
 	startPeerListening();
 
 	printer.print("ChatRoom '" + roomName + "' created.");
@@ -193,9 +208,6 @@ void ClientController::notifyJoinedRoom()
 
 		// Open a socket to the other user
 		peerListener->addPeer(currentUsername, currentUserAddress, SESSION_PORT);
-
-		// TODO: Remove this
-		printer.print("Connected to " + currentUsername + " (" + currentUserAddress + ").");
 
 		// Get the next user address
 		currentUserAddress = srvConnection.receiveMessage();

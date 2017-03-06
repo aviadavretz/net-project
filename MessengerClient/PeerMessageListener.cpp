@@ -23,7 +23,11 @@ void PeerMessageListener::run()
 		// Try to receive a message
 		string message = readMessage();
 
-		observer->notifyMessageReceived(message);
+		// TODO: Fix this..
+		if (message.compare("") != 0)
+		{
+			observer->notifyMessageReceived(message);
+		}
 	}
 }
 
@@ -37,8 +41,13 @@ string PeerMessageListener::readMessage()
 
 	// Receiving message length
 	sessionSocket->recv((char*)&messageLength, EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE);
-
 	messageLength = ntohl(messageLength);
+
+	// TODO: Fix this.. recv always returns empty message
+	if (messageLength == 0)
+	{
+		return "";
+	}
 
 	// Receiving the message content
 	sessionSocket->recv(messageContent, messageLength);
@@ -47,12 +56,19 @@ string PeerMessageListener::readMessage()
 	return string(messageContent);
 }
 
+#include "ClientTerminalPrinter.h"
+
 void PeerMessageListener::sendMessage(string message)
 {
+	// Go over all of the peers to which we connected
 	for (vector<PeerInfo>::iterator iterator = peers.begin(); iterator != peers.end(); iterator ++)
 	{
+		// Send the message to every one
 		PeerInfo peerInfo = *iterator;
 		sessionSocket->sendTo(message, peerInfo.getIp(), peerInfo.getPort());
+
+		ClientTerminalPrinter printer;
+		printer.print("Sent message: " + message);
 	}
 }
 
