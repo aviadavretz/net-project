@@ -20,13 +20,14 @@ using namespace std;
 using namespace npl;
 
 class PeerMessageListener: public MThread {
-	vector<PeerInfo> peers;
+	vector<PeerInfo*> peers;
 	SessionMessageObserver* observer;
 	UDPSocket* sessionSocket;
 	bool shouldContinue;
 
 	void run();
 	string readMessage();
+	void removePeer(PeerInfo* peer);
 
 public:
 	void sendMessage(string message);

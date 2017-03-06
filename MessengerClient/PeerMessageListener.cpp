@@ -6,6 +6,7 @@
  */
 
 #include "PeerMessageListener.h"
+#include <algorithm>
 
 PeerMessageListener::PeerMessageListener(SessionMessageObserver* observer)
 {
@@ -48,30 +49,43 @@ string PeerMessageListener::readMessage()
 void PeerMessageListener::sendMessage(string message)
 {
 	// Go over all of the peers to which we connected
-	for (vector<PeerInfo>::iterator iterator = peers.begin(); iterator != peers.end(); iterator ++)
+	for (vector<PeerInfo*>::iterator iterator = peers.begin(); iterator != peers.end(); iterator++)
 	{
 		// Send the message to every one
-		PeerInfo peerInfo = *iterator;
-		sessionSocket->sendTo(message, peerInfo.getIp(), peerInfo.getPort());
+		PeerInfo* peerInfo = *iterator;
+		sessionSocket->sendTo(message, peerInfo->getIp(), peerInfo->getPort());
 	}
 }
 
 void PeerMessageListener::addPeer(string username, string ip, int port)
 {
-	peers.push_back(PeerInfo(username, ip, port));
+	PeerInfo* newPeer = new PeerInfo(username, ip, port);
+	peers.push_back(newPeer);
 }
 
 void PeerMessageListener::removePeerByUsername(string username)
 {
-	for (vector<PeerInfo>::iterator iterator = peers.begin(); iterator != peers.end(); iterator++)
+	for (vector<PeerInfo*>::iterator iterator = peers.begin(); iterator != peers.end(); iterator++)
 	{
-		PeerInfo peerInfo = *iterator;
+		PeerInfo* peerInfo = *iterator;
 
 		// Check if the current entry is the one we would like to remove
-		if (peerInfo.getUsername().compare(username) == 0)
+		if (username.compare(peerInfo->getUsername()) == 0)
 		{
-			peers.erase(iterator);
+			removePeer(peerInfo);
 		}
+	}
+}
+
+void PeerMessageListener::removePeer(PeerInfo* peer)
+{
+	// TODO: Implement this without #include <algorithm>?
+	vector<PeerInfo*>::iterator position = std::find(peers.begin(), peers.end(), peer);
+
+	 // end() means the element was not found
+	if (position != peers.end())
+	{
+		peers.erase(position);
 	}
 }
 
