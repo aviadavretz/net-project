@@ -28,6 +28,7 @@ UDPSocket::UDPSocket(int port){
 
 	while (!success && port != 9999)
 	{
+		// SOCK_DGRAM = UDP
 		socket_fd = socket (AF_INET, SOCK_DGRAM, 0);
 		struct sockaddr_in  s_in;
 		bzero((char *) &s_in, sizeof(s_in));

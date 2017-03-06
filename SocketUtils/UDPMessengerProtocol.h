@@ -12,6 +12,6 @@
  * UDP Messenger protocol: No need to send the messageLength. Just send the message.
  */
 #define SESSION_PORT 3347
-#define MESSAGE_LENGTH 256
+#define MAX_MESSAGE_LENGTH 256
 
 #endif /* UDPMESSENGERPROTOCOL_H_ */

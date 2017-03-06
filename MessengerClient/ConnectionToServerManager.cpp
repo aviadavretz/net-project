@@ -101,5 +101,5 @@ void ConnectionToServerManager::openSocket(string address, int port)
 void ConnectionToServerManager::closeSocket()
 {
 	socketToServer->close();
-	socketToServer = NULL;
+	delete socketToServer;
 }

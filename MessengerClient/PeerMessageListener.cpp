@@ -19,7 +19,7 @@ PeerMessageListener::PeerMessageListener(SessionMessageObserver* observer)
 
 bool PeerMessageListener::arePeersEmpty()
 {
-	return peers.size() == 0;
+	return peers.empty();
 }
 
 int PeerMessageListener::getListeningPort()
@@ -40,11 +40,11 @@ void PeerMessageListener::run()
 
 string PeerMessageListener::readMessage()
 {
-	char messageContent[MESSAGE_LENGTH];
+	char messageContent[MAX_MESSAGE_LENGTH];
 
 	// Receiving the message content
-	sessionSocket->recv(messageContent, MESSAGE_LENGTH);
-	messageContent[MESSAGE_LENGTH] = '\0';
+	int rceivedMessageLength = sessionSocket->recv(messageContent, MAX_MESSAGE_LENGTH);
+	messageContent[rceivedMessageLength] = '\0';
 
 	return string(messageContent);
 }
