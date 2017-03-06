@@ -9,7 +9,6 @@
 #define SERVERREPLIESOBSERVER_H_
 
 using namespace std;
-using namespace npl;
 
 class ServerRepliesObserver
 {

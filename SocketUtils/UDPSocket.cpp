@@ -26,6 +26,24 @@ UDPSocket::UDPSocket(int port){
 
 		if (bind(socket_fd, (struct sockaddr *)&s_in, sizeof(s_in))<0){
 			cout<<"Error naming channel"<<endl;
+			::close(socket_fd);
+		}
+	}
+}
+
+UDPSocket::UDPSocket(const string& peerIp, int port){
+	socket_fd = socket (AF_INET, SOCK_DGRAM, 0);
+	if(port != 9999){
+		struct sockaddr_in  s_in;
+		bzero((char *) &s_in, sizeof(s_in));
+
+		// Set the sin address
+		s_in.sin_family = (short)AF_INET;
+		s_in.sin_addr.s_addr = inet_addr(peerIp.data());
+		s_in.sin_port = htons(port);
+
+		if (bind(socket_fd, (struct sockaddr *)&s_in, sizeof(s_in))<0){
+			cout<<"Error naming channel"<<endl;
 		}
 	}
 }

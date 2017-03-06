@@ -18,12 +18,12 @@
 
 using namespace std;
 
-class ClientController: public ServerRepliesObserver
+class ClientController: public ServerRepliesObserver, SessionMessageObserver
 {
 	ConnectionToServerManager srvConnection;
 	ClientTerminalPrinter printer;
 	ServerRepliesListener* srvListener;
-	PeerMessageListener peerListener;
+	PeerMessageListener* peerListener;
 	bool connected;
 
 	void sendCommandToServer(int commandCode, string args);
@@ -57,6 +57,7 @@ class ClientController: public ServerRepliesObserver
 		void notifySomeoneJoinedRoom();
 		void notifySomeoneLeftRoom();
 		void notifyServerShuttingDown();
+		void notifyMessageReceived(string username, string message);
 };
 
 #endif /* CLIENTCONTROLLER_H_ */
