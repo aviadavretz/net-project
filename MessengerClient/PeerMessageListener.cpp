@@ -70,9 +70,10 @@ void PeerMessageListener::removePeerByUsername(string username)
 		PeerInfo* peerInfo = *iterator;
 
 		// Check if the current entry is the one we would like to remove
-		if (username.compare(peerInfo->getUsername()) == 0)
+		if (peerInfo != NULL && username.compare(peerInfo->getUsername()) == 0)
 		{
 			removePeer(peerInfo);
+			break;
 		}
 	}
 }
@@ -85,6 +86,8 @@ void PeerMessageListener::removePeer(PeerInfo* peer)
 	 // end() means the element was not found
 	if (position != peers.end())
 	{
+		ClientTerminalPrinter printer;
+
 		peers.erase(position);
 	}
 }
