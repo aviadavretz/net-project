@@ -264,7 +264,7 @@ int main()
 
 			string message = args[0];
 
-			// TODO: Implement
+			// TODO: Implement it (don't forget to put the name inside the message aka >[Aviad] : I'm a douche
 		}
 		// ------------
 		// PRINT_STATUS
