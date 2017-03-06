@@ -14,15 +14,11 @@ void PeerMessageListener::run()
 		MUDPListener listener;
 		map<string, UDPSocket*>::iterator iter;
 
-		// TODO: Think of a better way to do this..
+		// TODO: Think of a better way to do this.. maybe add & remove them outside
 		for (iter = sockets.begin(); iter != sockets.end(); iter++)
 		{
 			UDPSocket* currSocket = (*iter).second;
-
-			if (currSocket != NULL)
-			{
-				listener.add(currSocket);
-			}
+			listener.add(currSocket);
 		}
 
 		int timeout = 3;
@@ -59,10 +55,22 @@ string PeerMessageListener::readMessage(UDPSocket* socket)
 	return string(messageContent);
 }
 
-string PeerMessageListener::getUsernameBySocket(UDPSocket* socket)
+string PeerMessageListener::getUsernameBySocket(UDPSocket* socketToFind)
 {
-	// TODO: Go over each value and return this sockets key.
-	return "GUGH";
+	map<string, UDPSocket*>::iterator iter;
+
+	// Go over each value and return the sockets key.
+	for (iter = sockets.begin(); iter != sockets.end(); iter++)
+	{
+		UDPSocket* currSocket = (*iter).second;
+
+		if (socketToFind == currSocket)
+		{
+			return (*iter).first;
+		}
+	}
+
+	return "N/A";
 }
 
 void PeerMessageListener::openSocket(string otherUsername, string address)
@@ -96,7 +104,17 @@ void PeerMessageListener::stop()
 
 void PeerMessageListener::closeAllSockets()
 {
-	// TODO:
+	map<string, UDPSocket*>::iterator iter;
+
+	for (iter = sockets.begin(); iter != sockets.end(); iter++)
+	{
+		UDPSocket* currSocket = (*iter).second;
+
+		// Close the socket
+		currSocket->close();
+	}
+
+	sockets.clear();
 }
 
 PeerMessageListener::PeerMessageListener(SessionMessageObserver* observer)
