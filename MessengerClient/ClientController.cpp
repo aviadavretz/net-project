@@ -15,10 +15,10 @@ bool ClientController::isConnected()
 	return connected;
 }
 
-void ClientController::notifyMessageReceived(string username, string message)
+void ClientController::notifyMessageReceived(string message)
 {
 	// Print out the received message.
-	printer.print("[" + username + "]: " + message);
+	printer.print(message);
 }
 
 void ClientController::sendCommandToServer(int commandCode, string args)
@@ -52,10 +52,6 @@ void ClientController::connect(string address)
 		// Start listening for server responses
 		srvListener = new ServerRepliesListener(&srvConnection, &printer, this);
 		srvListener->start();
-
-		// Start listening to peer messages (Even though there are currently no peers).
-		peerListener = new PeerMessageListener(this);
-		peerListener->start();
 	}
 	else
 	{
@@ -143,8 +139,8 @@ void ClientController::requestStatus()
 
 void ClientController::notifyDisconnected()
 {
-	// Close all UDP sockets.
-	peerListener->stop();
+	// Stop listening to peers messages
+	stopPeerListening();
 
 	// Stop listening for server responses
 	srvListener->stop();
@@ -163,7 +159,8 @@ void ClientController::notifySessionEstablished()
 	string otherUserAddr = srvConnection.receiveMessage();
 
 	// Open a socket to the other user
-	peerListener->openSocket(otherUsername, otherUserAddr);
+	startPeerListening();
+	peerListener->addPeer(otherUsername, otherUserAddr, SESSION_PORT);
 
 	printer.print("Session with " + otherUsername + " (" + otherUserAddr + ") established.");
 }
@@ -173,12 +170,16 @@ void ClientController::notifyChatRoomOpened()
 	// Receive the relevant data from the server.
 	string roomName = srvConnection.receiveMessage();
 
+	startPeerListening();
+
 	printer.print("ChatRoom '" + roomName + "' created.");
 }
 
 void ClientController::notifyJoinedRoom()
 {
 	printer.print("Establishing connections...");
+
+	startPeerListening();
 
 	string currentUsername;
 	string currentUserAddress = srvConnection.receiveMessage();
@@ -191,7 +192,7 @@ void ClientController::notifyJoinedRoom()
 		currentUsername = srvConnection.receiveMessage();
 
 		// Open a socket to the other user
-		peerListener->openSocket(currentUsername, currentUserAddress);
+		peerListener->addPeer(currentUsername, currentUserAddress, SESSION_PORT);
 
 		// TODO: Remove this
 		printer.print("Connected to " + currentUsername + " (" + currentUserAddress + ").");
@@ -210,7 +211,7 @@ void ClientController::notifySomeoneJoinedRoom()
 	string joiningUserAddr = srvConnection.receiveMessage();
 
 	// Open another socket to the joining user
-	peerListener->openSocket(joiningUsername, joiningUserAddr);
+	peerListener->addPeer(joiningUsername, joiningUserAddr, SESSION_PORT);
 
 	printer.print(joiningUsername + " has joined the room.");
 }
@@ -221,15 +222,14 @@ void ClientController::notifySomeoneLeftRoom()
 	string exitingUsername = srvConnection.receiveMessage();
 
 	// Close the socket to the leaving user
-	peerListener->closeSocket(exitingUsername);
+	peerListener->removePeerByUsername(exitingUsername);
 
 	printer.print(exitingUsername + " has left the room.");
 }
 
 void ClientController::notifyExitRoom()
 {
-	// Close all UDP sockets
-	peerListener->closeAllSockets();
+	stopPeerListening();
 
 	printer.print("You have left the room.");
 }
@@ -239,8 +239,7 @@ void ClientController::notifySessionClosed()
 	// Receive the relevant data from the server.
 	string otherUsername = srvConnection.receiveMessage();
 
-	// Close the session socket
-	peerListener->closeSocket(otherUsername);
+	stopPeerListening();
 
 	printer.print("Session with " + otherUsername + " has ended.");
 }
@@ -250,8 +249,7 @@ void ClientController::notifyRoomClosedByOwner()
 	// Receive the relevant data from the server.
 	string roomName = srvConnection.receiveMessage();
 
-	// Close all UDP sockets
-	peerListener->closeAllSockets();
+	stopPeerListening();
 
 	printer.print("ChatRoom '" + roomName + "' closed by its owner.");
 }
@@ -267,6 +265,22 @@ void ClientController::notifyServerShuttingDown()
 
 	// Disconnect and stop listening to the server.
 	notifyDisconnected();
+}
+
+void ClientController::startPeerListening()
+{
+	peerListener = new PeerMessageListener(this);
+	peerListener->start();
+}
+
+void ClientController::stopPeerListening()
+{
+	if (peerListener != NULL)
+	{
+		// Close the session socket
+		peerListener->stop();
+		delete peerListener;
+	}
 }
 
 ServerRepliesObserver::~ServerRepliesObserver() {}

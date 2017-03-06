@@ -14,24 +14,25 @@
 #include "MUDPListener.h"
 #include "MThread.h"
 #include <map>
+#include <vector>
+#include "PeerInfo.h"
 
 using namespace std;
 using namespace npl;
 
 class PeerMessageListener: public MThread {
-	// Key = username, Value = socket to the user.
-	map<string, UDPSocket*> sockets;
+	vector<PeerInfo> peers;
 	SessionMessageObserver* observer;
+	UDPSocket* sessionSocket;
 	bool shouldContinue;
 
 	void run();
-	string readMessage(UDPSocket* socket);
-	string getUsernameBySocket(UDPSocket* socket);
+	string readMessage();
 
 public:
-	void openSocket(string otherUsername, string address);
-	void closeSocket(string otherUsername);
-	void closeAllSockets();
+	void sendMessage(string message);
+	void addPeer(string username, string ip, int port);
+	void removePeerByUsername(string username);
 	void stop();
 
 	PeerMessageListener(SessionMessageObserver* observer);

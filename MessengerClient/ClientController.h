@@ -57,7 +57,9 @@ class ClientController: public ServerRepliesObserver, SessionMessageObserver
 		void notifySomeoneJoinedRoom();
 		void notifySomeoneLeftRoom();
 		void notifyServerShuttingDown();
-		void notifyMessageReceived(string username, string message);
+		void startPeerListening();
+		void stopPeerListening();
+		void notifyMessageReceived(string message);
 };
 
 #endif /* CLIENTCONTROLLER_H_ */

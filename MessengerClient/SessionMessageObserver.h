@@ -14,7 +14,7 @@ using namespace std;
 class SessionMessageObserver
 {
 public:
-	virtual void notifyMessageReceived(string username, string message) = 0;
+	virtual void notifyMessageReceived(string message) = 0;
 	virtual ~SessionMessageObserver() = 0;
 };
 
