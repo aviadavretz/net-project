@@ -25,7 +25,6 @@ public:
 	void add(UDPSocket* socket);
 	void add(vector<UDPSocket*> sockets);
 	UDPSocket* listen(int timeout = 0);
-
 };
 
 } /* namespace npl */

@@ -11,20 +11,17 @@ void PeerMessageListener::run()
 {
 	while (shouldContinue)
 	{
-		MUDPListener listener;
-		vector<UDPSocket*> peers;
+		MUDPListener* listener;
 		map<string, UDPSocket*>::iterator iter;
 
 		// TODO: Think of a better way to do this..
 		for (iter = sockets.begin(); iter != sockets.end(); iter++)
 		{
-			peers.push_back((*iter).second);
+			listener->add((*iter).second);
 		}
 
-		listener.add(peers);
-
 		int timeout = 3;
-		UDPSocket* readyPeer = listener.listen(timeout);
+		UDPSocket* readyPeer = listener->listen(timeout);
 
 		// No message received for the past given timeout seconds
 		if (readyPeer == NULL)
