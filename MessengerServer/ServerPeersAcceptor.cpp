@@ -26,5 +26,11 @@ void ServerPeersAcceptor::run()
 void ServerPeersAcceptor::stop()
 {
 	shouldContinue = false;
+}
+
+void ServerPeersAcceptor::closeSockets()
+{
+	// After stopped, close & delete the socket.
 	acceptingSocket->close();
+	delete acceptingSocket;
 }

@@ -82,7 +82,6 @@ int UDPSocket::reply(const string& msg){
 }
 
 void UDPSocket::close(){
-	cout<<"closing socket"<<endl;
 	shutdown(socket_fd,SHUT_RDWR);
 	::close(socket_fd);
 }

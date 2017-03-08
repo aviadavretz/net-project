@@ -30,6 +30,8 @@ void ServerController::stopServer()
 
 	// Stop listening and accepting incoming connections
 	peersAcceptor.stop();
+	peersAcceptor.closeSockets();
+
 	peersListener.stop();
 }
 

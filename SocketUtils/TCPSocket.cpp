@@ -107,7 +107,6 @@ int TCPSocket::send(const char* msg, int length){
 
 
 void TCPSocket::close(){
-	//cout<<"closing socket"<<endl;
 	shutdown(socket_fd,SHUT_RDWR);
 	::close(socket_fd);
 }

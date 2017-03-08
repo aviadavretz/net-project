@@ -27,6 +27,7 @@ class ServerPeersAcceptor: public MThread
 public:
 	ServerPeersAcceptor(NewPeerAcceptedObserver* observer);
 	void stop();
+	void closeSockets();
 };
 
 #endif /* SERVERPEERSACCEPTOR_H_ */

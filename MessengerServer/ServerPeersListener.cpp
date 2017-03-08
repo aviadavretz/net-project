@@ -263,6 +263,16 @@ string ServerPeersListener::readMessage(TCPSocket* socket)
 void ServerPeersListener::stop()
 {
 	shouldContinue = false;
+
+	// Delete all sockets
+	for (vector<TCPSocket*>::iterator iterator = peers.begin(); iterator != peers.end(); iterator++)
+	{
+		TCPSocket* currentSocket = (*iterator);
+
+		// Close & delete this socket.
+		currentSocket->close();
+		delete currentSocket;
+	}
 }
 
 void ServerPeersListener::addPeer(TCPSocket* peer)

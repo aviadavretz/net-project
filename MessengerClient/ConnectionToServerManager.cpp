@@ -21,6 +21,7 @@ string ConnectionToServerManager::receiveMessage()
 	socketToServer->recv(messageContent, messageLength);
 	messageContent[messageLength] = '\0';
 
+	// Convert the char* to string
 	return string(messageContent);
 }
 
@@ -38,6 +39,7 @@ int ConnectionToServerManager::receiveIntMessage()
 	socketToServer->recv(messageContent, messageLength);
 	messageContent[messageLength] = '\0';
 
+	// Convert the char* to int
 	return atoi(messageContent);
 }
 
