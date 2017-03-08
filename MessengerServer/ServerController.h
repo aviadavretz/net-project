@@ -45,7 +45,9 @@ class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 	bool isUserInChatRoom(User* user);
 	bool isBusyUser(User* user);
 	bool isUserLoggedIn(string username);
+	void closeExistingSessions(TCPSocket* peerSocket, User* requestingUser);
 	bool closeSession(Session* session);
+	string getOtherUsernameBySession(Session* session, string knownUsername);
 	ChatRoom* getRoomByUser(User* user);
 	Session* getSessionByUser(User* user);
 	TCPSocket* getPeerSocketByUsername(string username);

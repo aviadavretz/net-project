@@ -35,6 +35,50 @@ void ServerController::stopServer()
 	peersListener.stop();
 }
 
+string ServerController::getOtherUsernameBySession(Session* session, string knownUsername)
+{
+	string otherUsername = session->getSecondUser()->getUsername();
+
+	// If the known user is the second user in the session
+	if (otherUsername.compare(knownUsername) == 0)
+	{
+		// Return the first
+		return session->getFirstUser()->getUsername();
+	}
+
+	return otherUsername;
+}
+
+void ServerController::closeExistingSessions(TCPSocket* peerSocket, User* requestingUser)
+{
+	// Check if the requesting user is currently in a session
+	if (isUserInSession(requestingUser))
+	{
+		printer.print(requestingUser->getUsername() + " wants to create a Session, but is currently in a Session.");
+
+		Session* oldSession = getSessionByUser(requestingUser);
+
+		// Close the old session
+		closeSession(oldSession);
+
+		// Get the other username & socket
+		string otherSessionUsername = getOtherUsernameBySession(oldSession, requestingUser->getUsername());
+		TCPSocket* otherSocket = getPeerSocketByUsername(otherSessionUsername);
+
+		// Notify the users that the session has ended.
+		peersMessageSender.sendCloseSessionSuccess(peerSocket, otherSessionUsername);
+		peersMessageSender.sendCloseSessionSuccess(otherSocket, requestingUser->getUsername());
+
+		printer.print("Session between " + requestingUser->getUsername() + " and " + otherSessionUsername + " closed.");
+	}
+	// Check if the requesting user is currently in a room
+	else if (isUserInChatRoom(requestingUser))
+	{
+		// TODO: Implement this!!!
+		printer.print(requestingUser->getUsername() + " wants to create a Session, but is currently in a ChatRoom.");
+	}
+}
+
 vector<string> ServerController::getAllRegisteredUsersName()
 {
 	return userCredentialsManager.getAllRegisteredUsersName();
@@ -130,14 +174,10 @@ void ServerController::notifyStatusRequest(TCPSocket* peerSocket)
 			peersMessageSender.sendStatusInASession(peerSocket);
 
 			// Get the session in which the user is
-			Session* usersSession = getSessionByUser(requestingUser);
-			string otherUserName = usersSession->getSecondUser()->getUsername();
+			Session* userSession = getSessionByUser(requestingUser);
 
-			// In case requesting user is the second one in the session
-			if (otherUserName.compare(requestingUser->getUsername()) == 0)
-			{
-				otherUserName = usersSession->getFirstUser()->getUsername();
-			}
+			// Get the other username
+			string otherUserName = getOtherUsernameBySession(userSession, requestingUser->getUsername());
 
 			// Send the otherUserName to the user
 			peersMessageSender.sendMessage(peerSocket, otherUserName);
@@ -176,14 +216,14 @@ void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string ot
 		}
 		else
 		{
-			// Make sure the requesting user is not currently in a session or room
-			if (isBusyUser(requestingUser))
-			{
-				peersMessageSender.sendAlreadyBusy(peerSocket);
-				printer.print(requestingUser->getUsername() + " wants to create a Session, but is currently in a Session or ChatRoom.");
-			}
-			else
-			{
+//			// Check if the requesting user is not currently in a session or room
+//			if (isBusyUser(requestingUser))
+//			{
+//				peersMessageSender.sendAlreadyBusy(peerSocket);
+//				printer.print(requestingUser->getUsername() + " wants to create a Session, but is currently in a Session or ChatRoom.");
+//			}
+//			else
+//			{
 				// Check if user exists and is logged in
 				if (isUserLoggedIn(otherUserName))
 				{
@@ -199,6 +239,9 @@ void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string ot
 					}
 					else
 					{
+						// Close the existing sessions of the requesting user.
+						closeExistingSessions(peerSocket, requestingUser);
+
 						// Get the listening port of each participant
 						int requestingUserPort = peerListeningPorts[peerSocket];
 						int otherUserPort = peerListeningPorts[otherPeer];
@@ -222,7 +265,7 @@ void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string ot
 					printer.print(requestingUser->getUsername() + " tried to open a Session with " + otherUserName +
 								  ", but there is no logged in user named " + otherUserName);
 				}
-			}
+//			}
 		}
 	}
 }
@@ -368,13 +411,7 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 			if (success)
 			{
 				// Get the other username
-				string otherUsername = userSession->getSecondUser()->getUsername();
-
-				// If the requesting user is the second user in the session
-				if (otherUsername.compare(requestingUser->getUsername()) == 0)
-				{
-					otherUsername = userSession->getFirstUser()->getUsername();
-				}
+				string otherUsername = getOtherUsernameBySession(userSession, requestingUser->getUsername());
 
 				// Get the other socket
 				TCPSocket* otherSocket = getPeerSocketByUsername(otherUsername);
@@ -527,28 +564,11 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 		else if (isUserInSession(requestingUser))
 		{
 			// Close the session the user is in
-			Session* usersSession = getSessionByUser(requestingUser);
+			Session* userSession = getSessionByUser(requestingUser);
+			closeSession(userSession);
 
-			// TODO: closeSession(userSession); instead of the next few lines
-
-			// TODO: Implement this without #include <algorithm>?
-			vector<Session*>::iterator position = std::find(sessions.begin(), sessions.end(), usersSession);
-
-			 // end() means the element was not found
-			if (position != sessions.end())
-			{
-				sessions.erase(position);
-			}
-
-			// Notify the other user
-			// Get the other username
-			string otherUsername = usersSession->getSecondUser()->getUsername();
-
-			// If the requesting user is the second user in the session
-			if (otherUsername.compare(requestingUser->getUsername()) == 0)
-			{
-				otherUsername = usersSession->getFirstUser()->getUsername();
-			}
+			// Get the other other username
+			string otherUsername = getOtherUsernameBySession(userSession, requestingUser->getUsername());
 
 			// Get the other socket
 			TCPSocket* otherSocket = getPeerSocketByUsername(otherUsername);
