@@ -41,6 +41,8 @@ class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 	ServerTerminalPrinter printer;
 	map<TCPSocket*, int> peerListeningPorts;
 
+	pthread_mutex_t usersMutex;
+
 	bool isUserInSession(User* user);
 	bool isUserInChatRoom(User* user);
 	bool isUserBusy(User* user);

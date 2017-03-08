@@ -8,7 +8,9 @@
 #include "ServerController.h"
 
 ServerController::ServerController() : peersAcceptor(ServerPeersAcceptor(this)), peersListener(ServerPeersListener(this))
-{}
+{
+	pthread_mutex_init(&usersMutex, NULL);
+}
 
 void ServerController::startServer()
 {
@@ -112,10 +114,16 @@ vector<string> ServerController::getAllConnectedUsersName()
 	vector<string> users;
 	map<TCPSocket*,User*>::iterator iterator;
 
+	// Start the lock, as loggedInUsers may be edited in the middle of the operation otherwise
+	pthread_mutex_lock(&usersMutex);
+
 	for (iterator = loggedInUsers.begin(); iterator != loggedInUsers.end(); iterator++)
 	{
 		users.push_back(iterator->second->getUsername());
 	}
+
+	// We finished iterating over the users so we can release the lock
+	pthread_mutex_unlock(&usersMutex);
 
 	return users;
 }
@@ -563,8 +571,12 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 
 		notification = requestingUser->getUsername() + " (" +peerSocket->fromAddr() + ") has disconnected.";
 
+		pthread_mutex_lock(&usersMutex);
+
 		// Remove the user from the vector of connected users.
 		loggedInUsers.erase(peerSocket);
+
+		pthread_mutex_unlock(&usersMutex);
 	}
 	else
 	{
@@ -613,7 +625,14 @@ void ServerController::notifyLoginRequest(TCPSocket* peerSocket, string username
 			{
 				// User & PSW are correct.
 				User* user = new User(username);
+
+				// Make sure loggedInUsers doesn't change while appending to it
+				pthread_mutex_lock(&usersMutex);
+
 				loggedInUsers[peerSocket] = user;
+
+				// Append has been done so we can unlock it now
+				pthread_mutex_unlock(&usersMutex);
 
 				peersMessageSender.sendLoginSuccessful(peerSocket);
 				printer.printLoginSuccessful(username, address);
@@ -778,7 +797,14 @@ bool ServerController::isUserBusy(User* user)
 
 User* ServerController::getUserByPeer(TCPSocket* peer)
 {
-	return loggedInUsers[peer];
+	// TODO : Is lock really needed here ? idk...
+	pthread_mutex_lock(&usersMutex);
+
+	User* user = loggedInUsers[peer];
+
+	pthread_mutex_unlock(&usersMutex);
+
+	return user;
 }
 
 bool ServerController::isPeerLoggedIn(TCPSocket* peer)
@@ -788,6 +814,9 @@ bool ServerController::isPeerLoggedIn(TCPSocket* peer)
 
 TCPSocket* ServerController::getPeerSocketByUsername(string username)
 {
+	// Start locking to keep loggedInUsers from changing in the middle
+	pthread_mutex_lock(&usersMutex);
+
  	for (map<TCPSocket*, User*>::iterator iterator = loggedInUsers.begin(); iterator != loggedInUsers.end(); iterator++)
 	{
  		User* currentUser = (*iterator).second;
@@ -804,6 +833,9 @@ TCPSocket* ServerController::getPeerSocketByUsername(string username)
 			return iterator->first;
 		}
 	}
+
+ 	// Since we finished iterating we can unlock
+ 	pthread_mutex_unlock(&usersMutex);
 
  	return NULL;
 }
