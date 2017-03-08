@@ -33,7 +33,7 @@ string ClientController::getLoggedInUsername()
 void ClientController::sendMessage(string sendingUsername, string message)
 {
 	// Append the username to the message
-	string messageToSend = "[" + sendingUsername + "]: " + message;
+	string messageToSend = "[" + sendingUsername + "] " + message;
 
 	// Send the message to all peers
 	peerListener->sendMessage(messageToSend);
@@ -42,7 +42,7 @@ void ClientController::sendMessage(string sendingUsername, string message)
 void ClientController::notifyMessageReceived(string message)
 {
 	// Print out the received message.
-	printer.print(message);
+	printer.print(">" + message);
 }
 
 void ClientController::sendCommandToServer(int commandCode, string args)
