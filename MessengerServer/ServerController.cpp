@@ -10,6 +10,7 @@
 ServerController::ServerController() : peersAcceptor(ServerPeersAcceptor(this)), peersListener(ServerPeersListener(this))
 {
 	pthread_mutex_init(&usersMutex, NULL);
+	pthread_mutex_init(&sessionsMutex, NULL);
 }
 
 void ServerController::startServer()
@@ -130,6 +131,11 @@ vector<string> ServerController::getAllConnectedUsersName()
 
 vector<Session*> ServerController::getAllSessions()
 {
+	// TODO : Is it really necessary to use a lock here ?
+	pthread_mutex_lock(&sessionsMutex);
+	vector<Session*> sessions = this->sessions;
+	pthread_mutex_unlock(&sessionsMutex);
+
 	return sessions;
 }
 
@@ -272,7 +278,13 @@ void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string ot
 					// Other user is not busy. Create the session
 					Session* session = new Session(requestingUser, otherUser);
 
+					// Make sure sessions are not edited while adding a session
+					pthread_mutex_lock(&sessionsMutex);
+
 					sessions.push_back(session);
+
+					// We finished iterating so unlock can be done
+					pthread_mutex_unlock(&sessionsMutex);
 
 					peersMessageSender.sendEstablishedSessionCommunicationDetails(
 							peerSocket, requestingUser, requestingUserPort,
@@ -372,16 +384,23 @@ void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string 
 
 bool ServerController::eraseSession(Session* session)
 {
+	// Make sure sessions are not edited while erasing
+	pthread_mutex_lock(&sessionsMutex);
+
+	bool wasSessionErased = false;
 	vector<Session*>::iterator position = std::find(sessions.begin(), sessions.end(), session);
 
 	 // end() means the element was not found
 	if (position != sessions.end())
 	{
 		sessions.erase(position);
-		return true;
+		wasSessionErased = true;
 	}
 
-	return false;
+	// We finished editing so unlock can be done
+	pthread_mutex_unlock(&sessionsMutex);
+
+	return wasSessionErased;
 }
 
 void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket)
@@ -744,6 +763,11 @@ bool ServerController::isUserInSession(User* user)
 
 Session* ServerController::getSessionByUser(User* user)
 {
+	Session* session = NULL;
+
+	// Make sure sessions are not edited while iterating
+	pthread_mutex_lock(&sessionsMutex);
+
 	// Go over all sessions
  	for (vector<Session*>::iterator iterator = sessions.begin(); iterator != sessions.end(); iterator++)
 	{
@@ -755,11 +779,15 @@ Session* ServerController::getSessionByUser(User* user)
 			(secondUser->getUsername().compare(user->getUsername()) == 0))
 		{
 			// Return the Session object
-			return (*iterator);
+			session = (*iterator);
+			break;
 		}
 	}
 
- 	return NULL;
+ 	// We finished iterating so unlock can be done
+ 	pthread_mutex_unlock(&sessionsMutex);
+
+ 	return session;
 }
 
 bool ServerController::isUserInChatRoom(User* user)
@@ -814,6 +842,8 @@ bool ServerController::isPeerLoggedIn(TCPSocket* peer)
 
 TCPSocket* ServerController::getPeerSocketByUsername(string username)
 {
+	TCPSocket* socket = NULL;
+
 	// Start locking to keep loggedInUsers from changing in the middle
 	pthread_mutex_lock(&usersMutex);
 
@@ -829,15 +859,16 @@ TCPSocket* ServerController::getPeerSocketByUsername(string username)
  		// Compare the usernames
 		if (username.compare(currentUser->getUsername()) == 0)
 		{
-			// Return the User object
-			return iterator->first;
+			// Found the peer's socket !
+			socket = iterator->first;
+			break;
 		}
 	}
 
  	// Since we finished iterating we can unlock
  	pthread_mutex_unlock(&usersMutex);
 
- 	return NULL;
+ 	return socket;
 }
 
 User* ServerController::getLoggedInUserByUsername(string username)

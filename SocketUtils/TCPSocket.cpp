@@ -44,9 +44,12 @@ TCPSocket::TCPSocket(int port){
 
 	//bind the socket on the specified address
 	printf("TCP server binding...\n");
-	if (bind(socket_fd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
+	int bindReturnCode = bind(socket_fd, (struct sockaddr *)&serverAddr, sizeof(serverAddr));
+
+	// Check if the binding was successful
+	if (bindReturnCode < 0)
 	{
-		perror ("Error naming channel");
+		perror("Error naming channel (" + bindReturnCode + ")");
 	}
 }
 

@@ -42,6 +42,7 @@ class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 	map<TCPSocket*, int> peerListeningPorts;
 
 	pthread_mutex_t usersMutex;
+	pthread_mutex_t sessionsMutex;
 
 	bool isUserInSession(User* user);
 	bool isUserInChatRoom(User* user);
