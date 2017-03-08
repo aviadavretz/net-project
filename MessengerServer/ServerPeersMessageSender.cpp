@@ -145,9 +145,9 @@ void ServerPeersMessageSender::sendJoinRoomSuccess(TCPSocket* peer)
 	sendCode(peer, JOIN_ROOM_SUCCESS);
 }
 
-void ServerPeersMessageSender::sendAlreadyBusy(TCPSocket* peer)
+void ServerPeersMessageSender::sendAlreadyInRequestedRoom(TCPSocket* peer)
 {
-	sendCode(peer, ALREADY_BUSY);
+	sendCode(peer, ALREADY_IN_REQUESTED_ROOM);
 }
 
 void ServerPeersMessageSender::sendRoomNameExists(TCPSocket* peer)

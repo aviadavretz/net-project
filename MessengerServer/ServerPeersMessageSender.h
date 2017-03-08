@@ -43,7 +43,7 @@ public:
 	void sendOpenRoomSuccess(TCPSocket* peer, string roomName);
 	void sendRoomDoesntExist(TCPSocket* peer);
 	void sendJoinRoomSuccess(TCPSocket* peer);
-	void sendAlreadyBusy(TCPSocket* peer);
+	void sendAlreadyInRequestedRoom(TCPSocket* peer);
 	void sendExitRoomSuccess(TCPSocket* peer);
 	void sendCloseSessionSuccess(TCPSocket* peer, string otherUsername);
 	void sendNotInSessionOrRoom(TCPSocket* peer);

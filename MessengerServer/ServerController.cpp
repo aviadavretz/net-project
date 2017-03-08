@@ -8,8 +8,7 @@
 #include "ServerController.h"
 
 ServerController::ServerController() : peersAcceptor(ServerPeersAcceptor(this)), peersListener(ServerPeersListener(this))
-{
-}
+{}
 
 void ServerController::startServer()
 {
@@ -365,7 +364,6 @@ void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string 
 
 bool ServerController::eraseSession(Session* session)
 {
-	// TODO: Implement this without #include <algorithm>?
 	vector<Session*>::iterator position = std::find(sessions.begin(), sessions.end(), session);
 
 	 // end() means the element was not found
@@ -416,7 +414,6 @@ void ServerController::notifyJoinChatRoomRequest(TCPSocket* peerSocket, string r
 	else
 	{
 		User* requestingUser = getUserByPeer(peerSocket);
-
 		ChatRoom* room = getChatRoomByName(roomName);
 
 		// Make sure a room with the requested name exists.
@@ -428,42 +425,57 @@ void ServerController::notifyJoinChatRoomRequest(TCPSocket* peerSocket, string r
 		}
 		else
 		{
-			// Close the existing sessions of the requesting user.
-			closeExistingSessions(peerSocket, requestingUser);
+			// Get the ChatRoom the user is currently inside.
+			ChatRoom* currentRoom = getChatRoomByUser(requestingUser);
 
-			// Notify the user he has joined the room.
-			peersMessageSender.sendJoinRoomSuccess(peerSocket);
-			vector<User*> roomUsers = room->getParticipatingUsers();
-			int requestingUserPort = peerListeningPorts[peerSocket];
-			int otherUserPort;
-
-			// Send the relevant data to every user.
-			for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
+			// Check if the ChatRoom exists, and make sure it's not the one the user is trying to join.
+			if (currentRoom != NULL && currentRoom->getName().compare(roomName) == 0)
 			{
-				string currentUsername = (*iter)->getUsername();
-
-				// Get the current relevant socket
-				TCPSocket* currentUserSocket = getPeerSocketByUsername(currentUsername);
-
-				// Get the listening port of the other participant
-				int otherUserPort = peerListeningPorts[currentUserSocket];
-
-				// Notify the old user that someone has joined.
-				peersMessageSender.sendSomeoneJoinedRoom(currentUserSocket);
-
-				// Send both the joining user and the old user each-other's information
-				peersMessageSender.sendConnectionData(peerSocket, requestingUser->getUsername(), requestingUserPort,
-													  currentUserSocket, currentUsername, otherUserPort);
+				// Notify the user that he is already in the requested room.
+				peersMessageSender.sendAlreadyInRequestedRoom(peerSocket);
+				printer.print(requestingUser->getUsername() + " tried to join room '" + roomName +
+							  "', but he is already inside.");
 			}
+			// The requested room is not the current room
+			else
+			{
+				// Close the existing sessions of the requesting user.
+				closeExistingSessions(peerSocket, requestingUser);
 
-			// Notify the user that he has all the room users data.
-			peersMessageSender.sendMessage(peerSocket, DONE_SENDING_ROOM_PARTICIPANTS);
+				// Notify the user he has joined the room.
+				peersMessageSender.sendJoinRoomSuccess(peerSocket);
+				vector<User*> roomUsers = room->getParticipatingUsers();
+				int requestingUserPort = peerListeningPorts[peerSocket];
+				int otherUserPort;
 
-			// Add the requesting user to the room.
-			room->addParticipant(requestingUser);
+				// Send the relevant data to every user.
+				for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
+				{
+					string currentUsername = (*iter)->getUsername();
 
-			printer.print(requestingUser->getUsername() + " (" + peerSocket->fromAddr() +
-						  ") joined ChatRoom '" + roomName + "'");
+					// Get the current relevant socket
+					TCPSocket* currentUserSocket = getPeerSocketByUsername(currentUsername);
+
+					// Get the listening port of the other participant
+					int otherUserPort = peerListeningPorts[currentUserSocket];
+
+					// Notify the old user that someone has joined.
+					peersMessageSender.sendSomeoneJoinedRoom(currentUserSocket);
+
+					// Send both the joining user and the old user each-other's information
+					peersMessageSender.sendConnectionData(peerSocket, requestingUser->getUsername(), requestingUserPort,
+														  currentUserSocket, currentUsername, otherUserPort);
+				}
+
+				// Notify the user that he has all the room users data.
+				peersMessageSender.sendMessage(peerSocket, DONE_SENDING_ROOM_PARTICIPANTS);
+
+				// Add the requesting user to the room.
+				room->addParticipant(requestingUser);
+
+				printer.print(requestingUser->getUsername() + " (" + peerSocket->fromAddr() +
+							  ") joined ChatRoom '" + roomName + "'");
+			}
 		}
 	}
 }

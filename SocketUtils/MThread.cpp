@@ -31,7 +31,6 @@ MThread::~MThread(){
 	if (threadId>0){
 		// Kills the thread if exists
 		pthread_cancel(threadId);
-
 		cout << "Thread stopped." << endl;
 	}
 }

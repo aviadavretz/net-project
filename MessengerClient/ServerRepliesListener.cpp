@@ -64,9 +64,9 @@ void ServerRepliesListener::run()
 			printer->print("Connected to " + connection->getAddr() + ", but not Logged-in.");
 			break;
 		}
-		case (ALREADY_BUSY):
+		case (ALREADY_IN_REQUESTED_ROOM):
 		{
-			printer->print("You are already participating in a session or room.");
+			printer->print("You are already in the requested room.");
 			break;
 		}
 		case (SESSION_WITH_SELF):
