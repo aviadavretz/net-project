@@ -54,12 +54,10 @@ void ServerController::closeExistingSessions(TCPSocket* peerSocket, User* reques
 	// Check if the requesting user is currently in a session
 	if (isUserInSession(requestingUser))
 	{
-		printer.print(requestingUser->getUsername() + " wants to create a Session, but is currently in a Session.");
-
 		Session* oldSession = getSessionByUser(requestingUser);
 
 		// Close the old session
-		closeSession(oldSession);
+		eraseSession(oldSession);
 
 		// Get the other username & socket
 		string otherSessionUsername = getOtherUsernameBySession(oldSession, requestingUser->getUsername());
@@ -69,14 +67,40 @@ void ServerController::closeExistingSessions(TCPSocket* peerSocket, User* reques
 		peersMessageSender.sendCloseSessionSuccess(peerSocket, otherSessionUsername);
 		peersMessageSender.sendCloseSessionSuccess(otherSocket, requestingUser->getUsername());
 
-		printer.print("Session between " + requestingUser->getUsername() + " and " + otherSessionUsername + " closed.");
+		printer.print("Session between " + requestingUser->getUsername() + " and " +
+				      otherSessionUsername + " closed by " + requestingUser->getUsername() + ".");
 	}
 	// Check if the requesting user is currently in a room
 	else if (isUserInChatRoom(requestingUser))
 	{
-		// TODO: Implement this!!!
-		printer.print(requestingUser->getUsername() + " wants to create a Session, but is currently in a ChatRoom.");
+		ChatRoom* oldRoom = getChatRoomByUser(requestingUser);
+
+		// Remove the user from the room.
+		removeUserFromChatRoom(peerSocket, oldRoom, requestingUser);
 	}
+}
+
+void ServerController::removeUserFromChatRoom(TCPSocket* peerSocket, ChatRoom* room, User* user)
+{
+	// Remove the user from the room he is inside
+	room->removeParticipant(user);
+
+	vector<User*> roomUsers = room->getParticipatingUsers();
+
+	// Notify every user in the room.
+	for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
+	{
+		// Get the current relevant socket
+		TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
+
+		// Notify the user that someone has left.
+		peersMessageSender.sendSomeoneLeftRoom(currentUserSocket, user->getUsername());
+	}
+
+	// Notify the user he has left the room
+	peersMessageSender.sendExitRoomSuccess(peerSocket);
+
+	printer.print(user->getUsername() + " has left ChatRoom '" + room->getName() + "'.");
 }
 
 vector<string> ServerController::getAllRegisteredUsersName()
@@ -159,7 +183,7 @@ void ServerController::notifyStatusRequest(TCPSocket* peerSocket)
 			peersMessageSender.sendStatusInARoom(peerSocket);
 
 			// Get the room in which the user is
-			ChatRoom* usersRoom = getRoomByUser(requestingUser);
+			ChatRoom* usersRoom = getChatRoomByUser(requestingUser);
 			string roomName = usersRoom->getName();
 
 			// Send the roomName to the user
@@ -216,56 +240,47 @@ void ServerController::notifyOpenSessionRequest(TCPSocket* peerSocket, string ot
 		}
 		else
 		{
-//			// Check if the requesting user is not currently in a session or room
-//			if (isBusyUser(requestingUser))
-//			{
-//				peersMessageSender.sendAlreadyBusy(peerSocket);
-//				printer.print(requestingUser->getUsername() + " wants to create a Session, but is currently in a Session or ChatRoom.");
-//			}
-//			else
-//			{
-				// Check if user exists and is logged in
-				if (isUserLoggedIn(otherUserName))
+			// Check if user exists and is logged in
+			if (isUserLoggedIn(otherUserName))
+			{
+				TCPSocket* otherPeer = getPeerSocketByUsername(otherUserName);
+				User* otherUser = getUserByPeer(otherPeer);
+
+				// Make sure the other user is not busy
+				if (isUserBusy(otherUser))
 				{
-					TCPSocket* otherPeer = getPeerSocketByUsername(otherUserName);
-					User* otherUser = getUserByPeer(otherPeer);
-
-					// Make sure the other user is not busy
-					if (isBusyUser(otherUser))
-					{
-						peersMessageSender.sendOtherUserBusy(peerSocket);
-						printer.print(requestingUser->getUsername() + " wants to create a Session with " + otherUserName +
-									  ", but " + otherUserName + " is busy.");
-					}
-					else
-					{
-						// Close the existing sessions of the requesting user.
-						closeExistingSessions(peerSocket, requestingUser);
-
-						// Get the listening port of each participant
-						int requestingUserPort = peerListeningPorts[peerSocket];
-						int otherUserPort = peerListeningPorts[otherPeer];
-
-						// Other user is not busy. Create the session
-						Session* session = new Session(requestingUser, otherUser);
-
-						sessions.push_back(session);
-
-						peersMessageSender.sendEstablishedSessionCommunicationDetails(
-								peerSocket, requestingUser, requestingUserPort,
-								otherPeer, otherUser, otherUserPort);
-
-						printer.print(requestingUser->getUsername() + " has created a Session with " + otherUserName);
-					}
+					peersMessageSender.sendOtherUserBusy(peerSocket);
+					printer.print(requestingUser->getUsername() + " wants to create a Session with " + otherUserName +
+								  ", but " + otherUserName + " is busy.");
 				}
 				else
 				{
-					// User not found
-					peersMessageSender.sendUserNotFound(peerSocket);
-					printer.print(requestingUser->getUsername() + " tried to open a Session with " + otherUserName +
-								  ", but there is no logged in user named " + otherUserName);
+					// Close the existing sessions of the requesting user.
+					closeExistingSessions(peerSocket, requestingUser);
+
+					// Get the listening port of each participant
+					int requestingUserPort = peerListeningPorts[peerSocket];
+					int otherUserPort = peerListeningPorts[otherPeer];
+
+					// Other user is not busy. Create the session
+					Session* session = new Session(requestingUser, otherUser);
+
+					sessions.push_back(session);
+
+					peersMessageSender.sendEstablishedSessionCommunicationDetails(
+							peerSocket, requestingUser, requestingUserPort,
+							otherPeer, otherUser, otherUserPort);
+
+					printer.print(requestingUser->getUsername() + " has created a Session with " + otherUserName);
 				}
-//			}
+			}
+			else
+			{
+				// User not found
+				peersMessageSender.sendUserNotFound(peerSocket);
+				printer.print(requestingUser->getUsername() + " tried to open a Session with " + otherUserName +
+							  ", but there is no logged in user named " + otherUserName);
+			}
 		}
 	}
 }
@@ -348,7 +363,7 @@ void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string 
 	}
 }
 
-bool ServerController::closeSession(Session* session)
+bool ServerController::eraseSession(Session* session)
 {
 	// TODO: Implement this without #include <algorithm>?
 	vector<Session*>::iterator position = std::find(sessions.begin(), sessions.end(), session);
@@ -375,54 +390,11 @@ void ServerController::notifyCloseSessionOrExitRoomRequest(TCPSocket* peerSocket
 	{
 		User* requestingUser = getUserByPeer(peerSocket);
 
-		// Room
-		if (isUserInChatRoom(requestingUser))
+		// Check if the user is busy
+		if (isUserBusy(requestingUser))
 		{
-			// Remove the user from the room he is inside
-			ChatRoom* userRoom = getRoomByUser(requestingUser);
-			userRoom->removeParticipant(requestingUser);
-
-			vector<User*> roomUsers = userRoom->getParticipatingUsers();
-
-			// Notify every user in the room.
-			for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
-			{
-				// Get the current relevant socket
-				TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
-
-				// Notify the user that someone has left.
-				peersMessageSender.sendSomeoneLeftRoom(currentUserSocket, requestingUser->getUsername());
-			}
-
-			// Notify the user he has left the room
-			peersMessageSender.sendExitRoomSuccess(peerSocket);
-
-			printer.print(requestingUser->getUsername() + " has left ChatRoom '" + userRoom->getName() + "'.");
-		}
-		// Session
-		else if (isUserInSession(requestingUser))
-		{
-			// Close the session the user is in
-			Session* userSession = getSessionByUser(requestingUser);
-
-			// Delete the session
-			bool success = closeSession(userSession);
-
-			if (success)
-			{
-				// Get the other username
-				string otherUsername = getOtherUsernameBySession(userSession, requestingUser->getUsername());
-
-				// Get the other socket
-				TCPSocket* otherSocket = getPeerSocketByUsername(otherUsername);
-
-				// Notify both users that the session has ended.
-				peersMessageSender.sendCloseSessionSuccess(peerSocket, otherUsername);
-				peersMessageSender.sendCloseSessionSuccess(otherSocket, requestingUser->getUsername());
-
-				printer.print(requestingUser->getUsername() +
-							  " has closed the Session with " + otherUsername + ".");
-			}
+			// Close existing session/exit room
+			closeExistingSessions(peerSocket, requestingUser);
 		}
 		else
 		{
@@ -445,60 +417,53 @@ void ServerController::notifyJoinChatRoomRequest(TCPSocket* peerSocket, string r
 	{
 		User* requestingUser = getUserByPeer(peerSocket);
 
-		// Make sure the requesting user is not in a session or chat-room
-		if (isBusyUser(requestingUser))
+		ChatRoom* room = getChatRoomByName(roomName);
+
+		// Make sure a room with the requested name exists.
+		if (room == NULL)
 		{
-			// TODO: Leave the current session/room and create a new one?
-			peersMessageSender.sendAlreadyBusy(peerSocket);
-			printer.print(requestingUser->getUsername() + " tried to join a room, but is already in a room or session.");
+			peersMessageSender.sendRoomDoesntExist(peerSocket);
+			printer.print(requestingUser->getUsername() + " tried to join a room named '" +
+						  roomName + "', but it doesnt exist.");
 		}
 		else
 		{
-			ChatRoom* room = getChatRoomByName(roomName);
+			// Close the existing sessions of the requesting user.
+			closeExistingSessions(peerSocket, requestingUser);
 
-			// Make sure a room with the requested name exists.
-			if (room == NULL)
+			// Notify the user he has joined the room.
+			peersMessageSender.sendJoinRoomSuccess(peerSocket);
+			vector<User*> roomUsers = room->getParticipatingUsers();
+			int requestingUserPort = peerListeningPorts[peerSocket];
+			int otherUserPort;
+
+			// Send the relevant data to every user.
+			for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
 			{
-				peersMessageSender.sendRoomDoesntExist(peerSocket);
-				printer.print(requestingUser->getUsername() + " tried to join a room named '" +
-						  	  roomName + "', but it doesnt exist.");
+				string currentUsername = (*iter)->getUsername();
+
+				// Get the current relevant socket
+				TCPSocket* currentUserSocket = getPeerSocketByUsername(currentUsername);
+
+				// Get the listening port of the other participant
+				int otherUserPort = peerListeningPorts[currentUserSocket];
+
+				// Notify the old user that someone has joined.
+				peersMessageSender.sendSomeoneJoinedRoom(currentUserSocket);
+
+				// Send both the joining user and the old user each-other's information
+				peersMessageSender.sendConnectionData(peerSocket, requestingUser->getUsername(), requestingUserPort,
+													  currentUserSocket, currentUsername, otherUserPort);
 			}
-			else
-			{
-				// Notify the user he has joined the room.
-				peersMessageSender.sendJoinRoomSuccess(peerSocket);
-				vector<User*> roomUsers = room->getParticipatingUsers();
-				int requestingUserPort = peerListeningPorts[peerSocket];
-				int otherUserPort;
 
-				// Send the relevant data to every user.
-				for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
-				{
-					string currentUsername = (*iter)->getUsername();
+			// Notify the user that he has all the room users data.
+			peersMessageSender.sendMessage(peerSocket, DONE_SENDING_ROOM_PARTICIPANTS);
 
-					// Get the current relevant socket
-					TCPSocket* currentUserSocket = getPeerSocketByUsername(currentUsername);
+			// Add the requesting user to the room.
+			room->addParticipant(requestingUser);
 
-					// Get the listening port of the other participant
-					int otherUserPort = peerListeningPorts[currentUserSocket];
-
-					// Notify the old user that someone has joined.
-					peersMessageSender.sendSomeoneJoinedRoom(currentUserSocket);
-
-					// Send both the joining user and the old user each-other's information
-					peersMessageSender.sendConnectionData(peerSocket, requestingUser->getUsername(), requestingUserPort,
-														  currentUserSocket, currentUsername, otherUserPort);
-				}
-
-				// Notify the user that he has all the room users data.
-				peersMessageSender.sendMessage(peerSocket, DONE_SENDING_ROOM_PARTICIPANTS);
-
-				// Add the requesting user to the room.
-				room->addParticipant(requestingUser);
-
-				printer.print(requestingUser->getUsername() + " (" + peerSocket->fromAddr() +
-					      	  ") joined ChatRoom '" + roomName + "'");
-			}
+			printer.print(requestingUser->getUsername() + " (" + peerSocket->fromAddr() +
+						  ") joined ChatRoom '" + roomName + "'");
 		}
 	}
 }
@@ -542,40 +507,47 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 		User* requestingUser = getUserByPeer(peerSocket);
 
 		// Check if user is busy
-		if (isUserInChatRoom(requestingUser))
+		if (isUserBusy(requestingUser))
 		{
-			// Remove the user from the room he is inside
-			ChatRoom* usersRoom = getRoomByUser(requestingUser);
-			usersRoom->removeParticipant(requestingUser);
-
-			// Notify all other room users that the requesting user has left
-			vector<User*> roomUsers = usersRoom->getParticipatingUsers();
-
-			// Notify every user in the room.
-			for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
-			{
-				// Get the current relevant socket
-				TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
-
-				// Notify the user that someone has left.
-				peersMessageSender.sendSomeoneLeftRoom(currentUserSocket, requestingUser->getUsername());
-			}
+			// Close any existing sessions / exit room
+			closeExistingSessions(peerSocket, requestingUser);
 		}
-		else if (isUserInSession(requestingUser))
-		{
-			// Close the session the user is in
-			Session* userSession = getSessionByUser(requestingUser);
-			closeSession(userSession);
 
-			// Get the other other username
-			string otherUsername = getOtherUsernameBySession(userSession, requestingUser->getUsername());
-
-			// Get the other socket
-			TCPSocket* otherSocket = getPeerSocketByUsername(otherUsername);
-
-			// Notify the other user that the session has ended.
-			peersMessageSender.sendCloseSessionSuccess(otherSocket, requestingUser->getUsername());
-		}
+//		// Check if user is busy
+//		if (isUserInChatRoom(requestingUser))
+//		{
+//			// Remove the user from the room he is inside
+//			ChatRoom* usersRoom = getRoomByUser(requestingUser);
+//			usersRoom->removeParticipant(requestingUser);
+//
+//			// Notify all other room users that the requesting user has left
+//			vector<User*> roomUsers = usersRoom->getParticipatingUsers();
+//
+//			// Notify every user in the room.
+//			for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
+//			{
+//				// Get the current relevant socket
+//				TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
+//
+//				// Notify the user that someone has left.
+//				peersMessageSender.sendSomeoneLeftRoom(currentUserSocket, requestingUser->getUsername());
+//			}
+//		}
+//		else if (isUserInSession(requestingUser))
+//		{
+//			// Close the session the user is in
+//			Session* userSession = getSessionByUser(requestingUser);
+//			eraseSession(userSession);
+//
+//			// Get the other other username
+//			string otherUsername = getOtherUsernameBySession(userSession, requestingUser->getUsername());
+//
+//			// Get the other socket
+//			TCPSocket* otherSocket = getPeerSocketByUsername(otherUsername);
+//
+//			// Notify the other user that the session has ended.
+//			peersMessageSender.sendCloseSessionSuccess(otherSocket, requestingUser->getUsername());
+//		}
 
 		notification = requestingUser->getUsername() + " (" +peerSocket->fromAddr() + ") has disconnected.";
 
@@ -739,15 +711,15 @@ bool ServerController::isUserInSession(User* user)
 	return getSessionByUser(user) != NULL;
 }
 
-// TODO: Maybe create a map<user*, Session*> for this?
 Session* ServerController::getSessionByUser(User* user)
 {
+	// Go over all sessions
  	for (vector<Session*>::iterator iterator = sessions.begin(); iterator != sessions.end(); iterator++)
 	{
  		User* firstUser = (*iterator)->getFirstUser();
  		User* secondUser = (*iterator)->getSecondUser();
 
-		// TODO: Compare whole User* objects?
+ 		// Check if the given user is the first or second user of this session
 		if ((firstUser->getUsername().compare(user->getUsername()) == 0) ||
 			(secondUser->getUsername().compare(user->getUsername()) == 0))
 		{
@@ -761,19 +733,21 @@ Session* ServerController::getSessionByUser(User* user)
 
 bool ServerController::isUserInChatRoom(User* user)
 {
- 	return getRoomByUser(user) != NULL;
+ 	return getChatRoomByUser(user) != NULL;
 }
 
-// TODO: Maybe create a map<user*, room*> for this?
-ChatRoom* ServerController::getRoomByUser(User* user)
+ChatRoom* ServerController::getChatRoomByUser(User* user)
 {
+	// Go over all chatrooms
  	for (vector<ChatRoom*>::iterator iterator = chatRooms.begin(); iterator != chatRooms.end(); iterator++)
 	{
+ 		// Get the room users
 		vector<User*> currentRoomUsers = (*iterator)->getParticipatingUsers();
 
+		// Go over the room users
 		for (vector<User*>::iterator iterator2 = currentRoomUsers.begin(); iterator2 != currentRoomUsers.end(); iterator2++)
 		{
-			// TODO: Compare whole User* objects?
+			// Check if the given user is inside the room
 			if ((*iterator2)->getUsername().compare(user->getUsername()) == 0)
 			{
 				// Return the ChatRoom object
@@ -785,7 +759,7 @@ ChatRoom* ServerController::getRoomByUser(User* user)
  	return NULL;
 }
 
-bool ServerController::isBusyUser(User* user)
+bool ServerController::isUserBusy(User* user)
 {
 	return isUserInChatRoom(user) || isUserInSession(user);
 }
