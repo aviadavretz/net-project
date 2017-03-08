@@ -23,6 +23,8 @@ class ServerPeersListener: public MThread
 	PeerMessagesObserver* observer;
 	bool shouldContinue;
 
+	pthread_mutex_t peersMutex;
+
 	void run();
 	int readCommand(TCPSocket* socket);
 	void routeCommand(int command, TCPSocket* peer);

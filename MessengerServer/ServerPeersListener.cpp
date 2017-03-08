@@ -11,12 +11,22 @@
 ServerPeersListener::ServerPeersListener(PeerMessagesObserver* observer)
 {
 	this->observer = observer;
+	pthread_mutex_init(&peersMutex, NULL);
 	shouldContinue = true;
 }
 
 vector<TCPSocket*> ServerPeersListener::getAllConnectedSockets()
 {
+	// Make sure peers are not modified while accessing it
+	pthread_mutex_lock(&peersMutex);
+
+	vector<TCPSocket*> peers = this->peers;
+
+	// We finished accessing peers so we can unlock
+	pthread_mutex_unlock(&peersMutex);
+
 	return peers;
+
 }
 
 void ServerPeersListener::run()
@@ -24,7 +34,7 @@ void ServerPeersListener::run()
 	while (shouldContinue)
 	{
 		MTCPListener listener;
-		listener.add(peers);
+		listener.add(getAllConnectedSockets());
 
 		int timeout = 3;
 		TCPSocket* readyPeer = listener.listen(timeout);
@@ -264,6 +274,8 @@ void ServerPeersListener::stop()
 {
 	shouldContinue = false;
 
+	vector<TCPSocket*> peers = getAllConnectedSockets();
+
 	// Delete all sockets
 	for (vector<TCPSocket*>::iterator iterator = peers.begin(); iterator != peers.end(); iterator++)
 	{
@@ -277,11 +289,20 @@ void ServerPeersListener::stop()
 
 void ServerPeersListener::addPeer(TCPSocket* peer)
 {
+	// Make sure peers are not modified while appending
+	pthread_mutex_lock(&peersMutex);
+
 	peers.push_back(peer);
+
+	// Appending done so we can unlock
+	pthread_mutex_unlock(&peersMutex);
 }
 
 void ServerPeersListener::removePeer(TCPSocket* peer)
 {
+	// Make sure peers are not modified while erasing
+	pthread_mutex_lock(&peersMutex);
+
 	// TODO: Implement this without #include <algorithm>?
 	vector<TCPSocket*>::iterator position = std::find(peers.begin(), peers.end(), peer);
 
@@ -290,6 +311,9 @@ void ServerPeersListener::removePeer(TCPSocket* peer)
 	{
 		peers.erase(position);
 	}
+
+	// We finished erasing so we can unlock
+	pthread_mutex_unlock(&peersMutex);
 }
 
 pair<string, string> ServerPeersListener::getUsernameAndPasswordFromMessage(string message)
