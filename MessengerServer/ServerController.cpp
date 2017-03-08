@@ -11,6 +11,7 @@ ServerController::ServerController() : peersAcceptor(ServerPeersAcceptor(this)),
 {
 	pthread_mutex_init(&usersMutex, NULL);
 	pthread_mutex_init(&sessionsMutex, NULL);
+	pthread_mutex_init(&chatRoomsMutex, NULL);
 }
 
 void ServerController::startServer()
@@ -141,22 +142,38 @@ vector<Session*> ServerController::getAllSessions()
 
 vector<ChatRoom*> ServerController::getAllChatRooms()
 {
+	// TOOD : Not sure if this is okay
+	pthread_mutex_lock(&chatRoomsMutex);
+
+	vector<ChatRoom*> chatRooms = this->chatRooms;
+
+	pthread_mutex_unlock(&chatRoomsMutex);
+
 	return chatRooms;
 }
 
 ChatRoom* ServerController::getChatRoomByName(string name)
 {
+	ChatRoom* chatRoom = NULL;
+
+	// Make sure chat rooms are not modified as we iterate
+	pthread_mutex_lock(&chatRoomsMutex);
+
 	for (vector<ChatRoom*>::iterator iterator = chatRooms.begin(); iterator != chatRooms.end(); iterator++)
 	{
 		string currentRoomName = (*iterator)->getName();
 
 		if (currentRoomName.compare(name) == 0)
 		{
-			return *iterator;
+			chatRoom = *iterator;
+			break;
 		}
 	}
 
-	return NULL;
+	// We finished the iteration so unlock can be done
+	pthread_mutex_unlock(&chatRoomsMutex);
+
+	return chatRoom;
 }
 
 void ServerController::notifyNewPeerAccepted(TCPSocket* peerSocket)
@@ -336,6 +353,9 @@ void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string 
 			}
 			else
 			{
+				// Make sure chat rooms are not modified while we iterate
+				pthread_mutex_lock(&chatRoomsMutex);
+
 				// TODO: Implement this without #include <algorithm>?
 				vector<ChatRoom*>::iterator position = std::find(chatRooms.begin(), chatRooms.end(), roomToClose);
 
@@ -377,6 +397,8 @@ void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string 
 					printer.print("ChatRoom '" + roomName + "' has been closed by " +
 						      	  requestingUser->getUsername() + " (" + peerSocket->fromAddr() + ").");
 				}
+
+				pthread_mutex_unlock(&chatRoomsMutex);
 			}
 		}
 	}
@@ -529,7 +551,12 @@ void ServerController::notifyOpenChatRoomRequest(TCPSocket* peerSocket, string r
 		{
 			ChatRoom* newRoom = new ChatRoom(roomName, requestingUser);
 
+			// Make sure chat rooms are not modified while appending
+			pthread_mutex_lock(&chatRoomsMutex);
+
 			chatRooms.push_back(newRoom);
+
+			pthread_mutex_unlock(&chatRoomsMutex);
 
 			peersMessageSender.sendOpenRoomSuccess(peerSocket, roomName);
 			printer.print("ChatRoom '" + roomName + "' has been created by " +
@@ -710,11 +737,16 @@ void ServerController::notifyListAllRoomsRequest(TCPSocket* peerSocket)
 {
 	vector<string> roomNames;
 
+	// Make sure chat rooms are not modified while iterating
+	pthread_mutex_lock(&chatRoomsMutex);
+
 	// Build a list containing the room names
 	for (vector<ChatRoom*>::iterator iterator = chatRooms.begin(); iterator != chatRooms.end(); iterator++)
 	{
 		roomNames.push_back((*iterator)->getName());
 	}
+
+	pthread_mutex_unlock(&chatRoomsMutex);
 
 	peersMessageSender.sendAllRooms(peerSocket, roomNames);
 
@@ -797,6 +829,11 @@ bool ServerController::isUserInChatRoom(User* user)
 
 ChatRoom* ServerController::getChatRoomByUser(User* user)
 {
+	ChatRoom* chatRoom = NULL;
+
+	// Make sure chat rooms are not modified as we iterate
+	pthread_mutex_lock(&chatRoomsMutex);
+
 	// Go over all chatrooms
  	for (vector<ChatRoom*>::iterator iterator = chatRooms.begin(); iterator != chatRooms.end(); iterator++)
 	{
@@ -810,12 +847,14 @@ ChatRoom* ServerController::getChatRoomByUser(User* user)
 			if ((*iterator2)->getUsername().compare(user->getUsername()) == 0)
 			{
 				// Return the ChatRoom object
-				return (*iterator);
+				chatRoom = *iterator;
 			}
 		}
 	}
 
- 	return NULL;
+ 	pthread_mutex_unlock(&chatRoomsMutex);
+
+ 	return chatRoom;
 }
 
 bool ServerController::isUserBusy(User* user)

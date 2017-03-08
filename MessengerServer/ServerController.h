@@ -43,6 +43,7 @@ class ServerController: public NewPeerAcceptedObserver, PeerMessagesObserver
 
 	pthread_mutex_t usersMutex;
 	pthread_mutex_t sessionsMutex;
+	pthread_mutex_t chatRoomsMutex;
 
 	bool isUserInSession(User* user);
 	bool isUserInChatRoom(User* user);
