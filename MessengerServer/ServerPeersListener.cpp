@@ -12,6 +12,7 @@ ServerPeersListener::ServerPeersListener(PeerMessagesObserver* observer)
 {
 	this->observer = observer;
 	pthread_mutex_init(&peersMutex, NULL);
+	pthread_mutex_init(&commandsMutex, NULL);
 	shouldContinue = true;
 }
 
@@ -47,7 +48,13 @@ void ServerPeersListener::run()
 
 		int commandCode = readCommand(readyPeer);
 
+		// Make sure there is only 1 user-triggered process going on in the server at any given time
+		pthread_mutex_lock(&commandsMutex);
+
 		routeCommand(commandCode, readyPeer);
+
+		// Unlock when finished the user-command process
+		pthread_mutex_unlock(&commandsMutex);
 	}
 }
 
