@@ -108,6 +108,9 @@ void ClientController::registerUser(string username, string password)
 {
 	// Send register command to the server with username and password
 	sendCommandToServer(REGISTER, username + " " + password);
+
+	// Save the username for later, because the server will login. (If register fails, we won't use it anyway).
+	this->username = username;
 }
 
 void ClientController::openSession(string otherUserName)
