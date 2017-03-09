@@ -34,9 +34,11 @@ void ServerPeersListener::run()
 {
 	while (shouldContinue)
 	{
+		// Create an MTCPListener and add the connected sockets to it
 		MTCPListener listener;
 		listener.add(getAllConnectedSockets());
 
+		// Listen to incoming messages from connected peers, with a timeout.
 		int timeout = 3;
 		TCPSocket* readyPeer = listener.listen(timeout);
 
@@ -46,11 +48,13 @@ void ServerPeersListener::run()
 			continue;
 		}
 
+		// Read the incoming command
 		int commandCode = readCommand(readyPeer);
 
 		// Make sure there is only 1 user-triggered process going on in the server at any given time
 		pthread_mutex_lock(&commandsMutex);
 
+		// Route, process & execute the user command
 		routeCommand(commandCode, readyPeer);
 
 		// Unlock when finished the user-command process
@@ -214,6 +218,7 @@ void ServerPeersListener::routeDisconnectCommand(TCPSocket* peer)
 
 void ServerPeersListener::routeRegisterCommand(TCPSocket* peer)
 {
+	// Extract the username & password from the message
 	string message = readMessage(peer);
 	pair<string, string> usernamePassword = getUsernameAndPasswordFromMessage(message);
 
@@ -257,6 +262,7 @@ int ServerPeersListener::readIntMessage(TCPSocket* socket)
 	socket->recv(messageContent, messageLength);
 	messageContent[messageLength] = '\0';
 
+	// Convert char* to int
 	return atoi(messageContent);
 }
 
@@ -274,6 +280,7 @@ string ServerPeersListener::readMessage(TCPSocket* socket)
 	socket->recv(messageContent, messageLength);
 	messageContent[messageLength] = '\0';
 
+	// Convert char* to string
 	return string(messageContent);
 }
 
@@ -299,6 +306,7 @@ void ServerPeersListener::addPeer(TCPSocket* peer)
 	// Make sure peers are not modified while appending
 	pthread_mutex_lock(&peersMutex);
 
+	// Add the peer
 	peers.push_back(peer);
 
 	// Appending done so we can unlock
@@ -310,7 +318,7 @@ void ServerPeersListener::removePeer(TCPSocket* peer)
 	// Make sure peers are not modified while erasing
 	pthread_mutex_lock(&peersMutex);
 
-	// TODO: Implement this without #include <algorithm>?
+	// Find the position of the requested element
 	vector<TCPSocket*>::iterator position = std::find(peers.begin(), peers.end(), peer);
 
 	 // end() means the element was not found
@@ -325,13 +333,17 @@ void ServerPeersListener::removePeer(TCPSocket* peer)
 
 pair<string, string> ServerPeersListener::getUsernameAndPasswordFromMessage(string message)
 {
+	// Get the index of the delimiter
 	string::size_type delimiterIndex = message.find(USERNAME_PASSWORD_DELIMITER, 0);
 
+	// Make sure it exists
 	if (delimiterIndex != string::npos)
 	{
+		// Cut the string to get username and password
 		string username = message.substr(0, delimiterIndex);
 		string password = message.substr(delimiterIndex + 1, message.length());
 
+		// Create a pair<string, string>
 		return make_pair(username, password);
 	}
 

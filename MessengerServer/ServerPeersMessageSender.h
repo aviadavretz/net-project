@@ -21,14 +21,12 @@ using namespace npl;
 class ServerPeersMessageSender
 {
 	void sendCode(TCPSocket* peer, int code);
-//	void sendMessage(TCPSocket* peer, string message);
 	void sendStringList(TCPSocket* peer, int code, vector<string> strings);
 	void sendOpenSessionSuccess(TCPSocket* peer);
 
 public:
 	void sendServerShuttingDown(TCPSocket* peer);
 	void sendMessage(TCPSocket* peer, string message);
-	// TODO: Don't really need all these functions, only: sendCode(TCPSocket* peer, int code) and a bunch of constants
 	void sendClientAlreadyLoggedIn(TCPSocket* peer);
 	void sendUserAlreadyLoggedIn(TCPSocket* peer);
 	void sendNotLoggedIn(TCPSocket* peer);

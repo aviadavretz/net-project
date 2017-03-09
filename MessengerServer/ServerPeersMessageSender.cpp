@@ -9,14 +9,18 @@
 
 void ServerPeersMessageSender::sendCode(TCPSocket* peer, int code)
 {
+	// Send the code to the peer
 	int message = htonl(code);
 	peer->send((char*)&message, EXPECTED_COMMAND_BYTES_SIZE);
 }
 
 void ServerPeersMessageSender::sendMessage(TCPSocket* peer, string message)
 {
+	// Send the message length to the peer first
 	int messageLength = htonl(message.length());
 	peer->send((char*)&messageLength, EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE);
+
+	// Send the message to the peer
 	peer->send(message);
 }
 
@@ -241,13 +245,10 @@ void ServerPeersMessageSender::sendEstablishedSessionCommunicationDetails(TCPSoc
 					   receivingPeer, receivingUser->getUsername(), receivingListenPort);
 }
 
-// TODO: Maybe use sendCode instead?
-#include <sstream>
-
 void ServerPeersMessageSender::sendConnectionData(TCPSocket* first, string firstUsername, int firstListenPort,
 												  TCPSocket* second, string secondUsername, int secondListenPort)
 {
-	// Convert the ports to strings
+	// Convert the ports from ints to strings
 	ostringstream port1;
 	ostringstream port2;
 	port1 << firstListenPort;

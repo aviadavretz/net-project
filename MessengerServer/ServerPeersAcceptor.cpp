@@ -18,7 +18,10 @@ void ServerPeersAcceptor::run()
 {
 	while (shouldContinue)
 	{
+		// Block the thread - listen to incoming connections
 		TCPSocket* peerSocket = acceptingSocket->listenAndAccept();
+
+		// Notify the observer about the new peer
 		observer->notifyNewPeerAccepted(peerSocket);
 	}
 }

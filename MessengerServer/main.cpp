@@ -2,11 +2,9 @@
 #include "ServerTerminalPrinter.h"
 #include "UserInputCommands.h"
 #include "ServerController.h"
-#include "TCPSocket.h"
 #include "CommandUtils.h"
 
 using namespace std;
-using namespace npl;
 
 int main()
 {
@@ -30,18 +28,22 @@ int main()
 
 		if (userCommand.compare(PRINT_ALL_USERS) == 0)
 		{
+			// Print all registered usernames
 			printer.printUsersName(controller.getAllRegisteredUsersName());
 		}
 		else if (userCommand.compare(PRINT_CONNECTED_USERS) == 0)
 		{
+			// Print all connected usernames
 			printer.printConnectedUsersName(controller.getAllConnectedUsersName());
 		}
 		else if (userCommand.compare(PRINT_SESSIONS) == 0)
 		{
+			// Print all sessions
 			printer.print(controller.getAllSessions());
 		}
 		else if (userCommand.compare(PRINT_ROOMS) == 0)
 		{
+			// Print all room names
 			printer.print(controller.getAllChatRooms());
 		}
 		else if (commandUtils.doesCommandHavePrefix(userCommand, PRINT_ROOM_USERS))
@@ -58,7 +60,10 @@ int main()
 
 			string roomName = args[0];
 
+			// Get the requested room
 			ChatRoom* room = controller.getChatRoomByName(roomName);
+
+			// Print the room users
 			printer.printRoomUsers(room, roomName);
 		}
 		else if (userCommand.compare(SHUTDOWN_SERVER) == 0)

@@ -12,7 +12,6 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
-#include "string"
 
 using namespace std;
 
@@ -22,7 +21,7 @@ using namespace std;
 class UserCredentialsManager
 {
 private:
-	bool doesFileLineMatchesUserCredentials(string fileLine, string username, string password);
+	bool doesFileLineMatchUserCredentials(string fileLine, string username, string password);
 	bool writeUserCredentialsToFile(string username, string password);
 
 public:

@@ -31,7 +31,7 @@ void ChatRoom::addParticipant(User* user)
 
 void ChatRoom::removeParticipant(User* user)
 {
-	// TODO: Implement this without #include <algorithm>?
+	// Find the position of the requested element
 	vector<User*>::iterator position = std::find(users.begin(), users.end(), user);
 
 	 // end() means the element was not found

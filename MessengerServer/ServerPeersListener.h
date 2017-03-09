@@ -55,6 +55,4 @@ public:
 	vector<TCPSocket*> getAllConnectedSockets();
 };
 
-
-
 #endif /* SERVERPEERSLISTENER_H_ */

@@ -9,6 +9,7 @@
 
 ServerController::ServerController() : peersAcceptor(ServerPeersAcceptor(this)), peersListener(ServerPeersListener(this))
 {
+	// Initialize the mutexes
 	pthread_mutex_init(&usersMutex, NULL);
 	pthread_mutex_init(&sessionsMutex, NULL);
 	pthread_mutex_init(&chatRoomsMutex, NULL);
@@ -132,11 +133,6 @@ vector<string> ServerController::getAllConnectedUsersName()
 
 vector<Session*> ServerController::getAllSessions()
 {
-	// TODO : Is it really necessary to use a lock here ?
-	pthread_mutex_lock(&sessionsMutex);
-	vector<Session*> sessions = this->sessions;
-	pthread_mutex_unlock(&sessionsMutex);
-
 	return sessions;
 }
 
@@ -356,7 +352,7 @@ void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string 
 				// Make sure chat rooms are not modified while we iterate
 				pthread_mutex_lock(&chatRoomsMutex);
 
-				// TODO: Implement this without #include <algorithm>?
+				// Find the position of the requested element
 				vector<ChatRoom*>::iterator position = std::find(chatRooms.begin(), chatRooms.end(), roomToClose);
 
 				// end() means the element was not found
@@ -864,12 +860,7 @@ bool ServerController::isUserBusy(User* user)
 
 User* ServerController::getUserByPeer(TCPSocket* peer)
 {
-	// TODO : Is lock really needed here ? idk...
-	pthread_mutex_lock(&usersMutex);
-
 	User* user = loggedInUsers[peer];
-
-	pthread_mutex_unlock(&usersMutex);
 
 	return user;
 }
@@ -890,9 +881,7 @@ TCPSocket* ServerController::getPeerSocketByUsername(string username)
 	{
  		User* currentUser = (*iterator).second;
 
- 		// TODO: Somewhere we insert the socket after it connects and the User* remains NULL.
- 		// TODO: It's ok though, because that way, when we shutdown server we notify all connected (and just logged-in) users.
- 		// In case the map holds the socket as the key, but no value.
+ 		// In case the map holds the socket as the key, but no user as value.
  		if (currentUser == NULL) { continue; }
 
  		// Compare the usernames

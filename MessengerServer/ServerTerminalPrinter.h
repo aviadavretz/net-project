@@ -11,10 +11,9 @@
 #include "User.h"
 #include "Session.h"
 #include "ChatRoom.h"
-#include "string"
 #include "UserInputCommands.h"
 #include <vector>
-#include "strings.h"
+#include <iostream>
 
 using namespace std;
 
@@ -34,7 +33,6 @@ class ServerTerminalPrinter
 	void printNewPeerAccepted(string addr);
 	void printLoginSuccessful(string username, string addr);
 	void printListenPort(string addr, int port);
-
 	void print(string str);
 };
 

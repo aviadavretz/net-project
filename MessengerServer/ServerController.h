@@ -87,6 +87,4 @@ public:
 	bool isPeerLoggedIn(TCPSocket* peer);
 };
 
-
-
 #endif /* SERVERCONTROLLER_H_ */
