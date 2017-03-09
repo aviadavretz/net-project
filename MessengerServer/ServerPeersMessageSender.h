@@ -64,6 +64,7 @@ public:
 	void sendSomeoneJoinedRoom(TCPSocket* peer);
 	void sendSomeoneLeftRoom(TCPSocket* peer, string leavingUsername);
 	void sendRoomWasClosed(TCPSocket* peer, string roomName);
+	void sendYouClosedRoom(TCPSocket* peer, string roomName);
 };
 
 #endif /* SERVERPEERSMESSAGESENDER_H_ */

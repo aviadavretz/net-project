@@ -180,6 +180,11 @@ void ServerRepliesListener::run()
 			observer->notifyRoomClosedByOwner();
 			break;
 		}
+		case (YOU_CLOSED_ROOM):
+		{
+			observer->notifyYouClosedRoom();
+			break;
+		}
 		case (SERVER_SHUTTING_DOWN):
 		{
 			observer->notifyServerShuttingDown();

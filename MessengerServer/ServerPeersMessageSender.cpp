@@ -50,6 +50,15 @@ void ServerPeersMessageSender::sendRoomWasClosed(TCPSocket* peer, string roomNam
 	sendMessage(peer, roomName);
 }
 
+void ServerPeersMessageSender::sendYouClosedRoom(TCPSocket* peer, string roomName)
+{
+	// Send the code
+	sendCode(peer, YOU_CLOSED_ROOM);
+
+	// Send the roomName
+	sendMessage(peer, roomName);
+}
+
 void ServerPeersMessageSender::sendSomeoneJoinedRoom(TCPSocket* peer)
 {
 	// Send the code

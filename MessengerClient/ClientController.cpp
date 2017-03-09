@@ -302,6 +302,14 @@ void ClientController::notifyRoomClosedByOwner()
 	printer.print("ChatRoom '" + roomName + "' closed by its owner.");
 }
 
+void ClientController::notifyYouClosedRoom()
+{
+	// Receive the relevant data from the server.
+	string roomName = srvConnection.receiveMessage();
+
+	printer.print("You have closed ChatRoom '" + roomName + "'.");
+}
+
 void ClientController::notifyRoomClosedSuccess()
 {
 	printer.print("Closing the room..");

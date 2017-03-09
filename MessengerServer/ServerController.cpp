@@ -387,7 +387,7 @@ void ServerController::notifyCloseChatRoomRequest(TCPSocket* peerSocket, string 
 					// If the owner wasn't in the room when it closed, notify him as well.
 					if (!ownerIsInside)
 					{
-						peersMessageSender.sendRoomWasClosed(peerSocket, roomName);
+						peersMessageSender.sendYouClosedRoom(peerSocket, roomName);
 					}
 
 					printer.print("ChatRoom '" + roomName + "' has been closed by " +
