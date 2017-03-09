@@ -44,10 +44,10 @@ TCPSocket* MTCPListener::listen(int timeout) {
 
 	// Check which fd from the fd_set is available for read.
 	if (timeout > 0) {
-		readyCount = select(fdNum, &set,NULL,NULL,&tVal);
+		readyCount = select(nfds, &set,NULL,NULL,&tVal);
 	}
 	else {
-		readyCount = select(fdNum, &set,NULL,NULL,NULL);
+		readyCount = select(nfds, &set,NULL,NULL,NULL);
 	}
 
 	// If there are no ready fds
