@@ -11,10 +11,11 @@ CommandUtils::CommandUtils() {}
 CommandUtils::~CommandUtils() {}
 
 /**
- * This function receives a command line and determines if the command (disreguarding the arguments) is the prefix
+ * This function receives a command line and determines if the command (disregarding the arguments) is the prefix
  */
 bool CommandUtils::doesCommandHavePrefix(string command, string prefix)
 {
+	// If the command is not long enough
 	if (command.length() <= prefix.length())
 	{
 		return false;

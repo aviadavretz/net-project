@@ -87,9 +87,6 @@
 #define EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE 4
 
 #define DONE_SENDING_ROOM_PARTICIPANTS "DONE_SENDING_ROOM_PARTICIPANTS"
-#define TEST_PEER_NAME "test"
-#define SESSION_REFUSED_MSG "Connection to peer refused, peer might be busy or disconnected, try again later"
-
 
 
 #endif /* TCPMESSENGERPROTOCOL_H_ */

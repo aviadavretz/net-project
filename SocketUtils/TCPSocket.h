@@ -31,14 +31,15 @@ private:
 
 public:
 	/**
-	 * Constructor create a TCP server socket
+	 * Constructor create a TCP server socket (Passive)
 	 */
 	TCPSocket(int port);
 
 	/**
-	 * Constructor creates TCP client socket
+	 * Constructor creates TCP client socket (Active)
 	 */
 	TCPSocket(const string& peerIp, int port);
+
 	/**
 	 * Perform listen and accept on server socket
 	 */

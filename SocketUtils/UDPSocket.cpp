@@ -26,26 +26,33 @@ UDPSocket::UDPSocket(int port){
 	int iteration = 0;
 	bool success = false;
 
+	// As long as socket wasn't created
 	while (!success && port != 9999)
 	{
 		// SOCK_DGRAM = UDP
 		socket_fd = socket (AF_INET, SOCK_DGRAM, 0);
-		struct sockaddr_in  s_in;
+		struct sockaddr_in s_in;
+
+		// Clear the s_in struct
 		bzero((char *) &s_in, sizeof(s_in));
+
+		// Set the s_in address
 		s_in.sin_family = (short)AF_INET;
 		s_in.sin_addr.s_addr = htonl(INADDR_ANY);    /* WILDCARD any system ip*/
 		s_in.sin_port = htons(port);
 
-		if (bind(socket_fd, (struct sockaddr *)&s_in, sizeof(s_in))<0){
+		// Try to bind to the specified address
+		if (bind(socket_fd, (struct sockaddr *)&s_in, sizeof(s_in)) < 0){
 			// Close this socket and try again on the next port.
 			::close(socket_fd);
 			port++;
 		}
 		else
 		{
+			// Succeeded
 			listeningPort = port;
 			success = true;
-			cout << "Socket opened on port " << port << endl;
+			cout << "UDPSocket opened on port " << port << endl;
 		}
 	}
 }
@@ -53,25 +60,32 @@ UDPSocket::UDPSocket(int port){
 int UDPSocket::recv(char* buffer, int length){
 	socklen_t fromSize = sizeof(from);
 
-	int rc = recvfrom(socket_fd, buffer, length, 0,(sockaddr*)&from,&fromSize);
+	// Receive the message into the buffer
+	int bytesRead = recvfrom(socket_fd, buffer, length, 0,(sockaddr*)&from,&fromSize);
 
-	while (rc < 0)
+	// While nothing was read
+	while (bytesRead <= 0)
 	{
-		rc = recvfrom(socket_fd, buffer, length, 0,(sockaddr*)&from,&fromSize);
+		bytesRead = recvfrom(socket_fd, buffer, length, 0,(sockaddr*)&from,&fromSize);
 	}
 
-	return rc;
+	return bytesRead;
 }
 
 int UDPSocket::sendTo(const string& msg,const string& ip, int port){
-	struct sockaddr_in  s_in;
+	struct sockaddr_in s_in;
+
+	// Clear the s_in struct
 	bzero((char *) &s_in, sizeof(s_in));
+
+	// Initialize the address
 	s_in.sin_family = (short)AF_INET;
 	s_in.sin_addr.s_addr = inet_addr(ip.c_str());
 	s_in.sin_port = htons(port);
 
-	int rc = sendto(socket_fd,msg.c_str(), msg.length(),0,(struct sockaddr *)&s_in,sizeof(s_in));
-	return rc;
+	// Send the message to the specified s_in address
+	int sentBytes = sendto(socket_fd,msg.c_str(), msg.length(),0,(struct sockaddr *)&s_in,sizeof(s_in));
+	return sentBytes;
 }
 
 int UDPSocket::reply(const string& msg){

@@ -23,7 +23,6 @@ TCPSocket::TCPSocket(int connected_sock,struct sockaddr_in serverAddr,struct soc
 	socket_fd = connected_sock;
 }
 
-
 TCPSocket::TCPSocket(int port){
 	/**
 	 * int socket(int domain, int type, int protocol);
@@ -34,15 +33,15 @@ TCPSocket::TCPSocket(int port){
 	 */
 	socket_fd = ::socket(AF_INET, SOCK_STREAM, 0);
 
-	// clear the s_in struct
-	bzero((char *) &serverAddr, sizeof(serverAddr));  /* They say you must do this    */
+	// Clear the s_in struct
+	bzero((char *) &serverAddr, sizeof(serverAddr));
 
-	//sets the sin address
+	// Set the sin address
 	serverAddr.sin_family = (short)AF_INET;
 	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);    /* WILDCARD */
 	serverAddr.sin_port = htons((u_short)port);
 
-	//bind the socket on the specified address
+	// Try to bind the socket on the specified address
 	printf("TCP server binding...\n");
 	if (bind(socket_fd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
 	{
@@ -50,10 +49,7 @@ TCPSocket::TCPSocket(int port){
 	}
 }
 
-
 TCPSocket::TCPSocket(const string& peerIp, int port){
-	//cout<<"openning new client socket"<<endl;
-
 	/**
 	 * int socket(int domain, int type, int protocol);
 	 * creates a TCP socket
@@ -63,14 +59,15 @@ TCPSocket::TCPSocket(const string& peerIp, int port){
 	 */
 	socket_fd = ::socket (AF_INET, SOCK_STREAM, 0);
 
-	// clear the s_in struct
-	bzero((char *) &peerAddr, sizeof(peerAddr));  /* They say you must do this    */
+	// Clear the s_in struct
+	bzero((char *) &peerAddr, sizeof(peerAddr));
 
-	//sets the sin address
+	// Set the sin address
 	peerAddr.sin_family = (short)AF_INET;
 	peerAddr.sin_addr.s_addr = inet_addr(peerIp.data());
 	peerAddr.sin_port = htons((u_short)port);
 
+	// Try to connect to the peerAddr
 	if (connect(socket_fd, (struct sockaddr *)&peerAddr, sizeof(peerAddr)) < 0)
 	{
 		perror ("Error establishing communications");
@@ -80,13 +77,19 @@ TCPSocket::TCPSocket(const string& peerIp, int port){
 
 
 TCPSocket* TCPSocket::listenAndAccept(){
+	// Listen to incoming connections
 	int rc = listen(socket_fd, 1);
-	if (rc<0){
+
+	// If there was no new connection
+	if (rc<0) {
 		return NULL;
 	}
+
+	// Reset the peerAddr to zeros
 	socklen_t len = sizeof(peerAddr);
 	bzero((char *) &peerAddr, sizeof(peerAddr));
 
+	// Accept the new connection and create a new socket
 	int connect_sock = accept(socket_fd, (struct sockaddr *)&peerAddr, &len);
 	return new TCPSocket(connect_sock,serverAddr,peerAddr);
 }

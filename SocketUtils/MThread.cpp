@@ -19,6 +19,7 @@ void* worker(void* arg){
 }
 
 void MThread::start(){
+	// Create a thread, and send this Mthread instance as the arg to the startRoutine.
 	pthread_create(&threadId,NULL,worker,(void*)this);
 }
 
@@ -29,7 +30,7 @@ void MThread::waitForThread(){
 
 MThread::~MThread(){
 	if (threadId>0){
-		// Kills the thread if exists
+		// Kills the thread if it exists
 		pthread_cancel(threadId);
 		cout << "Thread stopped." << endl;
 	}
