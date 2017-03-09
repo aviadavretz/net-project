@@ -78,10 +78,10 @@ TCPSocket::TCPSocket(const string& peerIp, int port){
 
 TCPSocket* TCPSocket::listenAndAccept(){
 	// Listen to incoming connections
-	int rc = listen(socket_fd, 1);
+	int status = listen(socket_fd, 1);
 
 	// If there was no new connection
-	if (rc<0) {
+	if (status<0) {
 		return NULL;
 	}
 
