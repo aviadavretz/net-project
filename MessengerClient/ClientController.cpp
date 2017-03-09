@@ -211,13 +211,7 @@ void ClientController::notifySessionEstablished()
 
 	// Open a socket to the other user
 	peerListener->addPeer(otherUsername, otherUserAddr, otherUserListeningPort);
-
-	ostringstream oss;
-	oss << "Connection with " << otherUsername << " (" << otherUserAddr << ":" << otherUserListeningPort << ") established." << endl;
-	printer.print(oss.str());
-
-//	// TODO: Why doesnt this compile? no need to use ostringstream here..
-//	printer.printConnectionEstablished(otherUsername, otherUserAddr, otherUserListeningPort);
+	printer.printConnectionEstablished(otherUsername, otherUserAddr, otherUserListeningPort);
 }
 
 void ClientController::notifyChatRoomOpened()

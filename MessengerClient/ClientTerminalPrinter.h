@@ -35,3 +35,4 @@ public:
 };
 
 #endif /* CLIENTTERMINALPRINTER_H_ */
+;

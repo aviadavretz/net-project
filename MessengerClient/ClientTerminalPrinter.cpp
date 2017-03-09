@@ -40,7 +40,7 @@ void ClientTerminalPrinter::print(string str)
 	cout << str << endl;
 }
 
-void printConnectionEstablished(string otherUsername, string otherUserAddr, int otherUserListeningPort)
+void ClientTerminalPrinter::printConnectionEstablished(string otherUsername, string otherUserAddr, int otherUserListeningPort)
 {
 	cout << "Connection with " << otherUsername << " (" << otherUserAddr << ":" << otherUserListeningPort << ") established." << endl;
 }

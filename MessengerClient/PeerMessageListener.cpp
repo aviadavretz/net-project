@@ -83,7 +83,7 @@ void PeerMessageListener::removePeerByUsername(string username)
 
 void PeerMessageListener::removePeer(PeerInfo* peer)
 {
-	// TODO: Implement this without #include <algorithm>?
+	// Find the position of the object
 	vector<PeerInfo*>::iterator position = std::find(peers.begin(), peers.end(), peer);
 
 	 // end() means the element was not found

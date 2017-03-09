@@ -192,6 +192,7 @@ void ServerRepliesListener::run()
 
 			if (usersNumber > 0)
 			{
+				// Receive the registered users list
 				printer->printRegisteredUsers(connection->receiveMessages(usersNumber));
 			}
 			else
@@ -208,6 +209,7 @@ void ServerRepliesListener::run()
 
 			if (usersNumber > 0)
 			{
+				// Receive the connected users list
 				printer->printConnectedUsers(connection->receiveMessages(usersNumber));
 			}
 			else
@@ -224,6 +226,7 @@ void ServerRepliesListener::run()
 
 			if (roomsNumber > 0)
 			{
+				// Receive the rooms list
 				printer->printRooms(connection->receiveMessages(roomsNumber));
 			}
 			else
@@ -240,6 +243,7 @@ void ServerRepliesListener::run()
 
 			if (usersNumber > 0)
 			{
+				// Receive the room users list
 				printer->printUsersInRoom(connection->receiveMessages(usersNumber));
 			}
 			else
