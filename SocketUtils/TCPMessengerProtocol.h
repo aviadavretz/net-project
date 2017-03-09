@@ -83,10 +83,16 @@
 
 #define SERVER_SHUTTING_DOWN     0
 
+/**
+ * Size of commandCode message
+ */
 #define EXPECTED_COMMAND_BYTES_SIZE 				 4
+
+/**
+ * Size of message length message
+ */
 #define EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE 4
 
 #define DONE_SENDING_ROOM_PARTICIPANTS "DONE_SENDING_ROOM_PARTICIPANTS"
-
 
 #endif /* TCPMESSENGERPROTOCOL_H_ */

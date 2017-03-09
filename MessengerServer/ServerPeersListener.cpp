@@ -64,17 +64,17 @@ void ServerPeersListener::run()
 
 int ServerPeersListener::readCommand(TCPSocket* socket)
 {
-	int command = 0;
+	int commandCode = 0;
 
 	// Receive command (the size should be as stated in the protocol)
-	int bytesReceived = socket->recv((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
+	int bytesReceived = socket->recv((char*)&commandCode, EXPECTED_COMMAND_BYTES_SIZE);
 
-	return ntohl(command);
+	return ntohl(commandCode);
 }
 
-void ServerPeersListener::routeCommand(int command, TCPSocket* peer)
+void ServerPeersListener::routeCommand(int commandCode, TCPSocket* peer)
 {
-	switch (command)
+	switch (commandCode)
 	{
 		case (LOGIN):
 		{

@@ -28,7 +28,7 @@ class ServerPeersListener: public MThread
 
 	void run();
 	int readCommand(TCPSocket* socket);
-	void routeCommand(int command, TCPSocket* peer);
+	void routeCommand(int commandCode, TCPSocket* peer);
 	string readMessage(TCPSocket* socket);
 	int readIntMessage(TCPSocket* socket);
 	void routeLoginCommand(TCPSocket* peer);

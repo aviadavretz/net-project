@@ -10,8 +10,8 @@
 void ServerPeersMessageSender::sendCode(TCPSocket* peer, int code)
 {
 	// Send the code to the peer
-	int message = htonl(code);
-	peer->send((char*)&message, EXPECTED_COMMAND_BYTES_SIZE);
+	int commandCode = htonl(code);
+	peer->send((char*)&commandCode, EXPECTED_COMMAND_BYTES_SIZE);
 }
 
 void ServerPeersMessageSender::sendMessage(TCPSocket* peer, string message)

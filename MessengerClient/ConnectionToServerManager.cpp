@@ -79,8 +79,8 @@ int ConnectionToServerManager::receiveReplyCode()
 void ConnectionToServerManager::sendCommandCode(int commandCode)
 {
 	// Send the command-code
-	int commandLength = htonl(commandCode);
-	socketToServer->send((char*)&commandLength,4);
+	int command = htonl(commandCode);
+	socketToServer->send((char*)&command, EXPECTED_COMMAND_BYTES_SIZE);
 }
 
 void ConnectionToServerManager::sendArgs(string message)
@@ -89,7 +89,7 @@ void ConnectionToServerManager::sendArgs(string message)
 	int messageLength = htonl(message.length());
 
 	// Send the message length first
-	socketToServer->send((char*)&messageLength, 4);
+	socketToServer->send((char*)&messageLength, EXPECTED_MESSAGE_LENGTH_INDICATOR_BYTES_SIZE);
 
 	// Send the message itself
 	socketToServer->send(message);
