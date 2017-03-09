@@ -96,16 +96,16 @@ TCPSocket* TCPSocket::listenAndAccept(){
 
 
 int TCPSocket::recv(char* buffer, int length){
-	return read(socket_fd,buffer,length);
+	return ::recv(socket_fd,buffer,length,0);
 }
 
 
 int TCPSocket::send(const string& msg){
-	return write(socket_fd,msg.c_str(),msg.size());
+	return ::send(socket_fd,msg.c_str(),msg.size(),0);
 }
 
 int TCPSocket::send(const char* msg, int length){
-	return write(socket_fd, msg, length);
+	return ::send(socket_fd, msg, length,0);
 }
 
 
