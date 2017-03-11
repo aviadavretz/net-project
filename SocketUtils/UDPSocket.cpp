@@ -15,8 +15,6 @@
 
 using namespace npl;
 
-int listeningPort = 9999;
-
 int UDPSocket::getListeningPort()
 {
 	return listeningPort;

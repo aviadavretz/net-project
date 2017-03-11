@@ -20,6 +20,7 @@ namespace npl{
 class UDPSocket{
 	struct sockaddr_in from;
 	int socket_fd;
+	int listeningPort;
 
 public:
 	UDPSocket(int port = 9999);
