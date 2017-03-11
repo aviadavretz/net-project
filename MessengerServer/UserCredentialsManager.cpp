@@ -7,6 +7,11 @@
 
 #include "UserCredentialsManager.h"
 
+UserCredentialsManager::UserCredentialsManager()
+{
+	pthread_mutex_init(&usersFileMutex, NULL);
+}
+
 bool UserCredentialsManager::signUp(string username, string password)
 {
 	// Sign up
@@ -15,6 +20,11 @@ bool UserCredentialsManager::signUp(string username, string password)
 
 bool UserCredentialsManager::validateUserCredentials(string username, string password)
 {
+	bool isCorrectCredentials = false;
+
+	// Assure no other writes / reads are made to the file while we open it
+	pthread_mutex_lock(&usersFileMutex);
+
 	// Open the users file with read permission
 	ifstream usersFile;
 	usersFile.open(USERS_FILE_NAME, ios::in | ios::binary);
@@ -31,7 +41,8 @@ bool UserCredentialsManager::validateUserCredentials(string username, string pas
 			{
 				// Close the file
 				usersFile.close();
-				return true;
+				isCorrectCredentials = true;
+				break;
 			}
 		}
 
@@ -39,7 +50,9 @@ bool UserCredentialsManager::validateUserCredentials(string username, string pas
 		usersFile.close();
 	}
 
-	return false;
+	pthread_mutex_unlock(&usersFileMutex);
+
+	return isCorrectCredentials;
 }
 
 bool UserCredentialsManager::doesFileLineMatchUserCredentials(string fileLine, string username, string password)
@@ -54,6 +67,11 @@ bool UserCredentialsManager::doesFileLineMatchUserCredentials(string fileLine, s
 
 bool UserCredentialsManager::writeUserCredentialsToFile(string username, string password)
 {
+	bool wasWriteSuccessful = false;
+
+	// Assure no other writes / reads are made to the file while we write to it
+	pthread_mutex_lock(&usersFileMutex);
+
 	// Open the file with write permission.
 	ofstream usersFile;
 	usersFile.open(USERS_FILE_NAME, ios::out | ios::app | ios::binary);
@@ -64,15 +82,20 @@ bool UserCredentialsManager::writeUserCredentialsToFile(string username, string 
 		usersFile << username + PASSWORD_DELIMITER + password << endl;
 		usersFile.close();
 
-		return true;
+		wasWriteSuccessful = true;
 	}
 
-	return false;
+	pthread_mutex_unlock(&usersFileMutex);
+
+	return wasWriteSuccessful;
 }
 
 vector<string> UserCredentialsManager::getAllRegisteredUsersName()
 {
 	vector<string> usernames;
+
+	// Assure no other writes / reads are made to the file while we read from it
+	pthread_mutex_lock(&usersFileMutex);
 
 	// Open the file with read permission
 	ifstream usersFile;
@@ -99,6 +122,9 @@ vector<string> UserCredentialsManager::getAllRegisteredUsersName()
 		// Close the file
 		usersFile.close();
 	}
+
+	// Assure no other writes / reads are made to the file while we open it
+	pthread_mutex_unlock(&usersFileMutex);
 
 	return usernames;
 }

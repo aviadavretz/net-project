@@ -21,10 +21,13 @@ using namespace std;
 class UserCredentialsManager
 {
 private:
+	pthread_mutex_t usersFileMutex;
+
 	bool doesFileLineMatchUserCredentials(string fileLine, string username, string password);
 	bool writeUserCredentialsToFile(string username, string password);
 
 public:
+	UserCredentialsManager();
 	bool signUp(string username, string password);
 	bool validateUserCredentials(string username, string password);
 	vector<string> getAllRegisteredUsersName();
