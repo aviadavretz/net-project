@@ -24,7 +24,6 @@ class ServerPeersListener: public MThread
 	bool shouldContinue;
 
 	pthread_mutex_t peersMutex;
-	pthread_mutex_t commandsMutex;
 
 	void run();
 	int readCommand(TCPSocket* socket);
