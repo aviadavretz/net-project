@@ -575,42 +575,6 @@ void ServerController::notifyDisconnectRequest(TCPSocket* peerSocket)
 			closeExistingSessions(peerSocket, requestingUser);
 		}
 
-//		// Check if user is busy
-//		if (isUserInChatRoom(requestingUser))
-//		{
-//			// Remove the user from the room he is inside
-//			ChatRoom* usersRoom = getRoomByUser(requestingUser);
-//			usersRoom->removeParticipant(requestingUser);
-//
-//			// Notify all other room users that the requesting user has left
-//			vector<User*> roomUsers = usersRoom->getParticipatingUsers();
-//
-//			// Notify every user in the room.
-//			for (vector<User*>::iterator iter = roomUsers.begin(); iter != roomUsers.end(); iter++)
-//			{
-//				// Get the current relevant socket
-//				TCPSocket* currentUserSocket = getPeerSocketByUsername((*iter)->getUsername());
-//
-//				// Notify the user that someone has left.
-//				peersMessageSender.sendSomeoneLeftRoom(currentUserSocket, requestingUser->getUsername());
-//			}
-//		}
-//		else if (isUserInSession(requestingUser))
-//		{
-//			// Close the session the user is in
-//			Session* userSession = getSessionByUser(requestingUser);
-//			eraseSession(userSession);
-//
-//			// Get the other other username
-//			string otherUsername = getOtherUsernameBySession(userSession, requestingUser->getUsername());
-//
-//			// Get the other socket
-//			TCPSocket* otherSocket = getPeerSocketByUsername(otherUsername);
-//
-//			// Notify the other user that the session has ended.
-//			peersMessageSender.sendCloseSessionSuccess(otherSocket, requestingUser->getUsername());
-//		}
-
 		notification = requestingUser->getUsername() + " (" +peerSocket->fromAddr() + ") has disconnected.";
 
 		pthread_mutex_lock(&usersMutex);
